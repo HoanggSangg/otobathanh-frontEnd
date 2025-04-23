@@ -634,6 +634,12 @@ const Header = () => {
                   <DropdownItem to="/manager/banner">
                     Quản lý banner
                   </DropdownItem>
+                  <DropdownItem to="/manager/category">
+                    Quản lý danh mục
+                  </DropdownItem>
+                  <DropdownItem to="/manager/order">
+                    Quản lý đơn hàng
+                  </DropdownItem>
                 </DropdownContent>
               </ManagerDropdown>
             )}

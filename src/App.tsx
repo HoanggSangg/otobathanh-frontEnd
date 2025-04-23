@@ -33,6 +33,8 @@ import Products from './components/Appbar/Menu/Products';
 import Partner from './components/Home/Partner';
 import IndexBanner from './components/Admin/BannerManager/indexBanner';
 import ProtectedRoute from './components/AuthForm/Protected/ProtectedRoute';
+import IndexCategory from './components/Admin/CategoryManager/indexCategory';
+import IndexOrder from './components/Admin/OrderManager/indexOrder';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -94,6 +96,22 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <IndexBanner />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/manager/category" 
+              element={
+                <ProtectedRoute>
+                  <IndexCategory />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/manager/order" 
+              element={
+                <ProtectedRoute>
+                  <IndexOrder />
                 </ProtectedRoute>
               } 
             />

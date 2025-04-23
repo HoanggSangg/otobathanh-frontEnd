@@ -530,7 +530,9 @@ export const getCategoryByIdAPI = async (categoryId) => {
 
 export const createCategoryAPI = async (categoryData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/categories/create`, categoryData);
+    const response = await axios.post(`${API_URL}/api/categories/create`, categoryData, 
+      {headers: getAuthHeaders()}
+    );
     return response.data;
   } catch (error) {
     console.error('Error creating category:', error);
@@ -540,7 +542,9 @@ export const createCategoryAPI = async (categoryData) => {
 
 export const updateCategoryAPI = async (categoryId, categoryData) => {
   try {
-    const response = await axios.put(`${API_URL}/api/categories/${categoryId}`, categoryData);
+    const response = await axios.put(`${API_URL}/api/categories/${categoryId}`, categoryData, 
+      {headers: getAuthHeaders()}
+    );
     return response.data;
   } catch (error) {
     console.error('Error updating category:', error);
@@ -550,7 +554,9 @@ export const updateCategoryAPI = async (categoryId, categoryData) => {
 
 export const deleteCategoryAPI = async (categoryId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/categories/${categoryId}`);
+    const response = await axios.delete(`${API_URL}/api/categories/${categoryId}`, 
+      {headers: getAuthHeaders()}
+    );
     return response.data;
   } catch (error) {
     console.error('Error deleting category:', error);
@@ -664,6 +670,19 @@ export const deleteBannerAPI = async (bannerId) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting banner:', error);
+    throw error;
+  }
+};
+
+// Order APIs
+export const getAllOrdersAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/orders`, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all orders:', error);
     throw error;
   }
 };
