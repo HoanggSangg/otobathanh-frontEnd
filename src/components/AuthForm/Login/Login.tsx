@@ -191,7 +191,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
 
     try {
       const response = await loginAPI(formData.email, formData.password);
-      
+
       if (response.status === "thành công") {
         // Lưu token
         localStorage.setItem('token', response.token);
@@ -200,15 +200,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
         localStorage.setItem('user', JSON.stringify({
           id: response.id,
           fullName: response.fullName,
-          image: response.image
+          email: response.email,
+          image: response.image,
+          roles: response.roles
         }));
 
-        onClose();
-        navigate('/');
-        window.location.reload();
       } else {
-        throw new Error(response.message || 'Đăng nhập thất bại');
+        throw new Error(response.loginData.message || 'Đăng nhập thất bại');
       }
+
+      showToast('Đăng nhập thành công!', 'success');
+      onClose();
+      navigate('/');
     } catch (error) {
       showToast('Có lỗi khi đăng nhập!', 'error');
       console.error(error);

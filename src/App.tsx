@@ -31,6 +31,8 @@ import { ToastProvider } from './components/Styles/ToastProvider';
 import ProductOutstand from './components/Home/ProductOutstand';
 import Products from './components/Appbar/Menu/Products';
 import Partner from './components/Home/Partner';
+import IndexBanner from './components/Admin/BannerManager/indexBanner';
+import ProtectedRoute from './components/AuthForm/Protected/ProtectedRoute';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -62,9 +64,39 @@ const App = () => {
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/manager/products" element={<IndexProduct />} />
-            <Route path="/manager/accounts" element={<IndexAccount />} />
-            <Route path="/manager/news" element={<IndexNews />} />
+            {/* Protected manager routes */}
+            <Route 
+              path="/manager/products" 
+              element={
+                <ProtectedRoute>
+                  <IndexProduct />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/manager/accounts" 
+              element={
+                <ProtectedRoute>
+                  <IndexAccount />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/manager/news" 
+              element={
+                <ProtectedRoute>
+                  <IndexNews />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/manager/banner" 
+              element={
+                <ProtectedRoute>
+                  <IndexBanner />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="/news/:id" element={<NewsDetail />} />
             <Route path="/account/profile" element={<Profile />} />
             <Route path="/account/update" element={<UpdateAccount />} />

@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
 import {
-  TextField,
   Button,
   Box,
   Typography,
 } from '@mui/material';
-import { createNewsAPI, updateNewsAPI } from '../../API';
+import { createBannerAPI, updateBannerAPI } from '../../API';
 
 const FormContainer = styled(Box)`
   background: white;
@@ -16,52 +15,21 @@ const FormContainer = styled(Box)`
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-const StyledTextField = styled(TextField)`
-  margin-bottom: 20px !important;
-  
-  .MuiOutlinedInput-root {
-    border-radius: 8px;
-    
-    &:hover .MuiOutlinedInput-notchedOutline {
-      border-color: #e31837;
-    }
-    
-    &.Mui-focused .MuiOutlinedInput-notchedOutline {
-      border-color: #e31837;
-    }
-  }
-`;
-
-interface CreateNewsProps {
-  selectedNews: any;
+interface CreateBannerProps {
+  selectedBanner: any;
   onSuccess: () => void;
 }
 
-const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-  });
+const CreateBanner: React.FC<CreateBannerProps> = ({ selectedBanner, onSuccess }) => {
   const [image, setImage] = useState<File | null>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const showToast = useToast();
 
   useEffect(() => {
-    if (selectedNews) {
-      setFormData({
-        title: selectedNews.title,
-        content: selectedNews.content,
-      });
-      setCurrentImage(selectedNews.image);
+    if (selectedBanner) {
+      setCurrentImage(selectedBanner.image);
     }
-  }, [selectedNews]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  }, [selectedBanner]);
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -86,21 +54,18 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
         base64Image = await convertToBase64(image);
       }
 
-      const newsData = {
-        ...formData,
-        image: base64Image,
-      };
-
-      if (selectedNews) {
-        await updateNewsAPI(selectedNews._id, newsData);
-        showToast('Cập nhật tin tức thành công!', 'success');
-        onSuccess();
+      if (selectedBanner) {
+        await updateBannerAPI(selectedBanner._id, base64Image);
+        showToast('Cập nhật banner thành công!', 'success');
       } else {
-        await createNewsAPI(newsData);
-        showToast('Thêm tin tức mới thành công!', 'success');
-        onSuccess();
+        if (!base64Image) {
+          showToast('Vui lòng chọn ảnh banner!', 'error');
+          return;
+        }
+        await createBannerAPI(base64Image);
+        showToast('Thêm banner mới thành công!', 'success');
       }
-
+      onSuccess();
     } catch (error) {
       showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
     }
@@ -109,30 +74,10 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
   return (
     <FormContainer>
       <Typography variant="h5" sx={{ mb: 4, color: '#e31837', fontWeight: 'bold' }}>
-        {selectedNews ? "Chỉnh sửa tin tức" : "Thêm tin tức mới"}
+        {selectedBanner ? "Chỉnh sửa banner" : "Thêm banner mới"}
       </Typography>
 
       <form onSubmit={handleSubmit}>
-        <StyledTextField
-          fullWidth
-          label="Tiêu đề"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
-
-        <StyledTextField
-          fullWidth
-          label="Nội dung"
-          name="content"
-          value={formData.content}
-          onChange={handleChange}
-          multiline
-          rows={4}
-          required
-        />
-
         <Box sx={{ mb: 3 }}>
           <input
             type="file"
@@ -145,7 +90,7 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
               <img
                 src={image ? URL.createObjectURL(image) : currentImage || ''}
                 alt="Preview"
-                style={{ maxWidth: '200px', maxHeight: '200px' }}
+                style={{ maxWidth: '100%', maxHeight: '300px' }}
               />
             </Box>
           )}
@@ -161,11 +106,11 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
             px: 4
           }}
         >
-          {selectedNews ? "Cập nhật" : "Thêm mới"}
+          {selectedBanner ? "Cập nhật" : "Thêm mới"}
         </Button>
       </form>
     </FormContainer>
   );
 };
 
-export default CreateNews;
+export default CreateBanner;

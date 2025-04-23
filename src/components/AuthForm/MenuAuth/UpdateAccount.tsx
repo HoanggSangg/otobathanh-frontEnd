@@ -85,19 +85,6 @@ const CancelButton = styled(Button)`
   }
 `;
 
-const ErrorMessage = styled.p`
-  color: #e31837;
-  margin-top: 5px;
-  font-size: 14px;
-`;
-
-const SuccessMessage = styled.p`
-  color: #28a745;
-  margin-top: 5px;
-  font-size: 14px;
-  text-align: center;
-`;
-
 const UpdateAccount = () => {
     const navigate = useNavigate();
     const user = getCurrentUser();

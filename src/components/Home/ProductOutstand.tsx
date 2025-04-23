@@ -34,11 +34,11 @@ const rippleEffect = keyframes`
 `;
 
 const fadeInUp = keyframes`
-  from {
+  to {
     opacity: 0;
     transform: translateY(20px);
   }
-  to {
+  form {
     opacity: 1;
     transform: translateY(0);
   }
@@ -51,10 +51,10 @@ const InfoCard = styled(Paper)`
   transition: transform 0.3s ease;
   cursor: pointer;
   position: relative;
-  opacity: 0;
+  // opacity: 0; // Start with opacity 0
   
   &.animate {
-    animation: ${fadeInUp} 0.6s ease forwards;
+    animation: ${fadeInUp} 0.5s ease forwards;
   }
   
   &:hover {
@@ -222,13 +222,11 @@ const Products = () => {
         rootMargin: '40px',
       }
     );
-
     productRefs.current.forEach((ref) => {
       if (ref) observer.observe(ref);
     });
-
     return () => observer.disconnect();
-  }, [products, visibleMap]);
+  }, []);
 
   useEffect(() => {
     if (user && products.length > 0) {

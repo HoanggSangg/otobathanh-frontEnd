@@ -1,6 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
 
 export const getCurrentUser = () => {
+
     try {
         const userStr = localStorage.getItem('user');
         const token = localStorage.getItem('token');
@@ -31,8 +32,19 @@ export const getCurrentUser = () => {
     }
 };
 
-export const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.reload();
+export const getToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Không có token, vui lòng đăng nhập');
+    }
+    return token;
+};
+
+// Hàm tạo headers
+export const getAuthHeaders = () => {
+    const token = getToken(); // Lấy token
+    return {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    };
 };

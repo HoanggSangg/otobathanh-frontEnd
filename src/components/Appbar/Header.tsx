@@ -6,7 +6,7 @@ import LoginForm from '../AuthForm/Login/Login';
 import RegisterForm from '../AuthForm/Register/Register';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import { getCurrentUser, handleLogout } from '../Utils/auth';
+import { getCurrentUser } from '../Utils/auth';
 import { getAccountByIdAPI, getCartItemsAPI, removeFromCartAPI } from '../API';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from 'react-router-dom';
@@ -549,6 +549,15 @@ const Header = () => {
       console.error('Error removing item from cart:', error);
     }
   };
+  const handleLogout = () => {
+    // Clear all storage data
+    localStorage.clear();
+    sessionStorage.clear();
+    // Clear JWT token from cookie if exists
+    document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // Reload the page to reset all states and redirect to home
+    window.location.href = '/';
+  };
   return (
     <HeaderContainer>
       <HeaderContent>
@@ -621,6 +630,9 @@ const Header = () => {
                   </DropdownItem>
                   <DropdownItem to="/manager/news">
                     Quản lý tin tức
+                  </DropdownItem>
+                  <DropdownItem to="/manager/banner">
+                    Quản lý banner
                   </DropdownItem>
                 </DropdownContent>
               </ManagerDropdown>

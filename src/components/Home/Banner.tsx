@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Box, IconButton } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { getAllBannersAPI } from '../API';
 
 const BannerContainer = styled(Box)`
   position: relative;
@@ -150,22 +151,31 @@ const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [banners, setBanners] = useState<Array<{ image: string }>>([]);
 
-  const bannerImages = [
-    '../image/banner4.jpg',
-    '../image/banner2.jpg',
-    '../image/banner1.jpg'
-  ];
+  // Fetch banners from API
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const response = await getAllBannersAPI();
+        setBanners(response);
+      } catch (error) {
+        console.error('Error fetching banners:', error);
+      }
+    };
+
+    fetchBanners();
+  }, []);
 
   const nextSlide = () => {
     setCurrentSlide(current => 
-      current === bannerImages.length - 1 ? 0 : current + 1
+      current === banners.length - 1 ? 0 : current + 1
     );
   };
 
   const prevSlide = () => {
     setCurrentSlide(current => 
-      current === 0 ? bannerImages.length - 1 : current - 1
+      current === 0 ? banners.length - 1 : current - 1
     );
   };
 
@@ -188,9 +198,14 @@ const Banner = () => {
   };
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 5000); // Auto-slide every 5 seconds
+    const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [banners.length]); // Add dependency on banners.length
+
+  // Don't render anything if no banners are loaded
+  if (banners.length === 0) {
+    return null;
+  }
 
   return (
     <BannerContainer>
@@ -200,9 +215,9 @@ const Banner = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {bannerImages.map((image, index) => (
+        {banners.map((banner, index) => (
           <Slide key={index}>
-            <BannerImage src={image} alt={`Banner ${index + 1}`} />
+            <BannerImage src={banner.image} alt={`Banner ${index + 1}`} />
           </Slide>
         ))}
       </SlideContainer>
@@ -213,7 +228,7 @@ const Banner = () => {
         <ArrowForwardIosIcon />
       </RightButton>
       <DotContainer>
-        {bannerImages.map((_, index) => (
+        {banners.map((_, index) => (
           <Dot 
             key={index} 
             $active={currentSlide === index}
@@ -225,4 +240,4 @@ const Banner = () => {
   );
 };
 
-export default Banner; 
+export default Banner;
