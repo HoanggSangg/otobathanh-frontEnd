@@ -25,7 +25,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { getAllOrdersAPI, updateOrderStatusAPI, deleteOrderAPI } from '../../API';
+import { getAllOrdersAPI, updateOrderStatusAPI, deleteOrderAPI, getOrderDetailsAPI } from '../../API';
 
 
 
@@ -67,10 +67,10 @@ interface OrderItem {
 interface Order {
     _id: string;
     account_id: {
-      _id: string;
-      fullName: string;
-      email: string;
-      phone: string;
+        _id: string;
+        fullName: string;
+        email: string;
+        phone: string;
     };
     items: OrderItem[];  // Add this line
     phone: string;
@@ -81,7 +81,7 @@ interface Order {
     total: number;
     status: keyof typeof OrderStatus;
     createdAt: string;
-  }
+}
 
 // Fix the OrderStatus definition
 const OrderStatus = {
@@ -117,14 +117,25 @@ const IndexOrder = () => {
         if (!selectedOrder) return;
 
         try {
-            await updateOrderStatusAPI(selectedOrder._id, { status: newStatus });
-            setOrders(orders.map(order =>
-                order._id === selectedOrder._id ? { ...order, status: newStatus } : order
-            ));
+            await updateOrderStatusAPI(selectedOrder._id, newStatus );
+
             showToast('Cập nhật trạng thái thành công', 'success');
             setIsStatusDialogOpen(false);
+
+            fetchOrders();
         } catch (error) {
+            console.error('Error updating order status:', error);
             showToast('Không thể cập nhật trạng thái', 'error');
+        }
+    };
+
+    const handleViewDetails = async (order: Order) => {
+        try {
+            const orderDetails = await getOrderDetailsAPI(order._id);
+            setSelectedOrder({ ...order, items: orderDetails });
+            setIsDetailDialogOpen(true);
+        } catch (error) {
+            showToast('Không thể tải chi tiết đơn hàng', 'error');
         }
     };
 
@@ -192,17 +203,14 @@ const IndexOrder = () => {
                                 </TableCell>
                                 <TableCell align="right">
                                     <IconButton
-                                        onClick={() => {
-                                            setSelectedOrder(order);
-                                            setIsDetailDialogOpen(true);
-                                        }}
+                                        onClick={() => handleViewDetails(order)}
                                         color="primary"
                                     >
                                         <VisibilityIcon />
                                     </IconButton>
                                     <IconButton
                                         onClick={() => {
-                                            setSelectedOrder(order);
+                                            setSelectedOrder({ ...order, items: [] });
                                             setNewStatus(order.status);
                                             setIsStatusDialogOpen(true);
                                         }}

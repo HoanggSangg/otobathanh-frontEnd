@@ -35,7 +35,9 @@ const fadeInUp = keyframes`
 `;
 
 // Update InfoCard to include the animation
-const InfoCard = styled(Paper) <{ isVisible: boolean }>`
+const InfoCard = styled(Paper).withConfig({
+  shouldForwardProp: (prop) => prop !== 'isVisible',
+})<{ isVisible: boolean }>`
   height: 100%;
   display: flex;
   flex-direction: column;

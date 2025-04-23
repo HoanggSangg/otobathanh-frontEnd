@@ -10,7 +10,6 @@ export const loginAPI = async (email, password) => {
       email,
       password
     });
-
     const { token } = response.data;
 
     if (!token) {
@@ -377,7 +376,7 @@ export const updateOrderStatusAPI = async (orderId, status) => {
   try {
     const response = await axios.put(`${API_URL}/api/orders/${orderId}`, {
       status: status
-    });
+    }, {headers: getAuthHeaders()});
     return response.data;
   } catch (error) {
     console.error('Error updating order status:', error);
