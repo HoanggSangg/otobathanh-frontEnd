@@ -22,48 +22,34 @@ const ProductContainer = styled.div`
   padding: 0 20px;
 `;
 
-const rippleEffect = keyframes`
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-`;
-
+// Define the fade-in-up animation
 const fadeInUp = keyframes`
-  to {
+  from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(50px);
   }
-  form {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 `;
 
-const InfoCard = styled(Paper)`
+// Update InfoCard to include the animation
+const InfoCard = styled(Paper) <{ isVisible: boolean }>`
   height: 100%;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease;
   cursor: pointer;
   position: relative;
-  // opacity: 0; // Start with opacity 0
-  
-  &.animate {
-    animation: ${fadeInUp} 0.5s ease forwards;
-  }
-  
+  animation: ${({ isVisible }) => (isVisible ? fadeInUp : 'none')} 0.8s ease both;
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 `;
 
-// Update the AddToCartButton styling
 const AddToCartButton = styled(Button)`
   background-color: #e31837 !important;
   color: white !important;
@@ -73,19 +59,6 @@ const AddToCartButton = styled(Button)`
   
   &:hover {
     background-color: #cc1630 !important;
-  }
-
-  &:active::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation: ${rippleEffect} 0.4s ease-out;
   }
 `;
 
@@ -190,49 +163,54 @@ const Products = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
   const showToast = useToast();
+  const [visibleProducts, setVisibleProducts] = useState<Record<string, boolean>>({});
   const productRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [visibleMap, setVisibleMap] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-
-    fetchProducts();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const el = entry.target as HTMLElement;
-          const id = el.getAttribute('data-id') || '';
-
-          if (entry.isIntersecting) {
-            // Nếu chưa visible hoặc vừa ra khỏi rồi vào lại → animate
-            if (!visibleMap[id]) {
-              el.classList.remove('animate'); // reset
-              void el.offsetWidth;
-              el.classList.add('animate');    // animate lại
-
-              setVisibleMap(prev => ({ ...prev, [id]: true }));
+          const productId = entry.target.getAttribute('data-id');
+          if (productId) {
+            if (entry.isIntersecting) {
+              // Khi sản phẩm vào vùng hiển thị
+              setVisibleProducts((prev) => ({
+                ...prev,
+                [productId]: true,
+              }));
+            } else {
+              // Khi sản phẩm rời khỏi vùng hiển thị
+              setVisibleProducts((prev) => ({
+                ...prev,
+                [productId]: false,
+              }));
             }
-          } else {
-            // Khi ra khỏi tầm nhìn hoàn toàn
-            setVisibleMap(prev => ({ ...prev, [id]: false }));
           }
         });
       },
-      {
-        threshold: 0.5,
-        rootMargin: '40px',
-      }
+      { threshold: 0.1 } // Trigger khi 10% của phần tử hiển thị
     );
+
     productRefs.current.forEach((ref) => {
       if (ref) observer.observe(ref);
     });
-    return () => observer.disconnect();
-  }, []);
+
+    return () => {
+      productRefs.current.forEach((ref) => {
+        if (ref) observer.unobserve(ref);
+      });
+    };
+  }, [products, visibleProducts]);
 
   useEffect(() => {
     if (user && products.length > 0) {
       fetchLikeData();
     }
   }, [user, products]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -388,9 +366,10 @@ const Products = () => {
             <InfoCard
               elevation={2}
               key={product._id}
+              isVisible={!!visibleProducts[product._id]}
               data-id={product._id}
-              ref={(el: HTMLDivElement | null) => {
-                productRefs.current[index] = el;
+              ref={(el) => {
+                productRefs.current[index] = el as HTMLDivElement;
               }}
               onClick={() => handleViewDetail(product._id)}
             >

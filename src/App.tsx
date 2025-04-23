@@ -35,6 +35,7 @@ import IndexBanner from './components/Admin/BannerManager/indexBanner';
 import ProtectedRoute from './components/AuthForm/Protected/ProtectedRoute';
 import IndexCategory from './components/Admin/CategoryManager/indexCategory';
 import IndexOrder from './components/Admin/OrderManager/indexOrder';
+import ScrollToTop from './components/Styles/ScrollToTop';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -43,6 +44,7 @@ const MainContent = styled.main`
 const App = () => {
   return (
     <div>
+      <ScrollToTop />
       <ToastProvider>
         <Header />
         <MainContent>
@@ -131,6 +133,7 @@ const App = () => {
         </MainContent>
         <ChatBox />
       </ToastProvider>
+      
     </div>
   );
 };

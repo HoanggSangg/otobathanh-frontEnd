@@ -35,17 +35,6 @@ const rippleEffect = keyframes`
   }
 `;
 
-const fadeInUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
 const InfoCard = styled(Paper)`
   height: 100%;
   display: flex;
@@ -53,10 +42,6 @@ const InfoCard = styled(Paper)`
   transition: transform 0.3s ease;
   cursor: pointer;
   position: relative;
-  
-  &.animate {
-    animation: ${fadeInUp} 0.6s ease forwards;
-  }
   
   &:hover {
     transform: translateY(-1px);

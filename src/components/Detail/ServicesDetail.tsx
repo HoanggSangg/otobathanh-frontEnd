@@ -131,9 +131,6 @@ const Sidebar = styled.div`
 `;
 
 const Services = () => {
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []); // Run once when component mounts
 
   return (
     <ServicesContainer>
