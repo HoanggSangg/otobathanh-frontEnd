@@ -120,16 +120,24 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
 
   const handleDelete = async (newsId: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa tin tức này?')) {
-      try {
-        await deleteNewsAPI(newsId);
-        setNews(news.filter(n => n._id !== newsId));
-        showToast('Xóa tin tức thành công!', 'success');
-      } catch (err) {
-        showToast('Không thể xóa tin tức!', 'error');
-        console.error('Error deleting news:', err);
-      }
+        try {
+            const response = await deleteNewsAPI(newsId);
+            if (response.message) {
+                setNews(news.filter(n => n._id !== newsId));
+                showToast(response.message, 'success');
+            }
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // News not found
+            } else if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error'); // Server error
+            } else {
+                showToast('Không thể xóa tin tức!', 'error');
+            }
+            console.error('Error deleting news:', err);
+        }
     }
-  };
+};
 
   // Add these new states after existing useState declarations
   const [searchType, setSearchType] = useState('title'); // 'title' or 'content'

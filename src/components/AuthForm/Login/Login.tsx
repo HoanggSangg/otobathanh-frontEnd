@@ -17,6 +17,7 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
 import { loginAPI } from '../../API';
+import ForgotPasswordForm from '../Register/ForgotPassword';
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
@@ -171,6 +172,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
   const navigate = useNavigate();
   const showToast = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -190,108 +192,119 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     setLoading(true);
 
     try {
-      const response = await loginAPI(formData.email, formData.password);
-
-      if (response.status === "thành công") {
-        // Lưu token
-        localStorage.setItem('token', response.token);
-        
-        // Lưu thông tin user
-        localStorage.setItem('user', JSON.stringify({
-          id: response.id,
-          fullName: response.fullName,
-          email: response.email,
-          image: response.image,
-          roles: response.roles
-        }));
-
-      } else {
-        throw new Error(response.loginData.message || 'Đăng nhập thất bại');
-      }
-
-      showToast('Đăng nhập thành công!', 'success');
-      onClose();
-      navigate('/');
-    } catch (error) {
-      showToast('Có lỗi khi đăng nhập!', 'error');
-      console.error(error);
+        const response = await loginAPI(formData.email, formData.password);
+        if (response.status === "thành công") {
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('user', JSON.stringify({
+                id: response.id,
+                fullName: response.fullName,
+                email: response.email,
+                image: response.image,
+                roles: response.roles
+            }));
+            showToast(response.message, 'success');
+            onClose();
+            navigate('/');
+        }
+    } catch (err: any) {
+        if (err.response?.status === 401) {
+            showToast(err.response.data.message, 'error'); // Invalid credentials or unverified account
+        } else if (err.response?.status === 403) {
+            showToast(err.response.data.message, 'error'); // Account locked
+        } else if (err.response?.status === 500) {
+            showToast('Lỗi máy chủ', 'error'); // Server error
+        } else {
+            showToast('Có lỗi khi đăng nhập!', 'error');
+        }
+        console.error('Login error:', err);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const handleSocialLogin = (provider: string) => {
     console.log(`Login with ${provider}`);
   };
 
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+    onClose(); // Close the login dialog
+  };
+
   return (
-    <StyledDialog open={open} onClose={onClose}>
-      <DialogHeader>
-        <Title>Đăng nhập</Title>
-        <CloseButton onClick={onClose}>
-          <CloseIcon />
-        </CloseButton>
-      </DialogHeader>
-      <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <StyledTextField
-            fullWidth
-            label="Email hoặc Tên tài khoản"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <PasswordWrapper>
+    <>
+      <StyledDialog open={open} onClose={onClose}>
+        <DialogHeader>
+          <Title>Đăng nhập</Title>
+          <CloseButton onClick={onClose}>
+            <CloseIcon />
+          </CloseButton>
+        </DialogHeader>
+        <DialogContent>
+          <form onSubmit={handleSubmit}>
             <StyledTextField
               fullWidth
-              label="Mật khẩu"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={formData.password}
+              label="Email hoặc Tên tài khoản"
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
               required
             />
-            <VisibilityButton onClick={() => setShowPassword(!showPassword)}>
-              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </VisibilityButton>
-          </PasswordWrapper>
-          <ForgotPassword onClick={() => {/* Handle forgot password */ }}>
-            Quên mật khẩu?
-          </ForgotPassword>
-          <LoginButton
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? 'Đang xử lý...' : 'Đăng nhập'}
-          </LoginButton>
-        </form>
+            <PasswordWrapper>
+              <StyledTextField
+                fullWidth
+                label="Mật khẩu"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <VisibilityButton onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </VisibilityButton>
+            </PasswordWrapper>
+            <ForgotPassword onClick={handleForgotPassword}>
+              Quên mật khẩu?
+            </ForgotPassword>
+            <LoginButton
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? 'Đang xử lý...' : 'Đăng nhập'}
+            </LoginButton>
+          </form>
 
-        <SocialLoginContainer>
-          <SocialDivider>
-            <span>Hoặc đăng nhập với</span>
-          </SocialDivider>
-          <SocialButtons>
-            <SocialButton
-              $provider="facebook"
-              onClick={() => handleSocialLogin('facebook')}
-            >
-              <FacebookIcon />
-              <SocialButtonText>Facebook</SocialButtonText>
-            </SocialButton>
-            <SocialButton
-              $provider="google"
-              onClick={() => handleSocialLogin('google')}
-            >
-              <GoogleIcon />
-              <SocialButtonText>Google</SocialButtonText>
-            </SocialButton>
-          </SocialButtons>
-        </SocialLoginContainer>
-      </DialogContent>
-    </StyledDialog>
+          <SocialLoginContainer>
+            <SocialDivider>
+              <span>Hoặc đăng nhập với</span>
+            </SocialDivider>
+            <SocialButtons>
+              <SocialButton
+                $provider="facebook"
+                onClick={() => handleSocialLogin('facebook')}
+              >
+                <FacebookIcon />
+                <SocialButtonText>Facebook</SocialButtonText>
+              </SocialButton>
+              <SocialButton
+                $provider="google"
+                onClick={() => handleSocialLogin('google')}
+              >
+                <GoogleIcon />
+                <SocialButtonText>Google</SocialButtonText>
+              </SocialButton>
+            </SocialButtons>
+          </SocialLoginContainer>
+        </DialogContent>
+      </StyledDialog>
+
+      <StyledDialog open={showForgotPassword} onClose={() => setShowForgotPassword(false)}>
+        <ForgotPasswordForm onClose={() => setShowForgotPassword(false)} />
+      </StyledDialog>
+    </>
   );
 };
 
-export default LoginForm; 
+export default LoginForm;

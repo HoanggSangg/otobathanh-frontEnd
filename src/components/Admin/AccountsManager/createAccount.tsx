@@ -87,8 +87,11 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
                 if (response && response.length > 0 && response[0].roles) {
                     setAvailableRoles(response[0].roles);
                 }
-            } catch (error) {
-                console.error('Error fetching roles:', error);
+            } catch (err: any) {
+                if (err.response?.status === 500) {
+                    showToast(err.response.data.message, 'error');
+                }
+                console.error('Error fetching roles:', err);
             }
         };
         fetchRoles();
@@ -135,12 +138,23 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
                     status: formData.status,
                     _id: editingAccount._id
                 };
-                await updateAccountAPI(editingAccount._id, accountData);
-                showToast('Cập nhật tài khoản thành công!', 'success');
-                onSuccess();
+                const response = await updateAccountAPI(editingAccount._id, accountData);
+                
+                if (response.status === "thành công") {
+                    showToast(response.message, 'success');
+                    onSuccess();
+                } else {
+                    showToast(response.message, 'error');
+                }
             }
-        } catch (err) {
-            showToast('Không thể cập nhật tài khoản. Vui lòng thử lại!', 'error');
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // Account not found
+            } else if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error'); // Server error or image upload error
+            } else {
+                showToast('Không thể cập nhật tài khoản. Vui lòng thử lại!', 'error');
+            }
             console.error('Error updating account:', err);
         } finally {
             setIsLoading(false);

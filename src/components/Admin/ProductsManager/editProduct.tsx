@@ -165,11 +165,19 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
     const handleDelete = async (productId: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
             try {
-                await deleteProductAPI(productId);
-                setProducts(products.filter(p => p._id !== productId));
-                showToast('Xóa sản phẩm thành công!', 'success');
-            } catch (err) {
-                showToast('Không thể xóa sản phẩm!', 'error');
+                const response = await deleteProductAPI(productId);
+                if (response.message) {
+                    setProducts(products.filter(p => p._id !== productId));
+                    showToast(response.message, 'success');
+                }
+            } catch (err: any) {
+                if (err.response?.status === 404) {
+                    showToast(err.response.data.message, 'error'); // Product not found
+                } else if (err.response?.status === 500) {
+                    showToast(err.response.data.message, 'error'); // Server error
+                } else {
+                    showToast('Không thể xóa sản phẩm!', 'error');
+                }
                 console.error('Error deleting product:', err);
             }
         }

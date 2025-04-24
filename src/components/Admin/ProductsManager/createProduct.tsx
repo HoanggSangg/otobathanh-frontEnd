@@ -169,14 +169,24 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
   // Add function to handle comment deletion
   const handleDeleteComment = async (commentId: string) => {
     try {
-      await deleteCommentAPI(commentId);
-      setComments(comments.filter(comment => comment._id !== commentId));
-      showToast('Xóa bình luận thành công!', 'success');
-    } catch (error) {
-      console.error('Error deleting comment:', error);
-      showToast('Có lỗi khi xóa bình luận!', 'error');
+        const response = await deleteCommentAPI(commentId);
+        if (response.message) {
+            setComments(comments.filter(comment => comment._id !== commentId));
+            showToast(response.message, 'success');
+        }
+    } catch (err: any) {
+        if (err.response?.status === 404) {
+            showToast(err.response.data.message, 'error'); // Comment not found
+        } else if (err.response?.status === 403) {
+            showToast(err.response.data.message, 'error'); // Permission denied
+        } else if (err.response?.status === 500) {
+            showToast(err.response.data.message, 'error'); // Server error
+        } else {
+            showToast('Có lỗi khi xóa bình luận!', 'error');
+        }
+        console.error('Error deleting comment:', err);
     }
-  };
+};
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {

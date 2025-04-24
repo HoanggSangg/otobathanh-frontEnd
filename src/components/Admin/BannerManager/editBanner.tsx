@@ -76,16 +76,24 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
 
   const handleDelete = async (bannerId: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa banner này?')) {
-      try {
-        await deleteBannerAPI(bannerId);
-        setBanners(banners.filter(b => b._id !== bannerId));
-        showToast('Xóa banner thành công!', 'success');
-      } catch (err) {
-        showToast('Không thể xóa banner!', 'error');
-        console.error('Error deleting banner:', err);
-      }
+        try {
+            const response = await deleteBannerAPI(bannerId);
+            if (response.message) {
+                setBanners(banners.filter(b => b._id !== bannerId));
+                showToast(response.message, 'success');
+            }
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // Banner not found
+            } else if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error'); // Server error
+            } else {
+                showToast('Không thể xóa banner!', 'error');
+            }
+            console.error('Error deleting banner:', err);
+        }
     }
-  };
+};
 
   return (
     <Container>

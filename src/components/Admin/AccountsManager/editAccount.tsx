@@ -146,13 +146,20 @@ const EditAccount: React.FC<Props> = ({ onEdit }) => {
         try {
             setIsLoading(true);
             const response = await getAllAccountsAPI();
+            
             if (Array.isArray(response)) {
                 setAccounts(response);
+            } else if (response.status === "thất bại") {
+                showToast(response.message, 'error');
             } else {
                 showToast('Dữ liệu không hợp lệ!', 'error');
             }
-        } catch (err) {
-            showToast('Không thể tải danh sách sản phẩm!', 'error');
+        } catch (err: any) {
+            if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error');
+            } else {
+                showToast('Không thể tải danh sách tài khoản!', 'error');
+            }
             console.error('Error fetching accounts:', err);
         } finally {
             setIsLoading(false);
@@ -196,11 +203,22 @@ const EditAccount: React.FC<Props> = ({ onEdit }) => {
     const handleDelete = async (accountId: string) => {
         if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
             try {
-                await deleteAccountAPI(accountId);
-                setAccounts(accounts.filter(a => a._id !== accountId));
-                showToast('Xóa tài khoản thành công!', 'success');
-            } catch (err) {
-                showToast('Không thể xóa tài khoản!', 'error');
+                const response = await deleteAccountAPI(accountId);
+                
+                if (response.status === "thành công") {
+                    setAccounts(accounts.filter(a => a._id !== accountId));
+                    showToast(response.message, 'success');
+                } else {
+                    showToast(response.message, 'error');
+                }
+            } catch (err: any) {
+                if (err.response?.status === 404) {
+                    showToast(err.response.data.message, 'error'); // Account not found
+                } else if (err.response?.status === 500) {
+                    showToast(err.response.data.message, 'error'); // Server error
+                } else {
+                    showToast('Không thể xóa tài khoản!', 'error');
+                }
                 console.error('Error deleting account:', err);
             }
         }

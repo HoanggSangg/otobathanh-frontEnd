@@ -26,7 +26,7 @@ const LogoContainer = styled.div`
 `;
 
 const LogoBox = styled.div`
-  background: rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
   border-radius: 10px;
   padding: 20px;
   width: 150px;
@@ -44,18 +44,17 @@ const LogoBox = styled.div`
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    filter: brightness(0) invert(1);
   }
 `;
 
 const Partner = () => {
   const partners = [
-    { name: 'Mercedes-Benz', logo: '/images/partners/mercedes.png' },
-    { name: 'BMW', logo: '/images/partners/bmw.png' },
-    { name: 'Audi', logo: '/images/partners/audi.png' },
-    { name: 'Lexus', logo: '/images/partners/lexus.png' },
-    { name: 'Porsche', logo: '/images/partners/porsche.png' },
-    { name: 'Rolls-Royce', logo: '/images/partners/rolls-royce.png' }
+    { name: 'Mercedes-Benz', logo: 'https://www.carlogos.org/car-logos/mercedes-benz-logo.png' },
+    { name: 'BMW', logo: 'https://www.carlogos.org/car-logos/bmw-logo.png' },
+    { name: 'Audi', logo: 'https://www.carlogos.org/car-logos/audi-logo.png' },
+    { name: 'Lexus', logo: 'https://www.carlogos.org/car-logos/lexus-logo.png' },
+    { name: 'Porsche', logo: 'https://www.carlogos.org/car-logos/porsche-logo.png' },
+    { name: 'Rolls-Royce', logo: 'https://www.carlogos.org/car-logos/ferrari-logo.png' }
   ];
 
   return (

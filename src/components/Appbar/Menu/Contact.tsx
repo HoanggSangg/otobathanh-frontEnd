@@ -1,9 +1,11 @@
-import React from 'react';
 import styled from 'styled-components';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { createContactAPI } from '../../API';
+import { useToast } from '../../Styles/ToastProvider';
+import React, { useState } from 'react';
 
 const ContactContainer = styled.div`
   max-width: 1200px;
@@ -151,11 +153,110 @@ const SubmitButton = styled.button`
   }
 `;
 
+const TimeSlotSelect = styled.select`
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 15px;
+
+  &:focus {
+    outline: none;
+    border-color: #e31837;
+  }
+`;
+
 const Contact = () => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
+  const showToast = useToast();
+  const [images, setImages] = useState<File[]>([]);
+  // Update the formData state type
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    message: '',
+    timeSlot: '',
+    date: '',
+    images: [] as string[]
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const timeSlots = [
+    '08:00', '09:00', '10:00', '11:00',
+    '13:00', '14:00', '15:00', '16:00'
+  ];
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files); // Chuyển FileList thành mảng
+      setImages((prevImages) => [...prevImages, ...selectedFiles]); // Thêm ảnh mới vào state
+    }
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Date validation
+      if (!formData.date) {
+        throw new Error('Vui lòng chọn ngày hẹn.');
+      }
+
+      const base64Images = await Promise.all(images.map((image) => convertToBase64(image)));
+
+      const submitData = {
+        fullName: formData.name,
+        date: formData.date,
+        timeSlot: formData.timeSlot,
+        numberPhone: formData.phone,
+        description: formData.message,
+        images: base64Images,
+      };
+
+      const response = await createContactAPI(submitData);
+
+      showToast("Đặt lịch thành công!", 'success');
+      setFormData({
+        name: '',
+        phone: '',
+        message: '',
+        timeSlot: '',
+        date: '',
+        images: []
+      });
+      setImages([]);
+    } catch (error: any) {
+      console.error('Error during form submission:', error);  // Log the error for debugging
+
+      // Hiển thị lỗi nếu có
+      if (error.response && error.response.data && error.response.data.message) {
+        showToast(error.response.data.message, 'error');
+      } else {
+        showToast(error.message || 'Đã xảy ra lỗi không xác định.', 'error');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+
 
   return (
     <ContactContainer>
@@ -203,21 +304,86 @@ const Contact = () => {
           <h2>Gửi thông tin</h2>
           <FormGroup>
             <label>Họ và tên</label>
-            <input type="text" placeholder="Nhập họ và tên" required />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Nhập họ và tên"
+              required
+            />
           </FormGroup>
           <FormGroup>
             <label>Số điện thoại</label>
-            <input type="tel" placeholder="Nhập số điện thoại" required />
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Nhập số điện thoại"
+              required
+            />
           </FormGroup>
           <FormGroup>
-            <label>Email</label>
-            <input type="email" placeholder="Nhập địa chỉ email" required />
+            <label>Ngày hẹn</label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              min={new Date().toISOString().split('T')[0]}
+              required
+            />
+          </FormGroup>
+          <FormGroup>
+            <label>Khung giờ hẹn</label>
+            <TimeSlotSelect
+              name="timeSlot"
+              value={formData.timeSlot}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Chọn khung giờ</option>
+              {timeSlots.map(slot => (
+                <option key={slot} value={slot}>
+                  {slot}
+                </option>
+              ))}
+            </TimeSlotSelect>
           </FormGroup>
           <FormGroup>
             <label>Nội dung</label>
-            <textarea placeholder="Nhập nội dung liên hệ" required></textarea>
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder="Nhập nội dung liên hệ"
+              required
+            ></textarea>
           </FormGroup>
-          <SubmitButton type="submit">Gửi thông tin</SubmitButton>
+          <FormGroup>
+            <label>Hình ảnh</label>
+            <input
+              type="file"
+              name="images"
+              accept="image/*"
+              multiple // Cho phép chọn nhiều ảnh
+              onChange={handleImageChange}
+            />
+          </FormGroup>
+          <div style={{ marginTop: '20px' }}>
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={URL.createObjectURL(image)} // Hiển thị ảnh đã chọn
+                alt={`Selected ${index}`}
+                style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '10px', borderRadius: '8px' }}
+              />
+            ))}
+          </div>
+          <SubmitButton type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Đang gửi...' : 'Gửi thông tin'}
+          </SubmitButton>
         </ContactForm>
       </ContactGrid>
 
@@ -236,7 +402,7 @@ const Contact = () => {
       <MapSection>
         <MapContainer>
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.123456789012!2d106.700000!3d10.830000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528d1b2a4b1b3%3A0x4j5k6l7m8n9o0p1q!2s15%20TL08%2C%20Ph%C6%B0%E1%BB%9Dng%20Th%E1%BA%A1nh%20L%E1%BB%99c%2C%20Qu%E1%BA%ADn%2012%2C%20TP.HCM!5e0!3m2!1sen!2s!4v1610000000002!5m2!1sen!2s"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.123456789012!2d106.700000!3d10.830000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528d1b2a4b1b3%3A0x4j5k6l7m8n9o0p1q!2s15%20TL08%2C%20Ph%C6%B0%E1%BB%9Dng%20Th%E1%BA%A1nh%20L%E1%BB%9Dc%2C%20Qu%E1%BA%ADn%2012%2C%20TP.HCM!5e0!3m2!1sen!2s!4v1610000000002!5m2!1sen!2s"
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
@@ -248,4 +414,4 @@ const Contact = () => {
   );
 };
 
-export default Contact; 
+export default Contact;

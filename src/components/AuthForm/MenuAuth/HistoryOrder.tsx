@@ -95,14 +95,24 @@ const HistoryOrder = () => {
 
   const handleDelete = async (orderId: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
-      try {
-        await deleteOrderAPI(orderId);
-        setOrders(orders.filter((order: any) => order._id !== orderId));
-      } catch (err) {
-        showToast('Không thể xóa đơn hàng!', 'error');
-      }
+        try {
+            const response = await deleteOrderAPI(orderId);
+            if (response.message) {
+                setOrders(orders.filter((order: any) => order._id !== orderId));
+                showToast(response.message, 'success');
+            }
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // Order not found
+            } else if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error'); // Server error
+            } else {
+                showToast('Không thể xóa đơn hàng!', 'error');
+            }
+            console.error('Error deleting order:', err);
+        }
     }
-  };
+};
 
   if (loading) {
     return <Container>Đang tải...</Container>;

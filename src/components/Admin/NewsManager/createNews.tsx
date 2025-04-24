@@ -79,31 +79,41 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      let base64Image = null;
-      if (image) {
-        base64Image = await convertToBase64(image);
+      e.preventDefault();
+      try {
+          let base64Image = null;
+          if (image) {
+              base64Image = await convertToBase64(image);
+          }
+  
+          const newsData = {
+              ...formData,
+              image: base64Image,
+          };
+  
+          if (selectedNews) {
+              const response = await updateNewsAPI(selectedNews._id, newsData);
+              if (response) {
+                  showToast('Cập nhật tin tức thành công!', 'success');
+                  onSuccess();
+              } else {
+                  showToast('Không thể cập nhật tin tức!', 'error');
+              }
+          } else {
+              await createNewsAPI(newsData);
+              showToast('Thêm tin tức mới thành công!', 'success');
+              onSuccess();
+          }
+      } catch (err: any) {
+          if (err.response?.status === 404) {
+              showToast(err.response.data.message, 'error'); // News not found
+          } else if (err.response?.status === 400) {
+              showToast(err.response.data.message, 'error'); // Validation error
+          } else {
+              showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+          }
+          console.error('Error:', err);
       }
-
-      const newsData = {
-        ...formData,
-        image: base64Image,
-      };
-
-      if (selectedNews) {
-        await updateNewsAPI(selectedNews._id, newsData);
-        showToast('Cập nhật tin tức thành công!', 'success');
-        onSuccess();
-      } else {
-        await createNewsAPI(newsData);
-        showToast('Thêm tin tức mới thành công!', 'success');
-        onSuccess();
-      }
-
-    } catch (error) {
-      showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
-    }
   };
 
   return (

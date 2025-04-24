@@ -5,8 +5,7 @@ import styled, { keyframes } from 'styled-components';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import React, { useState, useEffect, useRef } from 'react';
 import { Typography, CardContent, CardMedia, Button, Paper } from '@mui/material';
-import { SectionTitle } from '../../Styles/StylesComponents';
-import { getAllProductsAPI, addToCartAPI, getCartItemsAPI, getFavoriteProductsAPI } from '../../API';
+import { addToCartAPI, getCartItemsAPI, getFavoriteProductsAPI } from '../../API';
 import { likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI } from '../../API';
 import { useNavigate } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -255,90 +254,107 @@ const LikeProducts = () => {
     e.stopPropagation();
 
     if (!user) {
-      showToast('Đăng nhập để thích sản phẩm', 'warning');
-      return;
+        showToast('Đăng nhập để thích sản phẩm', 'warning');
+        return;
     }
 
     try {
-      const isCurrentlyLiked = likedStatus[productId];
+        const isCurrentlyLiked = likedStatus[productId];
 
-      if (isCurrentlyLiked) {
-        // Unlike
-        await unlikeProductAPI({
-          accountId: user.id,
-          productId: productId
-        });
+        if (isCurrentlyLiked) {
+            // Unlike
+            const response = await unlikeProductAPI({
+                accountId: user.id,
+                productId: productId
+            });
 
-        setLikedStatus(prev => ({
-          ...prev,
-          [productId]: false
-        }));
-        setProductLikes(prev => ({
-          ...prev,
-          [productId]: Math.max((prev[productId] || 1) - 1, 0)
-        }));
-        showToast('Bạn đã xóa thích sản phẩm', 'success');
-      } else {
-        // Like
-        await likeProductAPI({
-          accountId: user.id,
-          productId: productId
-        });
+            if (response) {
+                setLikedStatus(prev => ({
+                    ...prev,
+                    [productId]: false
+                }));
+                setProductLikes(prev => ({
+                    ...prev,
+                    [productId]: Math.max((prev[productId] || 1) - 1, 0)
+                }));
+                showToast(response, 'success');
+                
+                // Remove product from liked products list
+                setLikedProducts(prev => prev.filter(p => p._id !== productId));
+            }
+        } else {
+            // Like logic remains unchanged
+            await likeProductAPI({
+                accountId: user.id,
+                productId: productId
+            });
 
-        setLikedStatus(prev => ({
-          ...prev,
-          [productId]: true
-        }));
-        setProductLikes(prev => ({
-          ...prev,
-          [productId]: (prev[productId] || 0) + 1
-        }));
-        showToast('Bạn đã thích sản phẩm', 'success');
-      }
-    } catch (error) {
-      console.error('Failed to update like:', error);
-      showToast('Lỗi khi thích sản phẩm', 'error');
+            setLikedStatus(prev => ({
+                ...prev,
+                [productId]: true
+            }));
+            setProductLikes(prev => ({
+                ...prev,
+                [productId]: (prev[productId] || 0) + 1
+            }));
+            showToast('Bạn đã thích sản phẩm', 'success');
+        }
+    } catch (err: any) {
+        if (err.response?.status === 500) {
+            showToast(err.response.data.message, 'error');
+        } else {
+            showToast('Lỗi khi thao tác với sản phẩm', 'error');
+        }
+        console.error('Failed to update like:', err);
     }
-  };
+};
 
   const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
     e.stopPropagation();
-
     if (!user || !user.id) {
-      navigate('/');
-      return;
+        navigate('/');
+        return;
     }
-
     try {
-      if (product.quantity < 1) {
-        showToast('Sản phẩm hết hàng!', 'info');
-        return;
-      }
+        if (product.quantity < 1) {
+            showToast('Sản phẩm hết hàng!', 'info');
+            return;
+        }
 
-      // Get current cart items to check quantity
-      const cartItems = await getCartItemsAPI(user.id);
-      const existingCartItem = cartItems.find((item: CartItem) => item.product_id._id === product._id);
-      const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
+        // Get current cart items to check quantity
+        const cartItems = await getCartItemsAPI(user.id);
+        const existingCartItem = cartItems.find((item: CartItem) => item.product_id._id === product._id);
+        const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
 
-      // Check if adding one more would exceed available quantity
-      if (currentCartQuantity + 1 > product.quantity) {
-        showToast(`Không thể thêm vào giỏ hàng. Chỉ còn ${product.quantity} sản phẩm trong kho!`, 'info');
-        return;
-      }
+        // Check if adding one more would exceed available quantity
+        if (currentCartQuantity + 1 > product.quantity) {
+            showToast(`Không thể thêm vào giỏ hàng. Chỉ còn ${product.quantity} sản phẩm trong kho!`, 'info');
+            return;
+        }
 
-      const cartData = {
-        quantity: 1,
-        product_id: product._id,
-        account_id: user.id
-      };
+        const cartData = {
+            quantity: 1,
+            product_id: product._id,
+            account_id: user.id
+        };
 
-      await addToCartAPI(cartData);
-      showToast('Thêm vào giỏ hàng thành công', 'success');
-    } catch (error) {
-      console.error('Failed to add to cart:', error);
-      showToast('Không thể thêm vào giỏ hàng!', 'error');
+        const response = await addToCartAPI(cartData);
+        if (response.message) {
+            showToast(response.message, 'success');
+        }
+    } catch (err: any) {
+        if (err.response?.status === 400) {
+            showToast(err.response.data.message, 'error'); // Invalid ID
+        } else if (err.response?.status === 404) {
+            showToast(err.response.data.message, 'error'); // Product or account not found
+        } else if (err.response?.status === 500) {
+            showToast(err.response.data.message, 'error'); // Server error
+        } else {
+            showToast('Không thể thêm vào giỏ hàng!', 'error');
+        }
+        console.error('Failed to add to cart:', err);
     }
-  };
+};
 
   const handleViewDetail = (productId: string) => {
     navigate(`/products/${productId}`);

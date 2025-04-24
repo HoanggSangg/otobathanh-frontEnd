@@ -14,38 +14,37 @@ const steps: Step[] = [
     title: 'CUỘC HẸN',
     description:
       'Bạn có thể trực tiếp đến xưởng dịch vụ của chúng tôi hoặc để lại thông tin để đội ngũ chúng tôi liên lạc.',
-    icon: '/image/procedure1.jpg',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure4_iwxdd1.jpg',
     position: 'top-left',
   },
   {
     title: 'CHẨN ĐOÁN',
     description:
       'Chúng tôi đã đầu tư vào các công cụ và phần mềm chẩn đoán hiện đại cho xe của bạn.',
-    icon: '/image/procedure2.jpg',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure3_volt4l.jpg',
     position: 'top-right',
   },
   {
     title: 'SỬA CHỮA',
     description:
       'Chúng tôi là xưởng sửa chữa hàng đầu với thợ có trình độ cao tại Sài Gòn.',
-    icon: '/image/procedure3.jpg',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure1_m6oigh.jpg',
     position: 'bottom-left',
   },
   {
     title: 'HOÀN THÀNH',
     description:
       'Xe của bạn sẽ được vệ sinh sạch sẽ và trả đúng hẹn sau khi hoàn thành.',
-    icon: '/image/procedure4.jpg',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure2_sqbwvm.jpg',
     position: 'bottom-right',
   },
 ];
 
 const images = [
-  '/image/procedure.jpg',
-  '/image/procedure1.jpg',
-  '/image/procedure2.jpg',
-  '/image/procedure3.jpg',
-  '/image/procedure4.jpg',
+  'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745462527/xecuuthuong_vr3au3.png',
+  'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745462526/cano_kmjkxk.jpg',
+  'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745462526/xecsgt_qsggsw.jpg',
+  'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745462527/xecuuhoa_ome8tj.png',
 ];
 
 const WorkProcess: React.FC = () => {

@@ -39,20 +39,30 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ selectedCategory, onSuc
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const categoryData = { name };
+        const categoryData = { name };
 
-      if (selectedCategory) {
-        await updateCategoryAPI(selectedCategory._id, categoryData);
-        showToast('Cập nhật danh mục thành công!', 'success');
-      } else {
-        await createCategoryAPI(categoryData);
-        showToast('Thêm danh mục mới thành công!', 'success');
-      }
-      onSuccess();
-    } catch (error) {
-      showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+        if (selectedCategory) {
+            const response = await updateCategoryAPI(selectedCategory._id, categoryData);
+            if (response) {
+                showToast('Cập nhật danh mục thành công!', 'success');
+                onSuccess();
+            }
+        } else {
+            await createCategoryAPI(categoryData);
+            showToast('Thêm danh mục mới thành công!', 'success');
+            onSuccess();
+        }
+    } catch (err: any) {
+        if (err.response?.status === 404) {
+            showToast(err.response.data.message, 'error'); // Category not found
+        } else if (err.response?.status === 400) {
+            showToast(err.response.data.message, 'error'); // Validation error
+        } else {
+            showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+        }
+        console.error('Error:', err);
     }
-  };
+};
 
   return (
     <FormContainer>

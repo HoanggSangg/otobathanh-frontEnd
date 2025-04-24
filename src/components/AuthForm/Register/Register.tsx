@@ -128,13 +128,6 @@ const SocialButton = styled.button<{ $provider: 'facebook' | 'google' }>`
   }
 `;
 
-const ErrorMessage = styled.div`
-  color: #e31837;
-  font-size: 14px;
-  margin-top: 4px;
-  text-align: left;
-`;
-
 interface RegisterFormProps {
   open: boolean;
   onClose: () => void;

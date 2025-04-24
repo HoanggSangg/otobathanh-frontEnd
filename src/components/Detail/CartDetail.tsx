@@ -175,9 +175,12 @@ const CartDetail = () => {
 
   const handleRemoveItem = async (itemId: string) => {
     try {
-      await removeFromCartAPI(itemId);
+      const response = await removeFromCartAPI(itemId);
       setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
-    } catch (error) {
+      showToast(response.message, 'success');
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message;
+      showToast(errorMessage, 'error');
       console.error('Error removing item:', error);
     }
   };

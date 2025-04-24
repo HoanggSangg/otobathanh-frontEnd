@@ -73,20 +73,6 @@ const SubmitButton = styled.button<{ $loading?: boolean }>`
   }
 `;
 
-const ErrorMessage = styled.div`
-  color: #e31837;
-  font-size: 14px;
-  margin-top: 4px;
-  text-align: left;
-`;
-
-const SuccessMessage = styled.div`
-  color: #28a745;
-  font-size: 14px;
-  margin-top: 4px;
-  text-align: left;
-`;
-
 const VisibilityToggle = styled(IconButton)`
   position: absolute !important;
   right: 8px;
@@ -114,10 +100,20 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
         setIsLoading(true);
 
         try {
-            await forgotPasswordAPI(email);
-            setStep('reset');
+            const response = await forgotPasswordAPI(email);
+            
+            if (response.status === "thành công") {
+                showToast(response.message, 'success');
+                setStep('reset');
+            } else {
+                showToast(response.message, 'error');
+            }
         } catch (err: any) {
-            showToast('Có lỗi xảy ra vui lòng thử lại sau!', 'error');
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error');
+            } else {
+                showToast(err.response.data.message, 'error');
+            }
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -126,19 +122,28 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (newPassword !== confirmPassword) {
             showToast('Mật khẩu xác nhận không khớp!', 'error');
             return;
         }
-
         setIsLoading(true);
-
         try {
             const response = await resetPasswordAPI(email, verificationCode, newPassword);
-            showToast('Mật khẩu được đặt lại thành công!', 'success');
+            
+            if (response.status === "thành công") {
+                showToast(response.message, 'success');
+                onClose && onClose(); // Close the dialog after successful password reset
+            } else {
+                showToast(response.message, 'error');
+            }
         } catch (err: any) {
-            showToast('Có lỗi xảy ra vui lòng thử lại sau!', 'error');
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // Account not found
+            } else if (err.response?.status === 400) {
+                showToast(err.response.data.message, 'error'); // Invalid verification code
+            } else {
+                showToast(err.response.data.message, 'error'); // Server error
+            }
             console.error(err);
         } finally {
             setIsLoading(false);
@@ -217,4 +222,4 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
     );
 };
 
-export default ForgotPasswordForm; 
+export default ForgotPasswordForm;

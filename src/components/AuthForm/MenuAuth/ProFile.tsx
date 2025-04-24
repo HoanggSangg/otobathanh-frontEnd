@@ -96,7 +96,7 @@ const Profile = () => {
         if (user?.id) {
           const response = await getAccountByIdAPI(user.id);
 
-          if (response && response.account) {
+          if (response.status === "thành công" && response.account) {
             const acc = response.account;
             setAccountData({
               fullName: acc.fullName || user?.fullName || '',
@@ -111,8 +111,25 @@ const Profile = () => {
           }
         }
       } catch (err: any) {
-        showToast('Không thể tải thông tin tài khoản!', 'error');
-        console.error('Error fetching account data:', err); 
+        if (err.response) {
+          switch (err.response.status) {
+            case 404:
+              showToast('Tài khoản không tồn tại.', 'error');
+              break;
+            case 500:
+              showToast('Đã xảy ra lỗi khi lấy thông tin tài khoản.', 'error');
+              break;
+            default:
+              if (err.response.data.status === "thất bại") {
+                showToast(err.response.data.message, 'error');
+              } else {
+                showToast('Không thể tải thông tin tài khoản!', 'error');
+              }
+          }
+        } else {
+          showToast('Lỗi kết nối đến máy chủ', 'error');
+        }
+        console.error('Error fetching account data:', err);
       } finally {
         setIsLoading(false);
       }

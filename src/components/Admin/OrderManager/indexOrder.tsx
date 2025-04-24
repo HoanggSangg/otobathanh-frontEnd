@@ -115,17 +115,23 @@ const IndexOrder = () => {
 
     const handleStatusChange = async () => {
         if (!selectedOrder) return;
-
         try {
-            await updateOrderStatusAPI(selectedOrder._id, newStatus );
-
-            showToast('Cập nhật trạng thái thành công', 'success');
-            setIsStatusDialogOpen(false);
-
-            fetchOrders();
-        } catch (error) {
-            console.error('Error updating order status:', error);
-            showToast('Không thể cập nhật trạng thái', 'error');
+            const response = await updateOrderStatusAPI(selectedOrder._id, newStatus);
+            
+            if (response.message) {
+                showToast(response.message, 'success');
+                setIsStatusDialogOpen(false);
+                fetchOrders(); // Refresh the orders list
+            }
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // Order not found
+            } else if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error'); // Server error
+            } else {
+                showToast('Không thể cập nhật trạng thái đơn hàng', 'error');
+            }
+            console.error('Error updating order status:', err);
         }
     };
 
@@ -141,13 +147,22 @@ const IndexOrder = () => {
 
     const handleDelete = async (orderId: string) => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) return;
-
+    
         try {
-            await deleteOrderAPI(orderId);
-            setOrders(orders.filter(order => order._id !== orderId));
-            showToast('Xóa đơn hàng thành công', 'success');
-        } catch (error) {
-            showToast('Không thể xóa đơn hàng', 'error');
+            const response = await deleteOrderAPI(orderId);
+            if (response.message) {
+                setOrders(orders.filter(order => order._id !== orderId));
+                showToast(response.message, 'success');
+            }
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                showToast(err.response.data.message, 'error'); // Order not found
+            } else if (err.response?.status === 500) {
+                showToast(err.response.data.message, 'error'); // Server error
+            } else {
+                showToast('Không thể xóa đơn hàng', 'error');
+            }
+            console.error('Error deleting order:', err);
         }
     };
 

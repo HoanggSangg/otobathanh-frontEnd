@@ -562,7 +562,7 @@ const Header = () => {
     <HeaderContainer>
       <HeaderContent>
         <LogoContainer>
-          <Logo src="../image/logo.png" alt="Ô Tô Bá Thành" />
+          <Logo src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Ô Tô Bá Thành" />
         </LogoContainer>
 
         <MenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>

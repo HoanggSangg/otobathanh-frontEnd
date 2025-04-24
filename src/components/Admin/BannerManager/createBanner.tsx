@@ -49,27 +49,40 @@ const CreateBanner: React.FC<CreateBannerProps> = ({ selectedBanner, onSuccess }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      let base64Image = null;
-      if (image) {
-        base64Image = await convertToBase64(image);
-      }
-
-      if (selectedBanner) {
-        await updateBannerAPI(selectedBanner._id, base64Image);
-        showToast('Cập nhật banner thành công!', 'success');
-      } else {
-        if (!base64Image) {
-          showToast('Vui lòng chọn ảnh banner!', 'error');
-          return;
+        let base64Image = null;
+        if (image) {
+            base64Image = await convertToBase64(image);
         }
-        await createBannerAPI(base64Image);
-        showToast('Thêm banner mới thành công!', 'success');
-      }
-      onSuccess();
-    } catch (error) {
-      showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+
+        if (selectedBanner) {
+            const response = await updateBannerAPI(selectedBanner._id, base64Image);
+            
+            if (response) {
+                showToast('Cập nhật banner thành công!', 'success');
+                onSuccess();
+            } else {
+                showToast('Không thể cập nhật banner!', 'error');
+            }
+        } else {
+            if (!base64Image) {
+                showToast('Vui lòng chọn ảnh banner!', 'error');
+                return;
+            }
+            await createBannerAPI(base64Image);
+            showToast('Thêm banner mới thành công!', 'success');
+            onSuccess();
+        }
+    } catch (err: any) {
+        if (err.response?.status === 404) {
+            showToast('Banner không tìm thấy', 'error');
+        } else if (err.response?.status === 400) {
+            showToast(err.response.data.message, 'error');
+        } else {
+            showToast('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+        }
+        console.error('Error:', err);
     }
-  };
+};
 
   return (
     <FormContainer>

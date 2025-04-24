@@ -48,8 +48,8 @@ export const verifyAccountAPI = async (email, verificationCode) => {
 }
 
 export const createProductAPI = async (formData) => {
-  const response = await axios.post(`${API_URL}/api/products/create`, formData, 
-    {headers: getAuthHeaders()}
+  const response = await axios.post(`${API_URL}/api/products/create`, formData,
+    { headers: getAuthHeaders() }
   );
   return response.data;
 };
@@ -78,8 +78,8 @@ export const getAllProductsAPI = async () => {
 
 export const deleteProductAPI = async (productId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/products/${productId}`, 
-      {headers: getAuthHeaders()}
+    const response = await axios.delete(`${API_URL}/api/products/${productId}`,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -89,8 +89,8 @@ export const deleteProductAPI = async (productId) => {
 
 export const updateProductAPI = async (productId, formData) => {
   try {
-    const response = await axios.put(`${API_URL}/api/products/${productId}`, formData, 
-      {headers: getAuthHeaders()}
+    const response = await axios.put(`${API_URL}/api/products/${productId}`, formData,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -223,8 +223,8 @@ export const getNewsByIdAPI = async (newsId) => {
 
 export const createNewsAPI = async (newsData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/news/create`, newsData, 
-      {headers: getAuthHeaders()}
+    const response = await axios.post(`${API_URL}/api/news/create`, newsData,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -234,8 +234,8 @@ export const createNewsAPI = async (newsData) => {
 
 export const updateNewsAPI = async (newsId, newsData) => {
   try {
-    const response = await axios.put(`${API_URL}/api/news/${newsId}`, newsData, 
-      {headers: getAuthHeaders()}
+    const response = await axios.put(`${API_URL}/api/news/${newsId}`, newsData,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -245,8 +245,8 @@ export const updateNewsAPI = async (newsId, newsData) => {
 
 export const deleteNewsAPI = async (newsId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/news/${newsId}`, 
-      {headers: getAuthHeaders()}
+    const response = await axios.delete(`${API_URL}/api/news/${newsId}`,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -347,7 +347,7 @@ export const removeFromCartAPI = async (cartItemId) => {
 // Order APIs
 export const createOrderAPI = async (orderData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/orders`, {
+    const response = await axios.post(`${API_URL}/api/orders/create`, {
       account_id: orderData.account_id,
       phone: orderData.phone,
       name: orderData.name,
@@ -376,7 +376,7 @@ export const updateOrderStatusAPI = async (orderId, status) => {
   try {
     const response = await axios.put(`${API_URL}/api/orders/${orderId}`, {
       status: status
-    }, {headers: getAuthHeaders()});
+    }, { headers: getAuthHeaders() });
     return response.data;
   } catch (error) {
     console.error('Error updating order status:', error);
@@ -529,8 +529,8 @@ export const getCategoryByIdAPI = async (categoryId) => {
 
 export const createCategoryAPI = async (categoryData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/categories/create`, categoryData, 
-      {headers: getAuthHeaders()}
+    const response = await axios.post(`${API_URL}/api/categories/create`, categoryData,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -541,8 +541,8 @@ export const createCategoryAPI = async (categoryData) => {
 
 export const updateCategoryAPI = async (categoryId, categoryData) => {
   try {
-    const response = await axios.put(`${API_URL}/api/categories/${categoryId}`, categoryData, 
-      {headers: getAuthHeaders()}
+    const response = await axios.put(`${API_URL}/api/categories/${categoryId}`, categoryData,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -553,8 +553,8 @@ export const updateCategoryAPI = async (categoryId, categoryData) => {
 
 export const deleteCategoryAPI = async (categoryId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/categories/${categoryId}`, 
-      {headers: getAuthHeaders()}
+    const response = await axios.delete(`${API_URL}/api/categories/${categoryId}`,
+      { headers: getAuthHeaders() }
     );
     return response.data;
   } catch (error) {
@@ -645,7 +645,7 @@ export const createBannerAPI = async (imageData) => {
 
 export const updateBannerAPI = async (bannerId, imageData) => {
   try {
-    const response = await axios.put(`${API_URL}/api/banners/${bannerId}`, 
+    const response = await axios.put(`${API_URL}/api/banners/${bannerId}`,
       { image: imageData },
       {
         headers: getAuthHeaders()
@@ -682,6 +682,71 @@ export const getAllOrdersAPI = async () => {
     return response.data;
   } catch (error) {
     console.error('Error fetching all orders:', error);
+    throw error;
+  }
+};
+
+export const createContactAPI = async (contactData) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/contacts/create`, {
+      fullName: contactData.fullName,
+      date: contactData.date,
+      timeSlot: contactData.timeSlot,
+      numberPhone: contactData.numberPhone,
+      description: contactData.description,
+      images: contactData.images, // Ensure images is an array of base64 strings
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating contact:', error);
+    throw error;
+  }
+};
+
+export const getAllContactsAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/contacts`, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    throw error;
+  }
+};
+
+export const getContactByIdAPI = async (contactId) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/contacts/${contactId}`, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching contact:', error);
+    throw error;
+  }
+};
+
+export const updateContactAPI = async (contactId, contactData) => {
+  try {
+    const response = await axios.put(`${API_URL}/api/contacts/${contactId}`, contactData, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating contact:', error);
+    throw error;
+  }
+};
+
+export const deleteContactAPI = async (contactId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/api/contacts/${contactId}`, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting contact:', error);
     throw error;
   }
 };

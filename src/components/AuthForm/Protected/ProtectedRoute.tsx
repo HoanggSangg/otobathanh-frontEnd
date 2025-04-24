@@ -35,13 +35,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           setIsLoading(false);
           return;
         }
-
         const userData = await getAccountByIdAPI(currentUser.id);
         
         const hasAdminRole = userData.account.roles?.some((role: Role) => 
           ADMIN_ROLES.includes(role.name.toLowerCase() as AdminRole)
         );
-
         if (!hasAdminRole) {
           showToast('Bạn không có quyền truy cập trang này', 'error');
         }

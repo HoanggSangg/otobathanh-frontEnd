@@ -67,7 +67,7 @@ const About = () => {
   return (
     <AboutContainer>
       <AboutContent>
-        <AboutImage src="../../image/logo.png" alt="Honda Ô tô Bá Thành Showroom" />
+        <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Honda Ô tô Bá Thành Showroom" />
         <AboutText>
           <h2>Giới thiệu chung</h2>
           <p>

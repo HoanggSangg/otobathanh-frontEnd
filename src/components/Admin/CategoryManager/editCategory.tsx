@@ -74,16 +74,24 @@ const EditCategory: React.FC<Props> = ({ onEdit }) => {
   };
 
   const handleDelete = async (categoryId: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-      try {
-        await deleteCategoryAPI(categoryId);
-        setCategories(categories.filter(c => c._id !== categoryId));
-        showToast('Xóa danh mục thành công!', 'success');
-      } catch (err) {
-        showToast('Không thể xóa danh mục!', 'error');
-        console.error('Error deleting category:', err);
+      if (window.confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+          try {
+              const response = await deleteCategoryAPI(categoryId);
+              if (response.message) {
+                  setCategories(categories.filter(c => c._id !== categoryId));
+                  showToast(response.message, 'success');
+              }
+          } catch (err: any) {
+              if (err.response?.status === 404) {
+                  showToast(err.response.data.message, 'error'); // Category not found
+              } else if (err.response?.status === 500) {
+                  showToast(err.response.data.message, 'error'); // Server error
+              } else {
+                  showToast('Không thể xóa danh mục!', 'error');
+              }
+              console.error('Error deleting category:', err);
+          }
       }
-    }
   };
 
   return (

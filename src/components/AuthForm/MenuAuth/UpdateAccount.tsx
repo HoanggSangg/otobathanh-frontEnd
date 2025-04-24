@@ -136,14 +136,19 @@ const UpdateAccount = () => {
         console.log(formData);
 
         try {
-
-            await updateAccountAPI(user.id, formData);
-            showToast('Cập nhật tài khoản thành công!', 'success');
-            navigate('/account/profile');
+            const response = await updateAccountAPI(user.id, formData);
+            
+            if (response.status === "thành công") {
+                showToast(response.message, 'success');
+                navigate('/account/profile');
+            } else {
+                showToast(response.message, 'error');
+            }
 
         } catch (err: any) {
-          showToast('Có lỗi khi cập nhật tài khoản!', 'error');
-          console.error('Lỗi khi cập nhật tài khoản:', err);
+            const errorMessage = err.response?.data?.message;
+            showToast(errorMessage, 'error');
+            console.error('Lỗi khi cập nhật tài khoản:', err);
         } finally {
             setIsLoading(false);
         }
