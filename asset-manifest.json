@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/otobathanh-frontEnd/static/css/main.d401c786.css",
+    "main.js": "/otobathanh-frontEnd/static/js/main.d751003b.js",
+    "static/js/453.07f347a4.chunk.js": "/otobathanh-frontEnd/static/js/453.07f347a4.chunk.js",
+    "index.html": "/otobathanh-frontEnd/index.html",
+    "main.d401c786.css.map": "/otobathanh-frontEnd/static/css/main.d401c786.css.map",
+    "main.d751003b.js.map": "/otobathanh-frontEnd/static/js/main.d751003b.js.map",
+    "453.07f347a4.chunk.js.map": "/otobathanh-frontEnd/static/js/453.07f347a4.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d401c786.css",
+    "static/js/main.d751003b.js"
+  ]
+}
