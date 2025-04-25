@@ -15,6 +15,7 @@ import HomeServices from './components/Appbar/Menu/Services';
 import NewsDetail from './components/Detail/NewsDetail';
 import styled from 'styled-components';
 import IndexProduct from './components/Admin/ProductsManager/indexProduct';
+import IndexBooking from './components/Admin/BookingManager/indexBooking';
 import IndexAccount from './components/Admin/AccountsManager/indexAccount';
 import ProductPage from './components/Detail/ProductDetail';
 import IndexNews from './components/Admin/NewsManager/indexNews';
@@ -36,6 +37,7 @@ import ProtectedRoute from './components/AuthForm/Protected/ProtectedRoute';
 import IndexCategory from './components/Admin/CategoryManager/indexCategory';
 import IndexOrder from './components/Admin/OrderManager/indexOrder';
 import ScrollToTop from './components/Styles/ScrollToTop';
+import Booking from './components/Appbar/Menu/Booking';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -117,6 +119,14 @@ const App = () => {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/manager/booking" 
+              element={
+                <ProtectedRoute>
+                  <IndexBooking />
+                </ProtectedRoute>
+              } 
+            />
             <Route path="/news/:id" element={<NewsDetail />} />
             <Route path="/account/profile" element={<Profile />} />
             <Route path="/account/update" element={<UpdateAccount />} />
@@ -128,6 +138,7 @@ const App = () => {
             <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
             <Route path="/procedure" element={<Procedure />} />
             <Route path="/partner" element={<Partner />} />
+            <Route path="/booking" element={<Booking />} />
           </Routes>
           <Footer />
         </MainContent>

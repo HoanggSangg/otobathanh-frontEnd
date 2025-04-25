@@ -705,9 +705,7 @@ export const createContactAPI = async (contactData) => {
 
 export const getAllContactsAPI = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/contacts`, {
-      headers: getAuthHeaders()
-    });
+    const response = await axios.get(`${API_URL}/api/contacts`);
     return response.data;
   } catch (error) {
     console.error('Error fetching contacts:', error);

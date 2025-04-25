@@ -616,6 +616,9 @@ const Header = () => {
             <NavLink to="/contact">
               Liên hệ
             </NavLink>
+            <NavLink to="/booking">
+              Đặt lịch
+            </NavLink>
             {isAdmin && (
               <ManagerDropdown>
                 <NavLink to="/manager">
@@ -639,6 +642,9 @@ const Header = () => {
                   </DropdownItem>
                   <DropdownItem to="/manager/order">
                     Quản lý đơn hàng
+                  </DropdownItem>
+                  <DropdownItem to="/manager/booking">
+                    Quản lý lịch hẹn
                   </DropdownItem>
                 </DropdownContent>
               </ManagerDropdown>
