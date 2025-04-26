@@ -1,5 +1,5 @@
 import React from 'react';
-import '../Css/Procedure.css';
+import '../css/Procedure.css';
 import { useState, useEffect } from 'react';
 
 interface Step {

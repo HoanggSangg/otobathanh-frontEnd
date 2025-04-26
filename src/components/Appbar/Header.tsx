@@ -28,7 +28,39 @@ const HeaderContainer = styled.header`
   }
 `;
 
-// Change CartButton from button to div
+// Thêm styled component cho Google Translate
+const GoogleTranslateWrapper = styled.div`
+  .goog-te-combo {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.7);
+    }
+    
+    option {
+      background-color: #1e2124;
+      color: white;
+    }
+  }
+  
+  .goog-te-gadget {
+    color: transparent !important;
+    
+    span {
+      display: none !important;
+    }
+  }
+  
+  .goog-te-banner-frame {
+    display: none !important;
+  }
+`;
+
 const CartButton = styled.div`
   background: none;
   border: none;
@@ -83,14 +115,13 @@ const LogoContainer = styled.div`
   z-index: 1001;
 `;
 
-// Add this styled component after other styled components
 const UserAvatar = styled.img`
-width: 32px;
-height: 32px;
-border-radius: 50%;
-object-fit: cover;
-margin-right: 8px;
-border: 2px solid #e31837;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+  border: 2px solid #e31837;
 `;
 
 const Logo = styled.img`
@@ -387,7 +418,6 @@ const CartPreviewContainer = styled.div`
   }
 `;
 
-// Add new styled component for delete button
 const DeleteItemButton = styled.button`
   background: none;
   border: none;
@@ -403,7 +433,6 @@ const DeleteItemButton = styled.button`
   }
 `;
 
-// Update CartItemPreview to include delete button
 const CartItemPreview = styled.div`
   display: flex;
   align-items: center;
@@ -460,7 +489,6 @@ const ClearCartButton = styled(AuthButton)`
   }
 `;
 
-// Add this new interface for cart items
 interface CartItem {
   _id: string;
   quantity: number;
@@ -482,7 +510,7 @@ const Header = () => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [userImage, setUserImage] = useState('');  // Add this state
+  const [userImage, setUserImage] = useState('');
   const user = getCurrentUser();
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
@@ -490,6 +518,8 @@ const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const translateElementRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -510,7 +540,6 @@ const Header = () => {
           const response = await getAccountByIdAPI(user.id);
           if (response && response.account) {
             setUserImage(response.account.image || '');
-            // Check admin role from fetched account data
             const hasAdminRole = response.account.roles?.some(
               (role: Role) => role.name.toLowerCase() === 'admin'
             );
@@ -524,7 +553,7 @@ const Header = () => {
 
     fetchCartItems();
     fetchUserData();
-  }, [user]); // Add user as dependency
+  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -549,15 +578,14 @@ const Header = () => {
       console.error('Error removing item from cart:', error);
     }
   };
+
   const handleLogout = () => {
-    // Clear all storage data
     localStorage.clear();
     sessionStorage.clear();
-    // Clear JWT token from cookie if exists
     document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    // Reload the page to reset all states and redirect to home
     window.location.href = '/';
   };
+
   return (
     <HeaderContainer>
       <HeaderContent>
@@ -616,9 +644,6 @@ const Header = () => {
             <NavLink to="/contact">
               Liên hệ
             </NavLink>
-            {/* <NavLink to="/booking">
-              Đặt lịch
-            </NavLink> */}
             {isAdmin && (
               <ManagerDropdown>
                 <NavLink to="/manager">
@@ -651,7 +676,6 @@ const Header = () => {
             )}
           </NavLinks>
         </NavContainer>
-
         <AuthContainer>
           <CartButton>
             <div onClick={() => navigate('/cart/cartDetail')}>
