@@ -616,9 +616,9 @@ const Header = () => {
             <NavLink to="/contact">
               Liên hệ
             </NavLink>
-            <NavLink to="/booking">
+            {/* <NavLink to="/booking">
               Đặt lịch
-            </NavLink>
+            </NavLink> */}
             {isAdmin && (
               <ManagerDropdown>
                 <NavLink to="/manager">

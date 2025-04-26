@@ -46,7 +46,7 @@ const MainContent = styled.main`
 const App = () => {
   return (
     <div>
-      <ScrollToTop />
+      
       <ToastProvider>
         <Header />
         <MainContent>
@@ -144,7 +144,7 @@ const App = () => {
         </MainContent>
         <ChatBox />
       </ToastProvider>
-      
+      <ScrollToTop />
     </div>
   );
 };

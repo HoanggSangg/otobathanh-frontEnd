@@ -696,6 +696,7 @@ export const createContactAPI = async (contactData) => {
       description: contactData.description,
       images: contactData.images, // Ensure images is an array of base64 strings
     });
+    console.log('Response data:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating contact:', error);
@@ -705,7 +706,9 @@ export const createContactAPI = async (contactData) => {
 
 export const getAllContactsAPI = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/contacts`);
+    const response = await axios.get(`${API_URL}/api/contacts`, {
+      headers: getAuthHeaders()
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching contacts:', error);
@@ -745,6 +748,43 @@ export const deleteContactAPI = async (contactId) => {
     return response.data;
   } catch (error) {
     console.error('Error deleting contact:', error);
+    throw error;
+  }
+};
+
+export const updateContactStatusAPI = async (contactId, status) => {
+  try {
+    const response = await axios.patch(`${API_URL}/api/contacts/${contactId}/status`,
+      { status },
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating contact status:', error);
+    throw error;
+  }
+};
+
+export const getContactsByTimeSlotAPI = async (timeSlot) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/contacts/by-timeslot`, {
+      params: { timeSlot }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching contacts by time slot:', error);
+    throw error;
+  }
+};
+
+export const getContactsByDateAPI = async (date) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/contacts/by-date`, {
+      params: { date }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching contacts by date:', error);
     throw error;
   }
 };

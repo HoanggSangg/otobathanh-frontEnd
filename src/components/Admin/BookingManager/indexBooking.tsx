@@ -21,11 +21,12 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
+    TextField,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { getAllContactsAPI, updateContactAPI, deleteContactAPI, getContactByIdAPI } from '../../API';
+import { getAllContactsAPI, getContactsByDateAPI, getContactsByTimeSlotAPI, updateContactAPI, updateContactStatusAPI, deleteContactAPI, getContactByIdAPI } from '../../API';
 
 const PageContainer = styled(Container)`
   padding: 40px 0;
@@ -41,7 +42,7 @@ type StyledTableContainerProps = {
     component?: React.ComponentType<any>;
 };
 
-const StyledTableContainer = styled(TableContainer)<StyledTableContainerProps>`
+const StyledTableContainer = styled(TableContainer) <StyledTableContainerProps>`
   margin-top: 20px;
   .MuiTableCell-head {
     font-weight: 600;
@@ -61,19 +62,37 @@ interface Contact {
     createdAt: string;
 }
 
+const ImageThumbnail = styled.img`
+    max-width: 200px;
+    max-height: 200px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    &:hover {
+        transform: scale(1.05);
+    }
+`;
+
+const TIME_SLOTS = [
+    '08:00', '09:00', '10:00', '11:00',
+    '13:00', '14:00', '15:00', '16:00'
+];
+
 const ContactStatus = {
     pending: 'Chờ xử lý',
     confirmed: 'Đã xác nhận',
     cancelled: 'Đã hủy'
 } as const;
 
-const indexBooking = () => {
+const IndexBooking = () => {
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
     const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
     const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
     const [newStatus, setNewStatus] = useState<keyof typeof ContactStatus>('pending');
     const showToast = useToast();
+    const [searchDate, setSearchDate] = useState('');
+    const [searchTimeSlot, setSearchTimeSlot] = useState('');
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     useEffect(() => {
         fetchContacts();
@@ -91,11 +110,8 @@ const indexBooking = () => {
     const handleStatusChange = async () => {
         if (!selectedContact) return;
         try {
-            const response = await updateContactAPI(selectedContact._id, {
-                ...selectedContact,
-                status: newStatus
-            });
-            
+            const response = await updateContactStatusAPI(selectedContact._id, newStatus);
+
             if (response) {
                 showToast('Cập nhật trạng thái thành công', 'success');
                 setIsStatusDialogOpen(false);
@@ -107,10 +123,53 @@ const indexBooking = () => {
         }
     };
 
+    const handleCombinedSearch = async () => {
+        if (!searchDate && !searchTimeSlot) {
+            fetchContacts();
+            return;
+        }
+        try {
+            let response: Contact[];
+            if (searchDate && searchTimeSlot) {
+                // If both filters are set, get by date first then filter by time
+                response = await getContactsByDateAPI(searchDate);
+                response = response.filter((contact: Contact) => contact.timeSlot === searchTimeSlot);
+            } else if (searchDate) {
+                response = await getContactsByDateAPI(searchDate);
+            } else {
+                response = await getContactsByTimeSlotAPI(searchTimeSlot);
+            }
+            setContacts(response);
+        } catch (error) {
+            showToast('Không thể tìm kiếm lịch hẹn', 'error');
+        }
+    };
+    // Add this state for editing mode
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedContact, setEditedContact] = useState<Contact | null>(null);
+
+    // Add this handler for saving edited contact
+    const handleSaveEdit = async () => {
+        if (!editedContact) return;
+        try {
+            const response = await updateContactAPI(editedContact._id, editedContact);
+            if (response) {
+                showToast('Cập nhật thông tin thành công', 'success');
+                setIsEditing(false);
+                fetchContacts();
+                setIsDetailDialogOpen(false);
+            }
+        } catch (error) {
+            showToast('Không thể cập nhật thông tin', 'error');
+        }
+    };
+
+    // Modify handleViewDetails to initialize editedContact
     const handleViewDetails = async (contact: Contact) => {
         try {
             const contactDetails = await getContactByIdAPI(contact._id);
             setSelectedContact(contactDetails);
+            setEditedContact(contactDetails);
             setIsDetailDialogOpen(true);
         } catch (error) {
             showToast('Không thể tải chi tiết lịch hẹn', 'error');
@@ -119,7 +178,7 @@ const indexBooking = () => {
 
     const handleDelete = async (contactId: string) => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa lịch hẹn này?')) return;
-    
+
         try {
             const response = await deleteContactAPI(contactId);
             if (response) {
@@ -148,6 +207,54 @@ const indexBooking = () => {
     return (
         <PageContainer maxWidth="lg">
             <Title variant="h4">Quản lý Lịch Hẹn</Title>
+            <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                <FormControl sx={{ minWidth: 200 }}>
+                    <TextField
+                        type="date"
+                        label="Tìm theo ngày"
+                        value={searchDate}
+                        onChange={(e) => setSearchDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                    />
+                </FormControl>
+
+                <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Tìm theo giờ hẹn</InputLabel>
+                    <Select
+                        value={searchTimeSlot}
+                        onChange={(e) => setSearchTimeSlot(e.target.value)}
+                        label="Tìm theo giờ hẹn"
+                    >
+                        <MenuItem value="">Tất cả</MenuItem>
+                        {TIME_SLOTS.map((slot) => (
+                            <MenuItem key={slot} value={slot}>
+                                {slot}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <Button
+                        onClick={handleCombinedSearch}
+                        variant="contained"
+                        sx={{ height: 40 }}
+                    >
+                        Tìm kiếm
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            setSearchDate('');
+                            setSearchTimeSlot('');
+                            fetchContacts();
+                        }}
+                        variant="outlined"
+                        sx={{ height: 40 }}
+                    >
+                        Đặt lại
+                    </Button>
+                </div>
+            </Paper>
 
             <StyledTableContainer component={Paper}>
                 <Table>
@@ -208,6 +315,29 @@ const indexBooking = () => {
                 </Table>
             </StyledTableContainer>
 
+            <Dialog
+                open={!!selectedImage}
+                onClose={() => setSelectedImage(null)}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogContent style={{ padding: 0 }}>
+                    <img
+                        src={selectedImage || ''}
+                        alt="Preview"
+                        style={{
+                            width: '100%',
+                            height: 'auto',
+                            maxHeight: '80vh',
+                            objectFit: 'contain'
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setSelectedImage(null)}>Đóng</Button>
+                </DialogActions>
+            </Dialog>
+
             {/* Status Update Dialog */}
             <Dialog open={isStatusDialogOpen} onClose={() => setIsStatusDialogOpen(false)}>
                 <DialogTitle>Cập nhật trạng thái lịch hẹn</DialogTitle>
@@ -238,28 +368,90 @@ const indexBooking = () => {
             {/* Contact Detail Dialog */}
             <Dialog
                 open={isDetailDialogOpen}
-                onClose={() => setIsDetailDialogOpen(false)}
+                onClose={() => {
+                    setIsDetailDialogOpen(false);
+                    setIsEditing(false);
+                }}
                 maxWidth="md"
                 fullWidth
             >
                 <DialogTitle>Chi tiết lịch hẹn</DialogTitle>
                 <DialogContent>
-                    {selectedContact && (
+                    {selectedContact && editedContact && (
                         <>
                             <Typography variant="subtitle1" gutterBottom>
-                                Họ và tên: {selectedContact.fullName}
+                                Họ và tên: {isEditing ? (
+                                    <TextField
+                                        value={editedContact.fullName}
+                                        onChange={(e) => setEditedContact({
+                                            ...editedContact,
+                                            fullName: e.target.value
+                                        })}
+                                        fullWidth
+                                        margin="dense"
+                                    />
+                                ) : selectedContact.fullName}
                             </Typography>
                             <Typography variant="subtitle1" gutterBottom>
-                                Số điện thoại: {selectedContact.numberPhone}
+                                Số điện thoại: {isEditing ? (
+                                    <TextField
+                                        value={editedContact.numberPhone}
+                                        onChange={(e) => setEditedContact({
+                                            ...editedContact,
+                                            numberPhone: e.target.value
+                                        })}
+                                        fullWidth
+                                        margin="dense"
+                                    />
+                                ) : selectedContact.numberPhone}
                             </Typography>
                             <Typography variant="subtitle1" gutterBottom>
-                                Ngày hẹn: {formatDate(selectedContact.date)}
+                                Ngày hẹn: {isEditing ? (
+                                    <TextField
+                                        type="date"
+                                        value={editedContact.date.split('T')[0]}
+                                        onChange={(e) => setEditedContact({
+                                            ...editedContact,
+                                            date: e.target.value
+                                        })}
+                                        fullWidth
+                                        margin="dense"
+                                    />
+                                ) : formatDate(selectedContact.date)}
                             </Typography>
                             <Typography variant="subtitle1" gutterBottom>
-                                Giờ hẹn: {selectedContact.timeSlot}
+                                Giờ hẹn: {isEditing ? (
+                                    <FormControl fullWidth margin="dense">
+                                        <Select
+                                            value={editedContact.timeSlot}
+                                            onChange={(e) => setEditedContact({
+                                                ...editedContact,
+                                                timeSlot: e.target.value
+                                            })}
+                                        >
+                                            {TIME_SLOTS.map((slot) => (
+                                                <MenuItem key={slot} value={slot}>
+                                                    {slot}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                ) : selectedContact.timeSlot}
                             </Typography>
                             <Typography variant="subtitle1" gutterBottom>
-                                Mô tả: {selectedContact.description}
+                                Mô tả: {isEditing ? (
+                                    <TextField
+                                        value={editedContact.description}
+                                        onChange={(e) => setEditedContact({
+                                            ...editedContact,
+                                            description: e.target.value
+                                        })}
+                                        fullWidth
+                                        multiline
+                                        rows={3}
+                                        margin="dense"
+                                    />
+                                ) : selectedContact.description}
                             </Typography>
                             <Typography variant="subtitle1" gutterBottom sx={{
                                 color: getStatusColor(selectedContact.status),
@@ -274,11 +466,11 @@ const indexBooking = () => {
                                     </Typography>
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         {selectedContact.images.map((image, index) => (
-                                            <img
+                                            <ImageThumbnail
                                                 key={index}
                                                 src={image}
                                                 alt={`Contact image ${index + 1}`}
-                                                style={{ maxWidth: '200px', maxHeight: '200px' }}
+                                                onClick={() => setSelectedImage(image)}
                                             />
                                         ))}
                                     </div>
@@ -288,11 +480,27 @@ const indexBooking = () => {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setIsDetailDialogOpen(false)}>Đóng</Button>
+                    {isEditing ? (
+                        <>
+                            <Button onClick={() => setIsEditing(false)} color="error">
+                                Hủy
+                            </Button>
+                            <Button onClick={handleSaveEdit} variant="contained" color="primary">
+                                Lưu
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button onClick={() => setIsDetailDialogOpen(false)}>Đóng</Button>
+                            <Button onClick={() => setIsEditing(true)} color="primary">
+                                Chỉnh sửa
+                            </Button>
+                        </>
+                    )}
                 </DialogActions>
             </Dialog>
         </PageContainer>
     );
 };
 
-export default indexBooking;
+export default IndexBooking;
