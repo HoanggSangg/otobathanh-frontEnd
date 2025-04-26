@@ -11,10 +11,12 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../Styles/ToastProvider';
 import {
   getAllProductsAPI, addToCartAPI, getAllCategoriesAPI,
-  likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI
+  likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI,
+  searchProductsAPI
 } from '../../API';
 import { getCurrentUser } from '../../Utils/auth';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { useSearchParams } from 'react-router-dom';
 
 const PageWrapper = styled.div`
     background-color: #fff;
@@ -213,6 +215,7 @@ const Products = () => {
   const user = getCurrentUser();
   const showToast = useToast();
   const productRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [searchParams] = useSearchParams();
 
   const handleSortChange = (event: SelectChangeEvent<string>) => {
     setSortOption(event.target.value);
@@ -221,7 +224,19 @@ const Products = () => {
   // Add missing fetchProducts function
   const fetchProducts = async () => {
     try {
-      const data = await getAllProductsAPI();
+      const searchTerm = searchParams.get('search');
+      let data;
+      console.log(searchTerm);
+      if (searchTerm) {
+        data = await searchProductsAPI(searchTerm);
+        console.log(data);
+        if (data.length === 0) {
+          showToast('Không tìm thấy sản phẩm phù hợp', 'info');
+        }
+      } else {
+        data = await getAllProductsAPI();
+      }
+
       setProducts(data);
     } catch (error) {
       console.error('Failed to fetch products:', error);
@@ -244,7 +259,7 @@ const Products = () => {
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-  }, []);
+  }, [searchParams]);
 
   // Separate useEffect for like data
   useEffect(() => {
@@ -569,13 +584,13 @@ const Products = () => {
                         : <FavoriteBorderIcon />
                       }
                     </LikeButton>
-                    <AddToCartButton
+                    {/* <AddToCartButton
                       variant="contained"
                       startIcon={<ShoppingCartIcon />}
                       onClick={(e) => handleAddToCart(e, product)}
                     >
                       Mua ngay
-                    </AddToCartButton>
+                    </AddToCartButton> */}
                   </ButtonGroup>
                 </ProductContent>
               </InfoCard>

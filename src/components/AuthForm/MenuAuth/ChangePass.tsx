@@ -111,7 +111,7 @@ const ChangePass = () => {
     };
 
     fetchUserData();
-  }, [user]);
+  }, []);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -136,7 +136,7 @@ const Profile = () => {
     };
 
     fetchAccountData();
-  }, [user]);
+  }, []);
 
   const handleUpdateClick = () => {
     navigate('/account/update');

@@ -7,10 +7,11 @@ import RegisterForm from '../AuthForm/Register/Register';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { getCurrentUser } from '../Utils/auth';
-import { getAccountByIdAPI, getCartItemsAPI, removeFromCartAPI } from '../API';
+import { getAccountByIdAPI, getCartItemsAPI, removeFromCartAPI, searchProductsAPI } from '../API';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from 'react-router-dom';
 import InputBase from '@mui/material/InputBase';
+import PersonIcon from '@mui/icons-material/Person';
 
 const HeaderContainer = styled.header`
   background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
@@ -157,6 +158,19 @@ const NavLinks = styled.nav<{ $isOpen: boolean }>`
     gap: 0;
     width: 100%;
   }
+`;
+
+const DefaultAvatar = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-right: 8px;
+  border: 2px solid #e31837;
+  color: white;
 `;
 
 const AuthContainer = styled.div`
@@ -515,10 +529,11 @@ const Header = () => {
   const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isMaster, setIsMaster] = useState(false);
+  const [isManager, setIsManager] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const translateElementRef = useRef<HTMLDivElement>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
 
   useEffect(() => {
@@ -540,10 +555,16 @@ const Header = () => {
           const response = await getAccountByIdAPI(user.id);
           if (response && response.account) {
             setUserImage(response.account.image || '');
-            const hasAdminRole = response.account.roles?.some(
-              (role: Role) => role.name.toLowerCase() === 'admin'
+
+            const hasManagerAccess = response.account.roles?.some(
+              (role: Role) => ['admin', 'master'].includes(role.name.toLowerCase())
             );
-            setIsAdmin(hasAdminRole);
+            setIsManager(hasManagerAccess);
+
+            const hasMasterRole = response.account.roles?.some(
+              (role: Role) => role.name.toLowerCase() === 'master'
+            );
+            setIsMaster(hasMasterRole);
           }
         }
       } catch (error) {
@@ -568,6 +589,18 @@ const Header = () => {
     };
   }, []);
 
+  const handleSearch = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim()) {
+      try {
+        navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
+        setIsSearchExpanded(false);
+        setSearchTerm('');
+      } catch (error) {
+        console.error('Error searching products:', error);
+      }
+    }
+  };
+
   const removeCartItem = async (e: React.MouseEvent, itemId: string) => {
     e.stopPropagation();
     try {
@@ -590,7 +623,12 @@ const Header = () => {
     <HeaderContainer>
       <HeaderContent>
         <LogoContainer>
-          <Logo src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Ô Tô Bá Thành" />
+          <Logo
+            src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png"
+            alt="Ô Tô Bá Thành"
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
         </LogoContainer>
 
         <MenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -616,6 +654,9 @@ const Header = () => {
             <InputBase
               autoFocus
               placeholder="Bạn muốn tìm gì?"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearch}
               sx={{
                 marginLeft: 1,
                 color: 'white',
@@ -644,15 +685,17 @@ const Header = () => {
             <NavLink to="/contact">
               Liên hệ
             </NavLink>
-            {isAdmin && (
+            {isManager && (
               <ManagerDropdown>
                 <NavLink to="/manager">
                   Quản lý
                 </NavLink>
                 <DropdownContent $isOpen={false}>
-                  <DropdownItem to="/manager/accounts">
-                    Quản lý tài khoản
-                  </DropdownItem>
+                  {isMaster && (
+                    <DropdownItem to="/manager/accounts">
+                      Quản lý tài khoản
+                    </DropdownItem>
+                  )}
                   <DropdownItem to="/manager/products">
                     Quản lý sản phẩm
                   </DropdownItem>
@@ -665,9 +708,6 @@ const Header = () => {
                   <DropdownItem to="/manager/category">
                     Quản lý danh mục
                   </DropdownItem>
-                  <DropdownItem to="/manager/order">
-                    Quản lý đơn hàng
-                  </DropdownItem>
                   <DropdownItem to="/manager/booking">
                     Quản lý lịch hẹn
                   </DropdownItem>
@@ -677,7 +717,7 @@ const Header = () => {
           </NavLinks>
         </NavContainer>
         <AuthContainer>
-          <CartButton>
+          {/* <CartButton>
             <div onClick={() => navigate('/cart/cartDetail')}>
               <ShoppingCartIcon />
               {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
@@ -733,16 +773,20 @@ const Header = () => {
                 </ButtonGroup>
               </CartPreviewContainer>
             )}
-          </CartButton>
+          </CartButton> */}
           {user ? (
             <UserInfo>
               <UserDropdown>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {(userImage || user.image) && (
+                  {(userImage || user.image) ? (
                     <UserAvatar
                       src={userImage || user.image}
                       alt={user.fullName}
                     />
+                  ) : (
+                    <DefaultAvatar>
+                      <PersonIcon />
+                    </DefaultAvatar>
                   )}
                   <UserName>
                     {user.fullName}
@@ -758,9 +802,9 @@ const Header = () => {
                   <DropdownItem to="/account/changePass">
                     Thay đổi mật khẩu
                   </DropdownItem>
-                  <DropdownItem to="/account/historyOrder">
+                  {/* <DropdownItem to="/account/historyOrder">
                     Lịch sử mua hàng
-                  </DropdownItem>
+                  </DropdownItem> */}
                   <DropdownItem to="/account/likeProducts">
                     Sản phẩm yêu thích
                   </DropdownItem>
@@ -801,7 +845,7 @@ const Header = () => {
               <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>
                 Liên hệ
               </NavLink>
-              {isAdmin && (
+              {isManager && (
                 <>
                   <NavLink to="/manager/accounts" onClick={() => setIsMenuOpen(false)}>
                     Quản lý tài khoản

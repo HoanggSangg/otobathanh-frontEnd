@@ -34,7 +34,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ selectedCategory, onSuc
     if (selectedCategory) {
       setName(selectedCategory.name || '');
     }
-  }, [selectedCategory]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

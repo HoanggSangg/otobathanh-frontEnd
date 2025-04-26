@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import {
+    updateAccountAPI,
+    getAccountByIdAPI,
+    getAllAccountsAPI,
+    deleteAccountAPI,
+    disableAccountAPI,
+    enableAccountAPI,
+} from '../../API';
 import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
 import {
@@ -10,10 +18,11 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Switch,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getAllAccountsAPI, deleteAccountAPI } from '../../API';
+import { checkIsMasterRole } from '../../Styles/roleUtils';
 
 const Container = styled.div`
   padding: 20px;
@@ -54,7 +63,6 @@ const ActionButton = styled(IconButton)`
 
 const StyledTableContainer = styled(TableContainer)`
   margin-top: 20px;
-  
   .MuiTableCell-head {
     font-weight: 600;
     background-color: #f5f5f5;
@@ -78,18 +86,6 @@ const FilterSelect = styled.select`
   font-size: 14px;
 `;
 
-interface EditFormData {
-    fullName: string;
-    email: string;
-    password: string;
-    image: string;
-    roles: {
-        _id: string;
-        name: string;
-    }[];
-    status: boolean;
-}
-
 interface Account {
     _id: string;
     fullName: string;
@@ -107,68 +103,112 @@ interface Account {
 
 interface Props {
     onEdit: (account: Account) => void;
+    onSuccess?: () => void;
 }
 
-const EditAccount: React.FC<Props> = ({ onEdit }) => {
+const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [searchType, setSearchType] = useState('fullName');
     const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const showToast = useToast();
-    const [formData, setFormData] = useState<EditFormData>({
-        fullName: '',
-        email: '',
-        password: '',
-        image: '',
-        roles: [],
-        status: true
-    });
+    const [isMaster, setIsMaster] = useState(false);
 
     useEffect(() => {
-        if (selectedAccount) {
-            setFormData({
-                fullName: selectedAccount.fullName,
-                email: selectedAccount.email,
-                password: '',
-                image: selectedAccount.image,
-                roles: selectedAccount.roles,
-                status: selectedAccount.status
-            });
-        }
-
         fetchAccounts();
-    }, [selectedAccount]);
+        const checkMasterRole = async () => {
+            const isMasterUser = await checkIsMasterRole();
+            setIsMaster(isMasterUser);
+        };
+        checkMasterRole();
+    }, []);
 
     const fetchAccounts = async () => {
         try {
             setIsLoading(true);
             const response = await getAllAccountsAPI();
-            
             if (Array.isArray(response)) {
                 setAccounts(response);
-            } else if (response.status === "thất bại") {
-                showToast(response.message, 'error');
             } else {
-                showToast('Dữ liệu không hợp lệ!', 'error');
+                showToast(response.message || 'Dữ liệu không hợp lệ!', 'error');
             }
         } catch (err: any) {
-            if (err.response?.status === 500) {
-                showToast(err.response.data.message, 'error');
-            } else {
-                showToast('Không thể tải danh sách tài khoản!', 'error');
-            }
             console.error('Error fetching accounts:', err);
+            showToast('Không thể tải danh sách tài khoản!', 'error');
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleEdit = (account: Account) => {
+        if (!isMaster && account.roles.some(role => role.name.toLowerCase() === 'master')) {
+            showToast('Chỉ Master mới có quyền chỉnh sửa tài khoản Master', 'error');
+            return;
+        }
         onEdit(account);
+        if (onSuccess) {
+            onSuccess();
+        }
     };
+
+    const handleDelete = async (accountId: string) => {
+        if (!isMaster) {
+            showToast('Chỉ Master mới có quyền xóa tài khoản', 'error');
+            return;
+        }
+        if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+            try {
+                const response = await deleteAccountAPI(accountId);
+                if (response.status === 'thành công') {
+                    setAccounts(prev => prev.filter(a => a._id !== accountId));
+                    showToast(response.message, 'success');
+                } else {
+                    showToast(response.message, 'error');
+                }
+            } catch (err: any) {
+                console.error('Error deleting account:', err);
+                showToast('Không thể xóa tài khoản!', 'error');
+            }
+        }
+    };
+
+    const handleToggleStatus = async (account: Account) => {
+        try {
+            if (!isMaster) {
+                showToast('Chỉ Master mới có quyền khóa/mở tài khoản', 'error');
+                return;
+            }
+
+            // Xác định API cần gọi dựa trên trạng thái tài khoản hiện tại
+            const apiCall = account.status ? disableAccountAPI : enableAccountAPI;
+            console.log(apiCall);
+
+            // Gọi API để thay đổi trạng thái tài khoản
+            const response = await apiCall(account._id);
+            
+
+            console.log(response); // Kiểm tra phản hồi từ API
+
+            if (response.status === 200) {
+                showToast(response.data.message, 'success');
+
+                // Cập nhật trạng thái của tài khoản trong UI
+                setAccounts(prev =>
+                    prev.map(a =>
+                        a._id === account._id ? { ...a, status: !account.status } : a
+                    )
+                );
+            } else {
+                showToast('Thao tác thất bại', 'error');
+            }
+        } catch (err: any) {
+            console.error('Error toggling account status:', err);
+            showToast('Không thể thay đổi trạng thái tài khoản!', 'error');
+        }
+    };
+
 
     const getFilteredAndSortedAccounts = () => {
         return accounts
@@ -180,9 +220,7 @@ const EditAccount: React.FC<Props> = ({ onEdit }) => {
                     case 'email':
                         return account.email.toLowerCase().includes(searchLower);
                     case 'role':
-                        return account.roles.some(role =>
-                            role.name.toLowerCase().includes(searchLower)
-                        );
+                        return account.roles.some(role => role.name.toLowerCase().includes(searchLower));
                     default:
                         return true;
                 }
@@ -200,30 +238,6 @@ const EditAccount: React.FC<Props> = ({ onEdit }) => {
             });
     };
 
-    const handleDelete = async (accountId: string) => {
-        if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
-            try {
-                const response = await deleteAccountAPI(accountId);
-                
-                if (response.status === "thành công") {
-                    setAccounts(accounts.filter(a => a._id !== accountId));
-                    showToast(response.message, 'success');
-                } else {
-                    showToast(response.message, 'error');
-                }
-            } catch (err: any) {
-                if (err.response?.status === 404) {
-                    showToast(err.response.data.message, 'error'); // Account not found
-                } else if (err.response?.status === 500) {
-                    showToast(err.response.data.message, 'error'); // Server error
-                } else {
-                    showToast('Không thể xóa tài khoản!', 'error');
-                }
-                console.error('Error deleting account:', err);
-            }
-        }
-    };
-
     return (
         <Container>
             <Header>
@@ -239,9 +253,7 @@ const EditAccount: React.FC<Props> = ({ onEdit }) => {
                     </FilterSelect>
                     <SearchInput
                         type="text"
-                        placeholder={`Tìm kiếm theo ${searchType === 'fullName' ? 'tên' :
-                                searchType === 'email' ? 'email' : 'vai trò'
-                            }...`}
+                        placeholder={`Tìm kiếm theo ${searchType === 'fullName' ? 'tên' : searchType === 'email' ? 'email' : 'vai trò'}...`}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -290,15 +302,26 @@ const EditAccount: React.FC<Props> = ({ onEdit }) => {
                                         <TableCell>{account.fullName}</TableCell>
                                         <TableCell>{account.email}</TableCell>
                                         <TableCell>{account.roles.map(role => role.name).join(', ')}</TableCell>
-                                        <TableCell>{account.status ? 'Kích hoạt' : 'Không kích hoạt'}</TableCell>
                                         <TableCell>
-                                            {new Date(account.createdAt).toLocaleDateString('vi-VN')}
+                                            <Switch
+                                                checked={account.status}
+                                                onChange={() => handleToggleStatus(account)}
+                                                color="primary"
+                                                disabled={!isMaster}
+                                            />
                                         </TableCell>
+                                        <TableCell>{new Date(account.createdAt).toLocaleDateString('vi-VN')}</TableCell>
                                         <TableCell align="right">
-                                            <ActionButton onClick={() => handleEdit(account)} color="primary">
+                                            <ActionButton
+                                                onClick={() => handleEdit(account)}
+                                                disabled={!isMaster && account.roles.some(role => role.name.toLowerCase() === 'master')}
+                                            >
                                                 <EditIcon />
                                             </ActionButton>
-                                            <ActionButton onClick={() => handleDelete(account._id)} color="error">
+                                            <ActionButton
+                                                onClick={() => handleDelete(account._id)}
+                                                disabled={!isMaster}
+                                            >
                                                 <DeleteIcon />
                                             </ActionButton>
                                         </TableCell>

@@ -85,15 +85,38 @@ const CancelButton = styled(Button)`
   }
 `;
 
+// Add new styled components
+const ImagePreview = styled.img`
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 10px 0;
+`;
+
+const ImageUploadLabel = styled(Label)`
+  cursor: pointer;
+  color: #e31837;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const UpdateAccount = () => {
     const navigate = useNavigate();
     const user = getCurrentUser();
     const showToast = useToast();
+    // Add new state for image
+    const [image, setImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>('');
+
+    // Update formData state
     const [formData, setFormData] = useState(() => ({
         fullName: user?.fullName || '',
         email: user?.email || '',
         roles: user?.roles?.[0]?.name || '',
         createdAt: '',
+        image: '',
     }));
     const [isLoading, setIsLoading] = useState(false);
 
@@ -111,12 +134,15 @@ const UpdateAccount = () => {
                             createdAt: acc.createdAt
                                 ? new Date(acc.createdAt).toLocaleDateString('vi-VN')
                                 : '',
+                            image: acc.image || '',
                         });
+                        if (acc.image) {
+                            setImagePreview(acc.image);
+                        }
                     }
                 }
             } catch (err) {
-              showToast('Không thể tải thông tin tài khoản!', 'error');
-              console.error('Lỗi khi tải thông tin tài khoản:', err);
+                showToast('Không thể tải thông tin tài khoản!', 'error');
             }
         };
         fetchAccountData();
@@ -130,25 +156,56 @@ const UpdateAccount = () => {
         }));
     };
 
+    const convertToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    // Add image handling function
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setImage(file);
+            // Create preview URL
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+        }
+    };
+
+    // Update handleSubmit to include image
+    // Update handleSubmit function
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        console.log(formData);
 
         try {
-            const response = await updateAccountAPI(user.id, formData);
-            
+
+            let base64Image = null;
+            if (image) {
+                base64Image = await convertToBase64(image);
+            }
+            const submitData = {
+                fullName: formData.fullName,
+                email: formData.email,
+                roles: formData.roles,
+                image: base64Image
+            };
+
+            const response = await updateAccountAPI(user.id, submitData);
+
             if (response.status === "thành công") {
-                showToast(response.message, 'success');
+                showToast('Cập nhật thông tin thành công', 'success');
                 navigate('/account/profile');
             } else {
                 showToast(response.message, 'error');
             }
-
         } catch (err: any) {
             const errorMessage = err.response?.data?.message;
-            showToast(errorMessage, 'error');
-            console.error('Lỗi khi cập nhật tài khoản:', err);
+            showToast(errorMessage || 'Cập nhật thất bại', 'error');
         } finally {
             setIsLoading(false);
         }
@@ -162,6 +219,25 @@ const UpdateAccount = () => {
         <Container>
             <Title>Cập Nhật Thông Tin Tài Khoản</Title>
             <Form onSubmit={handleSubmit}>
+                <FormGroup style={{ alignItems: 'center' }}>
+                    {(imagePreview || formData.image) && (
+                        <ImagePreview
+                            src={imagePreview || `${process.env.REACT_APP_API_URL}/${formData.image}`}
+                            alt="Avatar Preview"
+                        />
+                    )}
+                    <input
+                        type="file"
+                        id="image-upload"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ display: 'none' }}
+                    />
+                    <ImageUploadLabel htmlFor="image-upload">
+                        {imagePreview ? 'Thay đổi ảnh' : 'Tải lên ảnh đại diện'}
+                    </ImageUploadLabel>
+                </FormGroup>
+
                 <FormGroup>
                     <Label>Họ và tên</Label>
                     <Input

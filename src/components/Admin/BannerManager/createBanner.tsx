@@ -29,7 +29,7 @@ const CreateBanner: React.FC<CreateBannerProps> = ({ selectedBanner, onSuccess }
     if (selectedBanner) {
       setCurrentImage(selectedBanner.image);
     }
-  }, [selectedBanner]);
+  }, []);
 
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {

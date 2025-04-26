@@ -408,13 +408,13 @@ const Products = () => {
                       : <FavoriteBorderIcon />
                     }
                   </LikeButton>
-                  <AddToCartButton
+                  {/* <AddToCartButton
                     variant="contained"
                     startIcon={<ShoppingCartIcon />}
                     onClick={(e) => handleAddToCart(e, product)}
                   >
                     Mua ngay
-                  </AddToCartButton>
+                  </AddToCartButton> */}
                 </ButtonGroup>
               </ProductContent>
             </InfoCard>

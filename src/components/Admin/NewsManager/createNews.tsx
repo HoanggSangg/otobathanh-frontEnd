@@ -54,7 +54,7 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
       });
       setCurrentImage(selectedNews.image);
     }
-  }, [selectedNews]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({

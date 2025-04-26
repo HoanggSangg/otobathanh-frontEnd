@@ -164,7 +164,7 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
       }
     };
     fetchCategories();
-  }, [editingProduct]);
+  }, []);
 
   // Add function to handle comment deletion
   const handleDeleteComment = async (commentId: string) => {

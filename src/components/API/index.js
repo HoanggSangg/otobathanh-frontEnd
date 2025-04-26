@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAuthHeaders } from '../Utils/auth';
 
-const API_URL = 'https://otobathanhh.onrender.com';
+const API_URL = 'http://localhost:3000';
 
 // Account APIs
 export const loginAPI = async (email, password) => {
@@ -110,7 +110,7 @@ export const getProductByIdAPI = async (productId) => {
 // Manager Account APIs
 export const getAllAccountsAPI = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/accounts', {
+    const response = await fetch(`${API_URL}/api/accounts`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ export const getAllAccountsAPI = async () => {
 
 export const createAccountAPI = async (accountData) => {
   try {
-    const response = await fetch('http://localhost:3000/api/accounts', {
+    const response = await fetch(`${API_URL}/api/accounts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ export const createAccountAPI = async (accountData) => {
 
 export const updateAccountAPI = async (accountId, accountData) => {
   try {
-    const response = await fetch(`http://localhost:3000/api/accounts/${accountId}`, {
+    const response = await fetch(`${API_URL}/api/accounts/${accountId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export const updateAccountAPI = async (accountId, accountData) => {
 
 export const deleteAccountAPI = async (accountId) => {
   try {
-    const response = await fetch(`http://localhost:3000/api/accounts/${accountId}`, {
+    const response = await fetch(`${API_URL}/api/accounts/${accountId}`, {
       headers: getAuthHeaders()
     });
     if (!response.ok) {
@@ -432,7 +432,9 @@ export const deleteOrderDetailAPI = async (detailId) => {
 // Role APIs
 export const getAllRolesAPI = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/roles`);
+    const response = await axios.get(`${API_URL}/api/roles`, {
+      headers: getAuthHeaders()
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching roles:', error);
@@ -442,7 +444,9 @@ export const getAllRolesAPI = async () => {
 
 export const getRoleByIdAPI = async (roleId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/roles/${roleId}`);
+    const response = await axios.get(`${API_URL}/api/roles/${roleId}`, {
+      headers: getAuthHeaders()
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching role:', error);
@@ -452,7 +456,9 @@ export const getRoleByIdAPI = async (roleId) => {
 
 export const createRoleAPI = async (roleData) => {
   try {
-    const response = await axios.post(`${API_URL}/api/roles/create`, roleData);
+    const response = await axios.post(`${API_URL}/api/roles/create`, roleData, {
+      headers: getAuthHeaders()
+    });
     return response.data;
   } catch (error) {
     console.error('Error creating role:', error);
@@ -462,7 +468,9 @@ export const createRoleAPI = async (roleData) => {
 
 export const updateRoleAPI = async (roleId, roleData) => {
   try {
-    const response = await axios.put(`${API_URL}/api/roles/${roleId}`, roleData);
+    const response = await axios.put(`${API_URL}/api/roles/${roleId}`, roleData, {
+      headers: getAuthHeaders()
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating role:', error);
@@ -472,7 +480,9 @@ export const updateRoleAPI = async (roleId, roleData) => {
 
 export const deleteRoleAPI = async (roleId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/roles/${roleId}`);
+    const response = await axios.delete(`${API_URL}/api/roles/${roleId}`, {
+      headers: getAuthHeaders()
+    });
     return response.data;
   } catch (error) {
     console.error('Error deleting role:', error);
@@ -485,6 +495,8 @@ export const assignRoleToAccountAPI = async (accountId, roleId) => {
     const response = await axios.post(`${API_URL}/api/roles/assign`, {
       accountId,
       roleId
+    }, {
+      headers: getAuthHeaders()
     });
     return response.data;
   } catch (error) {
@@ -495,13 +507,28 @@ export const assignRoleToAccountAPI = async (accountId, roleId) => {
 
 export const removeRoleFromAccountAPI = async (accountId, roleId) => {
   try {
-    const response = await axios.post(`${API_URL}/api/roles/remove`, {
-      accountId,
-      roleId
+    const response = await axios.delete(`${API_URL}/api/roles/remove`, {
+      headers: getAuthHeaders(),
+      data: {
+        accountId,
+        roleId
+      }
     });
     return response.data;
   } catch (error) {
     console.error('Error removing role:', error);
+    throw error;
+  }
+};
+
+export const getAccountRolesAPI = async (accountId) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/roles/account/${accountId}`, {
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching account roles:', error);
     throw error;
   }
 };
@@ -785,6 +812,46 @@ export const getContactsByDateAPI = async (date) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching contacts by date:', error);
+    throw error;
+  }
+};
+
+// Search Products API
+export const searchProductsAPI = async (searchName) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/products/search`, {
+      params: { name: searchName }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    throw error;
+  }
+};
+
+export const enableAccountAPI = async (accountId) => {
+  try {
+    const response = await axios.put(`${API_URL}/api/accounts/enable`, { accountId }, {
+      headers: getAuthHeaders()
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error enabling account:', error);
+    throw error;
+  }
+};
+
+export const disableAccountAPI = async (accountId) => {
+  try {
+    console.log(accountId);
+    const response = await axios.put(`${API_URL}/api/accounts/disable`, { accountId }, {
+      headers: getAuthHeaders()
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error disabling account:', error);
     throw error;
   }
 };

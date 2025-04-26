@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getCurrentUser } from '../../Utils/auth';
 import { getAccountByIdAPI } from '../../API';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useToast } from '../../Styles/ToastProvider';
 
 interface Role {
@@ -14,8 +14,7 @@ interface User {
   roles: Role[];
 }
 
-const ADMIN_ROLES = ['admin', 'master'] as const;
-type AdminRole = typeof ADMIN_ROLES[number];
+const MASTER_ONLY_ROUTES = ['/manager/accounts'];
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -26,6 +25,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const currentUser = getCurrentUser();
   const showToast = useToast();
+  const location = useLocation();
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -35,15 +35,28 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           setIsLoading(false);
           return;
         }
-        const userData = await getAccountByIdAPI(currentUser.id);
         
-        const hasAdminRole = userData.account.roles?.some((role: Role) => 
-          ADMIN_ROLES.includes(role.name.toLowerCase() as AdminRole)
-        );
-        if (!hasAdminRole) {
-          showToast('Bạn không có quyền truy cập trang này', 'error');
+        const userData = await getAccountByIdAPI(currentUser.id);
+        const userRoles = userData.account.roles?.map((role: Role) => 
+          role.name.toLowerCase()
+        ) || [];
+
+        const isMasterRoute = MASTER_ONLY_ROUTES.includes(location.pathname);
+        const hasMasterRole = userRoles.includes('master');
+
+        if (isMasterRoute) {
+          // Nếu là route chỉ dành cho master
+          if (hasMasterRole) {
+            setIsAuthorized(true);
+          } else {
+            showToast('Chỉ Master mới có quyền truy cập trang này', 'error');
+            setIsAuthorized(false);
+          }
+        } else {
+          // Các route bảo vệ khác (nếu có)
+          setIsAuthorized(true);
         }
-        setIsAuthorized(hasAdminRole);
+        
       } catch (error) {
         console.error('Error checking user role:', error);
         showToast('Có lỗi xảy ra khi kiểm tra quyền truy cập', 'error');
@@ -54,10 +67,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     };
 
     checkUserRole();
-  }, [currentUser?.id, showToast]);
+  }, [currentUser?.id, showToast, location.pathname]);
 
   if (isLoading) {
-    return <div>Loading...</div>; // You can replace this with a loading spinner
+    return <div>Loading...</div>;
   }
 
   if (!isAuthorized) {

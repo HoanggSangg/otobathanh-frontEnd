@@ -379,11 +379,11 @@ const ProductPage = () => {
               )}
 
               {/* Contact Button */}
-              <ContactButton
+              {/* <ContactButton
                 onClick={(e) => handleAddToCart(e, product)}
               >
                 Mua ngay
-              </ContactButton>
+              </ContactButton> */}
               <ContactButton onClick={() => navigate('/contact')}>
                 Liên hệ tư vấn
               </ContactButton>
