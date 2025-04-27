@@ -170,13 +170,10 @@ export const updateAccountAPI = async (accountId, accountData) => {
 
 export const deleteAccountAPI = async (accountId) => {
   try {
-    const response = await fetch(`${API_URL}/api/accounts/${accountId}`, {
+    const response = await axios.delete(`${API_URL}/api/accounts/${accountId}`, {
       headers: getAuthHeaders()
     });
-    if (!response.ok) {
-      throw new Error('Failed to delete account');
-    }
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error('Error deleting account:', error);
     throw error;
@@ -831,10 +828,9 @@ export const searchProductsAPI = async (searchName) => {
 
 export const enableAccountAPI = async (accountId) => {
   try {
-    const response = await axios.put(`${API_URL}/api/accounts/enable`, { accountId }, {
+    const response = await axios.put(`${API_URL}/api/roles/enable`, { accountId }, {
       headers: getAuthHeaders()
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error enabling account:', error);
@@ -845,15 +841,17 @@ export const enableAccountAPI = async (accountId) => {
 export const disableAccountAPI = async (accountId) => {
   try {
     console.log(accountId);
-    const response = await axios.put(`${API_URL}/api/accounts/disable`, { accountId }, {
-      headers: getAuthHeaders()
-    });
-    console.log(response.data);
+    const response = await axios.put(
+      `${API_URL}/api/roles/disable`, // URL
+      { accountId },                     // BODY
+      { headers: getAuthHeaders() }       // HEADERS
+    );
     return response.data;
   } catch (error) {
     console.error('Error disabling account:', error);
     throw error;
   }
 };
+
 
 

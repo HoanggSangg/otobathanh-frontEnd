@@ -7,8 +7,7 @@ import RegisterForm from '../AuthForm/Register/Register';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { getCurrentUser } from '../Utils/auth';
-import { getAccountByIdAPI, getCartItemsAPI, removeFromCartAPI, searchProductsAPI } from '../API';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { getAccountByIdAPI, getCartItemsAPI } from '../API';
 import { useNavigate } from 'react-router-dom';
 import InputBase from '@mui/material/InputBase';
 import PersonIcon from '@mui/icons-material/Person';
@@ -21,81 +20,14 @@ const HeaderContainer = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 1100;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-
-  @media (max-width: 768px) {
-    padding: 8px 0;
-  }
 `;
 
-// Thêm styled component cho Google Translate
-const GoogleTranslateWrapper = styled.div`
-  .goog-te-combo {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background-color: transparent;
-    color: white;
-    cursor: pointer;
-    
-    &:hover {
-      border-color: rgba(255, 255, 255, 0.7);
-    }
-    
-    option {
-      background-color: #1e2124;
-      color: white;
-    }
-  }
-  
-  .goog-te-gadget {
-    color: transparent !important;
-    
-    span {
-      display: none !important;
-    }
-  }
-  
-  .goog-te-banner-frame {
-    display: none !important;
-  }
-`;
-
-const CartButton = styled.div`
-  background: none;
-  border: none;
-  color: white;
+const AuthButtons = styled.div`
   display: flex;
   align-items: center;
-  cursor: pointer;
-  padding: 8px;
-  margin-right: 15px;
-  position: relative;
-  
-  &:hover {
-    color: #e31837;
-  }
-`;
-
-const ButtonGroup = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 8px;
-`;
-
-const CartBadge = styled.span`
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #e31837;
-  color: white;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  min-width: 18px;
-  text-align: center;
+  gap: 10px;
 `;
 
 const HeaderContent = styled.div`
@@ -105,10 +37,7 @@ const HeaderContent = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
-
-  @media (max-width: 768px) {
-    padding: 0 15px;
-  }
+  gap: 15px;
 `;
 
 const LogoContainer = styled.div`
@@ -125,24 +54,66 @@ const UserAvatar = styled.img`
   border: 2px solid #e31837;
 `;
 
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const UserInfoMobi = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
 const Logo = styled.img`
   height: 70px;
   margin: 10px 0;
   object-fit: contain;
-  
+`;
+
+const SearchContainer = styled.div<{ $isExpanded: boolean }>`
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 36px;
+
   @media (max-width: 768px) {
-    height: 60px;
+    display: ${props => props.$isExpanded ? 'flex' : 'none'};
+    width: 100%;
+    margin-right: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
   }
 `;
 
-const NavContainer = styled.div`
+const NavContainer = styled.div<{ $isOpen: boolean }>`
   flex: 1;
   display: flex;
   justify-content: center;
   margin: 0 20px;
 
   @media (max-width: 768px) {
-    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 250px;
+    background-color: #000;
+    margin: 0;
+    padding-top: 80px;
+    flex-direction: column;
+    justify-content: flex-start;
+    transform: ${props => props.$isOpen ? 'translateX(0)' : 'translateX(100%)'};
+    transition: transform 0.3s ease;
+    z-index: 1099;
   }
 `;
 
@@ -153,10 +124,12 @@ const NavLinks = styled.nav<{ $isOpen: boolean }>`
   gap: 30px;
 
   @media (max-width: 768px) {
-    display: flex;
     flex-direction: column;
-    gap: 0;
+    align-items: flex-start;
+    padding: 0 20px 20px 20px;
+    gap: 15px;
     width: 100%;
+    background: linear-gradient(to bottom, #e31837, #000000);
   }
 `;
 
@@ -173,13 +146,16 @@ const DefaultAvatar = styled.div`
   color: white;
 `;
 
-const AuthContainer = styled.div`
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
+const MobileMenu = styled.div<{ $isOpen: boolean }>`
+  display: none;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
 
   @media (max-width: 768px) {
-    display: none;
+    display: flex;
+    width: 100%;
+    background: linear-gradient(to bottom, #000000, #e31837);
   }
 `;
 
@@ -192,11 +168,11 @@ const NavLink = styled(RouterNavLink)`
   transition: color 0.3s ease;
 
   &:hover {
-    color:rgb(22, 18, 19);
+    color: rgb(22, 18, 19);
   }
 
   &.active {
-    color:rgb(229, 229, 245);
+    color: rgb(229, 229, 245);
     
     &:after {
       content: '';
@@ -211,31 +187,9 @@ const NavLink = styled(RouterNavLink)`
 
   @media (max-width: 768px) {
     width: 100%;
-    text-align: center;
-    padding: 15px;
+    padding: 12px 0;
     font-size: 18px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &.active:after {
-      display: none;
-    }
-  }
-`;
-
-const AuthButtons = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    width: 100%;
-    gap: 15px;
-    margin-top: 20px;
   }
 `;
 
@@ -254,89 +208,12 @@ const AuthButton = styled.button<{ $primary?: boolean }>`
     background-color: ${props => props.$primary ? '#c41730' : 'rgba(255, 255, 255, 0.1)'};
     border-color: ${props => props.$primary ? '#c41730' : 'white'};
   }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-  }
-`;
-
-const MenuButton = styled.button`
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 8px;
-  z-index: 1001;
-
-  @media (max-width: 768px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  svg {
-    font-size: 28px;
-  }
-`;
-
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    width: 100%;
-    margin-top: 20px;
-    gap: 15px;
-  }
 `;
 
 const UserName = styled.span`
   color: #e31837;
   font-weight: 500;
   white-space: nowrap;
-
-  @media (max-width: 768px) {
-    font-size: 18px;
-  }
-`;
-
-const LogoutButton = styled(AuthButton)`
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const MobileNav = styled.div`
-  display: none;
-  
-  @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #1e2124;
-    padding: 80px 20px 20px;
-    overflow-y: auto;
-    z-index: 1000;
-    animation: slideIn 0.3s ease-out;
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateY(-100%);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
 `;
 
 const DropdownContent = styled.div<{ $isOpen: boolean }>`
@@ -353,9 +230,11 @@ const DropdownContent = styled.div<{ $isOpen: boolean }>`
 
   @media (max-width: 768px) {
     position: static;
-    width: 100%;
-    margin-top: 10px;
     display: ${props => props.$isOpen ? 'block' : 'none'};
+    width: 100%;
+    box-shadow: none;
+    background-color: transparent;
+    margin-top: 5px;
   }
 `;
 
@@ -365,6 +244,10 @@ const ManagerDropdown = styled.div`
 
   &:hover ${DropdownContent} {
     display: block;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
@@ -394,6 +277,11 @@ const DropdownItem = styled(NavLink)`
     background-color: rgba(255, 255, 255, 0.1);
     color: #e31837;
   }
+
+  @media (max-width: 768px) {
+    padding: 10px 0;
+    font-size: 16px;
+  }
 `;
 
 const DropdownButton = styled.button`
@@ -412,94 +300,51 @@ const DropdownButton = styled.button`
     background-color: rgba(255, 255, 255, 0.1);
     color: #e31837;
   }
+
+  @media (max-width: 768px) {
+    padding: 10px 0;
+    font-size: 16px;
+  }
 `;
 
-const CartPreviewContainer = styled.div`
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 300px;
-  background-color: #1e2124;
-  border-radius: 4px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 1002;
-  display: none;
-  padding: 8px;
+const AuthContainer = styled.div`
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1100;
+`;
 
-  ${CartButton}:hover & {
+const MenuButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1110;
+
+  @media (max-width: 768px) {
     display: block;
   }
 `;
 
-const DeleteItemButton = styled.button`
-  background: none;
-  border: none;
-  color: #888;
-  padding: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-left: 8px;
-  
-  &:hover {
-    color: #e31837;
-    transform: scale(1.1);
-  }
-`;
+const MobileNavOverlay = styled.div<{ $isOpen: boolean }>`
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1098;
+  opacity: ${props => props.$isOpen ? 1 : 0};
+  pointer-events: ${props => props.$isOpen ? 'auto' : 'none'};
+  transition: opacity 0.3s ease;
 
-const CartItemPreview = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  
-  &:last-child {
-    border-bottom: none;
-  }
-`;
-
-const CartItemImage = styled.img`
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 10px;
-`;
-
-const CartItemInfo = styled.div`
-  flex: 1;
-`;
-
-const CartItemName = styled.div`
-  color: white;
-  font-size: 14px;
-  margin-bottom: 4px;
-`;
-
-const CartItemPrice = styled.div`
-  color: #e31837;
-  font-weight: 500;
-  font-size: 13px;
-`;
-
-const CartItemQuantity = styled.span`
-  color: #888;
-  font-size: 12px;
-  margin-left: 8px;
-`;
-
-const ViewCartButton = styled(AuthButton)`
-  width: 100%;
-`;
-
-const ClearCartButton = styled(AuthButton)`
-  width: 100%;
-  background-color: #666;
-  border-color: #666;
-  
-  &:hover {
-    background-color: #555;
-    border-color: #555;
+  @media (max-width: 768px) {
+    display: block;
   }
 `;
 
@@ -534,7 +379,6 @@ const Header = () => {
   const searchRef = useRef<HTMLDivElement>(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -601,22 +445,19 @@ const Header = () => {
     }
   };
 
-  const removeCartItem = async (e: React.MouseEvent, itemId: string) => {
-    e.stopPropagation();
-    try {
-      await removeFromCartAPI(itemId);
-      setCartItems(prevItems => prevItems.filter(item => item._id !== itemId));
-      setCartCount(prev => prev - 1);
-    } catch (error) {
-      console.error('Error removing item from cart:', error);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
     document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     window.location.href = '/';
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -631,84 +472,101 @@ const Header = () => {
           />
         </LogoContainer>
 
-        <MenuButton onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
-        </MenuButton>
-        <div
-          ref={searchRef}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.15)',
-            borderRadius: '20px',
-            padding: '5px 10px',
-            transition: 'width 0.4s ease',
-            width: isSearchExpanded ? '350px' : '40px',
-            overflow: 'hidden',
-            cursor: 'pointer',
-          }}
-          onClick={() => setIsSearchExpanded(true)}
-        >
-          <SearchIcon style={{ color: '#fff' }} />
-          {isSearchExpanded && (
-            <InputBase
-              autoFocus
-              placeholder="Bạn muốn tìm gì?"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleSearch}
-              sx={{
-                marginLeft: 1,
-                color: 'white',
-                flex: 1,
-                '& input::placeholder': {
-                  color: 'rgba(255,255,255,0.6)',
-                },
-              }}
-            />
-          )}
-        </div>
-        <NavContainer>
-          <NavLinks $isOpen={false}>
-            <NavLink to="/" end>
+        <MobileNavOverlay $isOpen={isMenuOpen} onClick={closeMenu} />
+
+        <NavContainer $isOpen={isMenuOpen}>
+          <MobileMenu $isOpen={isMenuOpen}>
+            <SearchContainer $isExpanded={true}>
+              <SearchIcon style={{ color: '#fff' }} />
+              <InputBase
+                placeholder="Bạn muốn tìm gì?"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleSearch}
+                sx={{
+                  marginLeft: 1,
+                  color: 'white',
+                  flex: 1,
+                  '& input::placeholder': {
+                    color: 'rgba(255,255,255,0.6)',
+                  },
+                }}
+              />
+            </SearchContainer>
+
+            {user && (
+              <UserInfoMobi>
+                {(userImage || user.image) ? (
+                  <UserAvatar src={userImage || user.image} alt={user.fullName} />
+                ) : (
+                  <DefaultAvatar>
+                    <PersonIcon />
+                  </DefaultAvatar>
+                )}
+                <UserName>{user.fullName}</UserName>
+              </UserInfoMobi>
+            )}
+
+            {user && (
+              <>
+                <DropdownItem to="/account/profile" onClick={closeMenu}>
+                  Thông tin tài khoản
+                </DropdownItem>
+                <DropdownItem to="/account/update" onClick={closeMenu}>
+                  Cập nhật tài khoản
+                </DropdownItem>
+                <DropdownItem to="/account/changePass" onClick={closeMenu}>
+                  Thay đổi mật khẩu
+                </DropdownItem>
+                <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
+                  Sản phẩm yêu thích
+                </DropdownItem>
+                <DropdownButton onClick={handleLogout}>
+                  Đăng xuất
+                </DropdownButton>
+              </>
+            )}
+          </MobileMenu>
+          <NavLinks $isOpen={isMenuOpen}>
+            <NavLink to="/" end onClick={closeMenu}>
               Trang chủ
             </NavLink>
-            <NavLink to="/services">
+            <NavLink to="/services" onClick={closeMenu}>
               Dịch vụ
             </NavLink>
-            <NavLink to="/products">
+            <NavLink to="/products" onClick={closeMenu}>
               Sản phẩm
             </NavLink>
-            <NavLink to="/about">
+            <NavLink to="/about" onClick={closeMenu}>
               Giới thiệu
             </NavLink>
-            <NavLink to="/contact">
+            <NavLink to="/contact" onClick={closeMenu}>
               Liên hệ
             </NavLink>
             {isManager && (
               <ManagerDropdown>
-                <NavLink to="/manager">
+                <NavLink to="/manager" onClick={closeMenu}>
                   Quản lý
                 </NavLink>
-                <DropdownContent $isOpen={false}>
+                <DropdownContent $isOpen={isDropdownOpen}>
                   {isMaster && (
-                    <DropdownItem to="/manager/accounts">
+                    <DropdownItem to="/manager/accounts" onClick={closeMenu}>
                       Quản lý tài khoản
                     </DropdownItem>
                   )}
-                  <DropdownItem to="/manager/products">
+                  <DropdownItem to="/manager/products" onClick={closeMenu}>
                     Quản lý sản phẩm
                   </DropdownItem>
-                  <DropdownItem to="/manager/news">
+                  <DropdownItem to="/manager/news" onClick={closeMenu}>
                     Quản lý tin tức
                   </DropdownItem>
-                  <DropdownItem to="/manager/banner">
+                  <DropdownItem to="/manager/banner" onClick={closeMenu}>
                     Quản lý banner
                   </DropdownItem>
-                  <DropdownItem to="/manager/category">
+                  <DropdownItem to="/manager/category" onClick={closeMenu}>
                     Quản lý danh mục
                   </DropdownItem>
-                  <DropdownItem to="/manager/booking">
+                  <DropdownItem to="/manager/booking" onClick={closeMenu}>
                     Quản lý lịch hẹn
                   </DropdownItem>
                 </DropdownContent>
@@ -717,63 +575,6 @@ const Header = () => {
           </NavLinks>
         </NavContainer>
         <AuthContainer>
-          {/* <CartButton>
-            <div onClick={() => navigate('/cart/cartDetail')}>
-              <ShoppingCartIcon />
-              {cartCount > 0 && <CartBadge>{cartCount}</CartBadge>}
-            </div>
-            {cartItems.length > 0 && (
-              <CartPreviewContainer>
-                {cartItems.map((item) => (
-                  <CartItemPreview key={item._id}>
-                    <CartItemImage
-                      src={item.product_id.image}
-                      alt={item.product_id.name}
-                    />
-                    <CartItemInfo>
-                      <CartItemName>
-                        {item.product_id.name.length > 30
-                          ? `${item.product_id.name.substring(0, 30)}...`
-                          : item.product_id.name}
-                      </CartItemName>
-                      <CartItemPrice>
-                        {new Intl.NumberFormat('vi-VN', {
-                          style: 'currency',
-                          currency: 'VND'
-                        }).format(item.product_id.price)}
-                        <CartItemQuantity>x{item.quantity}</CartItemQuantity>
-                      </CartItemPrice>
-                    </CartItemInfo>
-                    <DeleteItemButton
-                      onClick={(e) => removeCartItem(e, item._id)}
-                    >
-                      ✕
-                    </DeleteItemButton>
-                  </CartItemPreview>
-                ))}
-                <ButtonGroup>
-                  <ViewCartButton
-                    $primary
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate('/cart/cartDetail');
-                    }}
-                  >
-                    Xem giỏ hàng
-                  </ViewCartButton>
-                  <ClearCartButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCartItems([]);
-                      setCartCount(0);
-                    }}
-                  >
-                    Xóa giỏ hàng
-                  </ClearCartButton>
-                </ButtonGroup>
-              </CartPreviewContainer>
-            )}
-          </CartButton> */}
           {user ? (
             <UserInfo>
               <UserDropdown>
@@ -793,19 +594,16 @@ const Header = () => {
                   </UserName>
                 </div>
                 <DropdownContent $isOpen={isDropdownOpen}>
-                  <DropdownItem to="/account/profile">
+                  <DropdownItem to="/account/profile" onClick={closeMenu}>
                     Thông tin tài khoản
                   </DropdownItem>
-                  <DropdownItem to="/account/update">
+                  <DropdownItem to="/account/update" onClick={closeMenu}>
                     Cập nhật tài khoản
                   </DropdownItem>
-                  <DropdownItem to="/account/changePass">
+                  <DropdownItem to="/account/changePass" onClick={closeMenu}>
                     Thay đổi mật khẩu
                   </DropdownItem>
-                  {/* <DropdownItem to="/account/historyOrder">
-                    Lịch sử mua hàng
-                  </DropdownItem> */}
-                  <DropdownItem to="/account/likeProducts">
+                  <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
                     Sản phẩm yêu thích
                   </DropdownItem>
                   <DropdownButton onClick={handleLogout}>
@@ -824,71 +622,35 @@ const Header = () => {
               </AuthButton>
             </AuthButtons>
           )}
-        </AuthContainer>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <MobileNav>
-            <NavLinks $isOpen={true}>
-              <NavLink to="/" onClick={() => setIsMenuOpen(false)} end>
-                Trang chủ
-              </NavLink>
-              <NavLink to="/services" onClick={() => setIsMenuOpen(false)}>
-                Dịch vụ
-              </NavLink>
-              <NavLink to="/products" onClick={() => setIsMenuOpen(false)}>
-                Sản phẩm
-              </NavLink>
-              <NavLink to="/about" onClick={() => setIsMenuOpen(false)}>
-                Giới thiệu
-              </NavLink>
-              <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>
-                Liên hệ
-              </NavLink>
-              {isManager && (
-                <>
-                  <NavLink to="/manager/accounts" onClick={() => setIsMenuOpen(false)}>
-                    Quản lý tài khoản
-                  </NavLink>
-                  <NavLink to="/manager/products" onClick={() => setIsMenuOpen(false)}>
-                    Quản lý sản phẩm
-                  </NavLink>
-                  <NavLink to="/manager/news" onClick={() => setIsMenuOpen(false)}>
-                    Quản lý tin tức
-                  </NavLink>
-                </>
-              )}
-            </NavLinks>
-            {user ? (
-              <UserInfo>
-                <UserName>{user.fullName}</UserName>
-                <NavLink to="/account/profile" onClick={() => setIsMenuOpen(false)}>
-                  Thông tin tài khoản
-                </NavLink>
-                <NavLink to="/account/update" onClick={() => setIsMenuOpen(false)}>
-                  Cập nhật tài khoản
-                </NavLink>
-                <LogoutButton onClick={() => {
-                  handleLogout();
-                  setIsMenuOpen(false);
-                }}>
-                  Đăng xuất
-                </LogoutButton>
-              </UserInfo>
-            ) : (
-              <AuthButtons>
-                <AuthButton onClick={() => setIsLoginOpen(true)}>
-                  Đăng nhập
-                </AuthButton>
-                <AuthButton $primary onClick={() => setIsRegisterOpen(true)}>
-                  Đăng ký
-                </AuthButton>
-              </AuthButtons>
+          <MenuButton onClick={toggleMenu}>
+            {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+          </MenuButton>
+          <SearchContainer
+            ref={searchRef}
+            $isExpanded={isSearchExpanded}
+            onClick={() => setIsSearchExpanded(true)}
+          >
+            <SearchIcon style={{ color: '#fff' }} />
+            {isSearchExpanded && (
+              <InputBase
+                autoFocus
+                placeholder="Bạn muốn tìm gì?"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleSearch}
+                sx={{
+                  marginLeft: 1,
+                  color: 'white',
+                  flex: 1,
+                  '& input::placeholder': {
+                    color: 'rgba(255,255,255,0.6)',
+                  },
+                }}
+              />
             )}
-          </MobileNav>
-        )}
+          </SearchContainer>
+        </AuthContainer>
       </HeaderContent>
-
       <LoginForm
         open={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}

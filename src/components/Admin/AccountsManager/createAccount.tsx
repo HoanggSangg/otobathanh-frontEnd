@@ -221,20 +221,29 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
           required
         />
 
-        <FormControl fullWidth>
-          <Select
-            value={selectedRoleId}
-            onChange={handleRoleChange}
-            label="Vai trò"
-            disabled={!isMaster || editingIsMaster}
-          >
-            {availableRoles.map(role => (
-              <MenuItem key={role._id} value={role._id}>
-                {role.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {(!formData.roles.length || formData.roles.every(role => !role._id)) ? (
+          <FormControl fullWidth>
+            <Select
+              value={selectedRoleId}
+              onChange={handleRoleChange}
+              label="Vai trò"
+              disabled={!isMaster || editingIsMaster}
+            >
+              {availableRoles.map(role => (
+                <MenuItem key={role._id} value={role._id}>
+                  {role.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : (
+          <TextField
+            fullWidth
+            label="Vai trò hiện tại"
+            value={formData.roles.map(role => role.name).join(', ')}
+            disabled
+          />
+        )}
 
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
           <StyledButton

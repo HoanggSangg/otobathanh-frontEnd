@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-    updateAccountAPI,
-    getAccountByIdAPI,
     getAllAccountsAPI,
     deleteAccountAPI,
     disableAccountAPI,
@@ -9,6 +7,7 @@ import {
 } from '../../API';
 import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
+import { getCurrentUser } from '../../Utils/auth';
 import {
     IconButton,
     Table,
@@ -158,9 +157,17 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             showToast('Chỉ Master mới có quyền xóa tài khoản', 'error');
             return;
         }
+
+        const currentUser = getCurrentUser();
+        if (currentUser?.id === accountId) {
+            showToast('Không thể khóa tài khoản của chính mình', 'error');
+            return;
+        }
+
         if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
             try {
                 const response = await deleteAccountAPI(accountId);
+                console.log(response);
                 if (response.status === 'thành công') {
                     setAccounts(prev => prev.filter(a => a._id !== accountId));
                     showToast(response.message, 'success');
@@ -181,28 +188,26 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 return;
             }
 
-            // Xác định API cần gọi dựa trên trạng thái tài khoản hiện tại
-            const apiCall = account.status ? disableAccountAPI : enableAccountAPI;
-            console.log(apiCall);
-
-            // Gọi API để thay đổi trạng thái tài khoản
-            const response = await apiCall(account._id);
-            
-
-            console.log(response); // Kiểm tra phản hồi từ API
-
-            if (response.status === 200) {
-                showToast(response.data.message, 'success');
-
-                // Cập nhật trạng thái của tài khoản trong UI
-                setAccounts(prev =>
-                    prev.map(a =>
-                        a._id === account._id ? { ...a, status: !account.status } : a
-                    )
-                );
-            } else {
-                showToast('Thao tác thất bại', 'error');
+            const currentUser = getCurrentUser();
+            if (currentUser?.id === account._id) {
+                showToast('Không thể khóa tài khoản của chính mình', 'error');
+                return;
             }
+
+            if (account.roles.some(role => role.name.toLowerCase() === 'master')) {
+                showToast('Không thể khóa tài khoản Master khác', 'error');
+                return;
+            }
+
+            const apiCall = account.status ? disableAccountAPI : enableAccountAPI;
+            const response = await apiCall(account._id);
+            showToast(response.message, 'success');
+
+            setAccounts(prev =>
+                prev.map(a =>
+                    a._id === account._id ? { ...a, status: !account.status } : a
+                )
+            );
         } catch (err: any) {
             console.error('Error toggling account status:', err);
             showToast('Không thể thay đổi trạng thái tài khoản!', 'error');
