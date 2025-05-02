@@ -183,6 +183,7 @@ const LikeProducts = () => {
   const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
   const [likedProducts, setLikedProducts] = useState<Product[]>([]);
   const productRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [hasLoadedLikes, setHasLoadedLikes] = useState(false);
 
   const fetchFavoriteProducts = async () => {
     try {
@@ -205,10 +206,11 @@ const LikeProducts = () => {
 
 
   useEffect(() => {
-    if (user && likedProducts.length > 0) {
+    if (user && likedProducts.length > 0 && !hasLoadedLikes) {
       fetchLikeData();
+      setHasLoadedLikes(true);
     }
-  }, [user, likedProducts]);
+  }, [user, likedProducts, hasLoadedLikes]);
 
   const fetchLikeData = async () => {
     if (!user) return;
@@ -268,6 +270,8 @@ const LikeProducts = () => {
                 productId: productId
             });
 
+            fetchLikeData();
+
             if (response) {
                 setLikedStatus(prev => ({
                     ...prev,
@@ -288,6 +292,8 @@ const LikeProducts = () => {
                 accountId: user.id,
                 productId: productId
             });
+
+            fetchLikeData();
 
             setLikedStatus(prev => ({
                 ...prev,

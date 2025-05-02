@@ -216,6 +216,7 @@ const Products = () => {
   const showToast = useToast();
   const productRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [searchParams] = useSearchParams();
+  const [hasLoadedLikes, setHasLoadedLikes] = useState(false);
 
   const handleSortChange = (event: SelectChangeEvent<string>) => {
     setSortOption(event.target.value);
@@ -226,7 +227,6 @@ const Products = () => {
     try {
       const searchTerm = searchParams.get('search');
       let data;
-      console.log(searchTerm);
       if (searchTerm) {
         data = await searchProductsAPI(searchTerm);
         console.log(data);
@@ -261,23 +261,17 @@ const Products = () => {
     fetchCategories();
   }, [searchParams]);
 
-  // Separate useEffect for like data
   useEffect(() => {
-    if (user && products.length > 0) {
+    if (user && products.length > 0 && !hasLoadedLikes) {
       fetchLikeData();
+      setHasLoadedLikes(true);
     }
-  }, [user, products]);
-
-  // Add missing handleViewDetail function
-  const handleViewDetail = (productId: string) => {
-    navigate(`/products/${productId}`);
-  };
+  }, [user, products, hasLoadedLikes]);
 
   const fetchLikeData = async () => {
     if (!user) return;
 
     try {
-      // Get like counts for all products
       const likeCounts = await Promise.all(
         products.map(async (product) => {
           try {
@@ -295,15 +289,15 @@ const Products = () => {
         })
       );
 
-      const likesMap = likeCounts.reduce((acc, curr) => ({
-        ...acc,
-        [curr.id]: curr.count
-      }), {});
+      const likesMap = likeCounts.reduce((acc, curr) => {
+        acc[curr.id] = curr.count;
+        return acc;
+      }, {} as Record<string, number>);
 
-      const likedStatusMap = likeCounts.reduce((acc, curr) => ({
-        ...acc,
-        [curr.id]: curr.isLiked
-      }), {});
+      const likedStatusMap = likeCounts.reduce((acc, curr) => {
+        acc[curr.id] = curr.isLiked;
+        return acc;
+      }, {} as Record<string, boolean>);
 
       setProductLikes(likesMap);
       setLikedStatus(likedStatusMap);
@@ -313,7 +307,10 @@ const Products = () => {
     }
   };
 
-
+  // Add missing handleViewDetail function
+  const handleViewDetail = (productId: string) => {
+    navigate(`/products/${productId}`);
+  };
 
   const handleLike = async (e: React.MouseEvent, productId: string) => {
     e.stopPropagation();
@@ -333,6 +330,8 @@ const Products = () => {
           productId: productId
         });
 
+        fetchLikeData();
+
         setLikedStatus(prev => ({
           ...prev,
           [productId]: false
@@ -348,6 +347,8 @@ const Products = () => {
           accountId: user.id,
           productId: productId
         });
+
+        fetchLikeData();
 
         setLikedStatus(prev => ({
           ...prev,
@@ -416,9 +417,6 @@ const Products = () => {
     }));
   };
 
-
-  // Fix category filter logic
-  // Update the getFilteredAndSortedProducts function
   const getFilteredAndSortedProducts = () => {
     let filtered = [...products];
 

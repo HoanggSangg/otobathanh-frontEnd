@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Appbar/Header';
 import Banner from './components/Home/Banner';
@@ -43,10 +43,61 @@ const MainContent = styled.main`
   margin-top: 80px;
 `;
 
+declare global {
+  interface Window {
+    fbAsyncInit?: () => void;  // Thêm dấu ? để biến thành optional
+    FB?: any;
+  }
+}
+
 const App = () => {
+  
+  useEffect(() => {
+    // Hàm kiểm tra FB SDK
+    const isFBReady = () => {
+      return window.FB && typeof window.FB.init === 'function';
+    };
+
+    if (isFBReady()) return;
+
+    // Khởi tạo SDK
+    window.fbAsyncInit = function () {
+      try {
+        window.FB?.init({
+          appId: process.env.REACT_APP_FACEBOOK_CLIENT_ID,
+          cookie: true,
+          xfbml: true,
+          version: 'v18.0',
+          autoLogAppEvents: true
+        });
+      } catch (error) {
+        console.error('FB init error:', error);
+      }
+    };
+
+    // Tải script
+    if (!document.getElementById('facebook-jssdk')) {
+      const script = document.createElement('script');
+      script.id = 'facebook-jssdk';
+      script.src = 'https://connect.facebook.net/vi_VN/sdk.js';
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+
+    // Cleanup
+    return () => {
+      const script = document.getElementById('facebook-jssdk');
+      script?.remove();
+
+      if ('FB' in window) delete (window as any).FB;
+      if ('fbAsyncInit' in window) delete (window as any).fbAsyncInit;
+    };
+  }, []);
+
   return (
     <div>
-      
+
       <ToastProvider>
         <Header />
         <MainContent>
@@ -71,61 +122,61 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             {/* Protected manager routes */}
-            <Route 
-              path="/manager/products" 
+            <Route
+              path="/manager/products"
               element={
                 <ProtectedRoute>
                   <IndexProduct />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/manager/accounts" 
+            <Route
+              path="/manager/accounts"
               element={
                 <ProtectedRoute>
                   <IndexAccount />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/manager/news" 
+            <Route
+              path="/manager/news"
               element={
                 <ProtectedRoute>
                   <IndexNews />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/manager/banner" 
+            <Route
+              path="/manager/banner"
               element={
                 <ProtectedRoute>
                   <IndexBanner />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/manager/category" 
+            <Route
+              path="/manager/category"
               element={
                 <ProtectedRoute>
                   <IndexCategory />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/manager/order" 
+            <Route
+              path="/manager/order"
               element={
                 <ProtectedRoute>
                   <IndexOrder />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/manager/booking" 
+            <Route
+              path="/manager/booking"
               element={
                 <ProtectedRoute>
                   <IndexBooking />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="/news/:id" element={<NewsDetail />} />
             <Route path="/account/profile" element={<Profile />} />

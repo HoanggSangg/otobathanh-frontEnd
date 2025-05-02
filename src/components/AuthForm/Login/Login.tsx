@@ -192,38 +192,76 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     setLoading(true);
 
     try {
-        const response = await loginAPI(formData.email, formData.password);
-        if (response.status === "thành công") {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify({
-                id: response.id,
-                fullName: response.fullName,
-                email: response.email,
-                image: response.image,
-                roles: response.roles
-            }));
-            showToast(response.message, 'success');
-            onClose();
-            navigate('/');
-        }
+      const response = await loginAPI(formData.email, formData.password);
+      if (response.status === "thành công") {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify({
+          id: response.id,
+          fullName: response.fullName,
+          email: response.email,
+          image: response.image,
+          roles: response.roles
+        }));
+        showToast(response.message, 'success');
+        onClose();
+        window.location.reload();
+      }
     } catch (err: any) {
-        if (err.response?.status === 401) {
-            showToast(err.response.data.message, 'error'); // Invalid credentials or unverified account
-        } else if (err.response?.status === 403) {
-            showToast(err.response.data.message, 'error'); // Account locked
-        } else if (err.response?.status === 500) {
-            showToast('Lỗi máy chủ', 'error'); // Server error
-        } else {
-            showToast('Có lỗi khi đăng nhập!', 'error');
-        }
-        console.error('Login error:', err);
+      if (err.response?.status === 401) {
+        showToast(err.response.data.message, 'error'); // Invalid credentials or unverified account
+      } else if (err.response?.status === 403) {
+        showToast(err.response.data.message, 'error'); // Account locked
+      } else if (err.response?.status === 500) {
+        showToast('Lỗi máy chủ', 'error'); // Server error
+      } else {
+        showToast('Có lỗi khi đăng nhập!', 'error');
+      }
+      console.error('Login error:', err);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
+    if (provider === 'facebook') {
+      if (!window.FB) {
+        showToast('Không thể khởi tạo Facebook SDK', 'error');
+        return;
+      }
+
+      window.FB.login(function (response: any) {
+        if (response.authResponse) {
+          const accessToken = response.authResponse.accessToken;
+
+          // ✅ Gửi accessToken đến backend
+          fetch('http://localhost:3000/api/accounts/facebook-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ access_token: accessToken })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showToast(data.message || 'Đăng nhập thành công!', 'success');
+                onClose();
+                navigate('/');
+              } else {
+                showToast(data.message || 'Lỗi đăng nhập Facebook', 'error');
+              }
+            })
+            .catch(err => {
+              console.error('Facebook login error:', err);
+              showToast('Không thể đăng nhập bằng Facebook', 'error');
+            });
+        } else {
+          showToast('Bạn đã hủy đăng nhập Facebook', 'info');
+        }
+      }, { scope: 'email,public_profile' });
+    } else {
+      showToast('Google login chưa hỗ trợ', 'info');
+    }
   };
 
   const handleForgotPassword = () => {

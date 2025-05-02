@@ -105,7 +105,7 @@ const NavContainer = styled.div<{ $isOpen: boolean }>`
     top: 0;
     right: 0;
     bottom: 0;
-    width: 250px;
+    width: 210px;
     background-color: #000;
     margin: 0;
     padding-top: 80px;
@@ -418,7 +418,7 @@ const Header = () => {
 
     fetchCartItems();
     fetchUserData();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -37,7 +37,7 @@ const fadeInUp = keyframes`
 // Update InfoCard to include the animation
 const InfoCard = styled(Paper).withConfig({
   shouldForwardProp: (prop) => prop !== 'isVisible',
-})<{ isVisible: boolean }>`
+}) <{ isVisible: boolean }>`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -167,6 +167,7 @@ const Products = () => {
   const showToast = useToast();
   const [visibleProducts, setVisibleProducts] = useState<Record<string, boolean>>({});
   const productRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [hasLoadedLikes, setHasLoadedLikes] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -205,10 +206,11 @@ const Products = () => {
   }, [products, visibleProducts]);
 
   useEffect(() => {
-    if (user && products.length > 0) {
+    if (user && products.length > 0 && !hasLoadedLikes) {
       fetchLikeData();
+      setHasLoadedLikes(true);
     }
-  }, [user, products]);
+  }, [user, products, hasLoadedLikes]);
 
   useEffect(() => {
     fetchProducts();
@@ -227,7 +229,6 @@ const Products = () => {
     if (!user) return;
 
     try {
-      // Get like counts for all products
       const likeCounts = await Promise.all(
         products.map(async (product) => {
           try {
@@ -245,15 +246,15 @@ const Products = () => {
         })
       );
 
-      const likesMap = likeCounts.reduce((acc, curr) => ({
-        ...acc,
-        [curr.id]: curr.count
-      }), {});
+      const likesMap = likeCounts.reduce((acc, curr) => {
+        acc[curr.id] = curr.count;
+        return acc;
+      }, {} as Record<string, number>);
 
-      const likedStatusMap = likeCounts.reduce((acc, curr) => ({
-        ...acc,
-        [curr.id]: curr.isLiked
-      }), {});
+      const likedStatusMap = likeCounts.reduce((acc, curr) => {
+        acc[curr.id] = curr.isLiked;
+        return acc;
+      }, {} as Record<string, boolean>);
 
       setProductLikes(likesMap);
       setLikedStatus(likedStatusMap);
@@ -262,8 +263,6 @@ const Products = () => {
       showToast('Không thể tải dữ liệu yêu thích', 'error');
     }
   };
-
-
 
   const handleLike = async (e: React.MouseEvent, productId: string) => {
     e.stopPropagation();
@@ -283,6 +282,8 @@ const Products = () => {
           productId: productId
         });
 
+        fetchLikeData();
+
         setLikedStatus(prev => ({
           ...prev,
           [productId]: false
@@ -298,6 +299,8 @@ const Products = () => {
           accountId: user.id,
           productId: productId
         });
+
+        fetchLikeData();
 
         setLikedStatus(prev => ({
           ...prev,
