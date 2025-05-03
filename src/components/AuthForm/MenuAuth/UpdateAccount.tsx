@@ -203,6 +203,7 @@ const UpdateAccount = () => {
             } else {
                 showToast(response.message, 'error');
             }
+            window.location.reload();
         } catch (err: any) {
             const errorMessage = err.response?.data?.message;
             showToast(errorMessage || 'Cập nhật thất bại', 'error');

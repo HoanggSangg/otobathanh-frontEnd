@@ -853,5 +853,17 @@ export const disableAccountAPI = async (accountId) => {
   }
 };
 
+export const googleLoginAPI = async (access_token) => {  // Đổi tên tham số thành access_token
+  try {
+    const response = await axios.post(`${API_URL}/api/accounts/google-login`, {
+      access_token  // Gửi đúng tên trường như trong Postman
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error in Google login:', error);
+    throw error;
+  }
+};
+
 
 

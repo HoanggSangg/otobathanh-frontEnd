@@ -38,6 +38,7 @@ import IndexCategory from './components/Admin/CategoryManager/indexCategory';
 import IndexOrder from './components/Admin/OrderManager/indexOrder';
 import ScrollToTop from './components/Styles/ScrollToTop';
 import Booking from './components/Appbar/Menu/Booking';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -51,7 +52,7 @@ declare global {
 }
 
 const App = () => {
-  
+
   useEffect(() => {
     // Hàm kiểm tra FB SDK
     const isFBReady = () => {
@@ -97,105 +98,106 @@ const App = () => {
 
   return (
     <div>
-
-      <ToastProvider>
-        <Header />
-        <MainContent>
-          <Breadcrumb />
-          <Routes>
-            <Route path="/" element={
-              <>
-                <Banner />
-                <HomeServices />
-                <ProductOutstand />
-                <News />
-                <Information />
-                <Procedure />
-                <HomeStats />
-                <Partner />
-              </>
-            } />
-            <Route path="/productoutstand" element={<ProductOutstand />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/products/:id" element={<ProductPage />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            {/* Protected manager routes */}
-            <Route
-              path="/manager/products"
-              element={
-                <ProtectedRoute>
-                  <IndexProduct />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/accounts"
-              element={
-                <ProtectedRoute>
-                  <IndexAccount />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/news"
-              element={
-                <ProtectedRoute>
-                  <IndexNews />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/banner"
-              element={
-                <ProtectedRoute>
-                  <IndexBanner />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/category"
-              element={
-                <ProtectedRoute>
-                  <IndexCategory />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/order"
-              element={
-                <ProtectedRoute>
-                  <IndexOrder />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/manager/booking"
-              element={
-                <ProtectedRoute>
-                  <IndexBooking />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/news/:id" element={<NewsDetail />} />
-            <Route path="/account/profile" element={<Profile />} />
-            <Route path="/account/update" element={<UpdateAccount />} />
-            <Route path="/account/changePass" element={<ChangePass />} />
-            <Route path="/account/historyOrder" element={<HistoryOrder />} />
-            <Route path="/account/likeProducts" element={<LikeProducts />} />
-            <Route path="/cart/cartDetail" element={<CartDetail />} />
-            <Route path="/order/checkout" element={<Order />} />
-            <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
-            <Route path="/procedure" element={<Procedure />} />
-            <Route path="/partner" element={<Partner />} />
-            <Route path="/booking" element={<Booking />} />
-          </Routes>
-          <Footer />
-        </MainContent>
-        <ChatBox />
-      </ToastProvider>
-      <ScrollToTop />
+      <GoogleOAuthProvider clientId="174690362633-vhh68lq31jp889ibopdb8abbi7sj4rcu.apps.googleusercontent.com">
+        <ToastProvider>
+          <Header />
+          <MainContent>
+            <Breadcrumb />
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <Banner />
+                  <HomeServices />
+                  <ProductOutstand />
+                  <News />
+                  <Information />
+                  <Procedure />
+                  <HomeStats />
+                  <Partner />
+                </>
+              } />
+              <Route path="/productoutstand" element={<ProductOutstand />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductPage />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              {/* Protected manager routes */}
+              <Route
+                path="/manager/products"
+                element={
+                  <ProtectedRoute>
+                    <IndexProduct />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/accounts"
+                element={
+                  <ProtectedRoute>
+                    <IndexAccount />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/news"
+                element={
+                  <ProtectedRoute>
+                    <IndexNews />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/banner"
+                element={
+                  <ProtectedRoute>
+                    <IndexBanner />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/category"
+                element={
+                  <ProtectedRoute>
+                    <IndexCategory />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/order"
+                element={
+                  <ProtectedRoute>
+                    <IndexOrder />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/booking"
+                element={
+                  <ProtectedRoute>
+                    <IndexBooking />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/news/:id" element={<NewsDetail />} />
+              <Route path="/account/profile" element={<Profile />} />
+              <Route path="/account/update" element={<UpdateAccount />} />
+              <Route path="/account/changePass" element={<ChangePass />} />
+              <Route path="/account/historyOrder" element={<HistoryOrder />} />
+              <Route path="/account/likeProducts" element={<LikeProducts />} />
+              <Route path="/cart/cartDetail" element={<CartDetail />} />
+              <Route path="/order/checkout" element={<Order />} />
+              <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
+              <Route path="/procedure" element={<Procedure />} />
+              <Route path="/partner" element={<Partner />} />
+              <Route path="/booking" element={<Booking />} />
+            </Routes>
+            <Footer />
+          </MainContent>
+          <ChatBox />
+        </ToastProvider>
+        <ScrollToTop />
+      </GoogleOAuthProvider>
     </div>
   );
 };

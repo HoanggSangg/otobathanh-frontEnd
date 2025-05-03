@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
+import { googleLoginAPI } from '../../API';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   Dialog,
   DialogTitle,
@@ -222,7 +224,39 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        // Truyền đúng access_token nhận được từ Google
+        const result = await googleLoginAPI(response.access_token);
+        
+        // Phần xử lý kết quả không thay đổi
+        if (result.token) {
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('user', JSON.stringify({
+            id: result.user._id,
+            fullName: result.user.fullName,
+            email: result.user.email,
+            image: result.user.image,
+            roles: result.user.roles
+          }));
+  
+          showToast('Đăng nhập Google thành công!', 'success');
+          onClose();
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Google login error:', error);
+        showToast('Đăng nhập Google thất bại', 'error');
+      }
+    },
+    onError: () => {
+      showToast('Đăng nhập Google thất bại', 'error');
+    },
+    flow: 'implicit'
+  });
+
+  const handleSocialLogin = async (provider: 'facebook' | 'google') => {
     if (provider === 'facebook') {
       if (!window.FB) {
         showToast('Không thể khởi tạo Facebook SDK', 'error');
@@ -233,7 +267,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
 
-          // ✅ Gửi accessToken đến backend
           fetch('http://localhost:3000/api/accounts/facebook-login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -259,10 +292,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
           showToast('Bạn đã hủy đăng nhập Facebook', 'info');
         }
       }, { scope: 'email,public_profile' });
-    } else {
-      showToast('Google login chưa hỗ trợ', 'info');
+
+    } else if (provider === 'google') {
+      try {
+        handleGoogleLogin();
+      } catch (error) {
+        console.error('Google login error:', error);
+        showToast('Đăng nhập Google thất bại', 'error');
+      }
     }
   };
+
 
   const handleForgotPassword = () => {
     setShowForgotPassword(true);
