@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Pagination,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,6 +31,21 @@ const StyledTableContainer = styled(TableContainer)`
   }
 `;
 
+const LoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #e31837;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 const StyledPaper = styled(Paper)`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 `;
@@ -44,18 +60,31 @@ interface Props {
   onEdit: (banner: Banner) => void;
 }
 
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
+`;
+
 const EditBanner: React.FC<Props> = ({ onEdit }) => {
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
 
   useEffect(() => {
     fetchBanners();
+
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    // Cleanup timer
+    return () => clearTimeout(loadingTimer);
   }, []);
 
   const fetchBanners = async () => {
     try {
-      setIsLoading(true);
       const response = await getAllBannersAPI();
       if (Array.isArray(response)) {
         setBanners(response);
@@ -65,8 +94,6 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
     } catch (err) {
       showToast('Không thể tải danh sách banner!', 'error');
       console.error('Error fetching banners:', err);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -76,24 +103,40 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
 
   const handleDelete = async (bannerId: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa banner này?')) {
-        try {
-            const response = await deleteBannerAPI(bannerId);
-            if (response.message) {
-                setBanners(banners.filter(b => b._id !== bannerId));
-                showToast(response.message, 'success');
-            }
-        } catch (err: any) {
-            if (err.response?.status === 404) {
-                showToast(err.response.data.message, 'error'); // Banner not found
-            } else if (err.response?.status === 500) {
-                showToast(err.response.data.message, 'error'); // Server error
-            } else {
-                showToast('Không thể xóa banner!', 'error');
-            }
-            console.error('Error deleting banner:', err);
+      try {
+        const response = await deleteBannerAPI(bannerId);
+        if (response.message) {
+          setBanners(banners.filter(b => b._id !== bannerId));
+          showToast(response.message, 'success');
         }
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          showToast(err.response.data.message, 'error'); // Banner not found
+        } else if (err.response?.status === 500) {
+          showToast(err.response.data.message, 'error'); // Server error
+        } else {
+          showToast('Không thể xóa banner!', 'error');
+        }
+        console.error('Error deleting banner:', err);
+      }
     }
-};
+  };
+
+  // Add new state for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Add pagination handler
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
+
+  // Add function to get current page items
+  const getCurrentPageItems = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return banners.slice(startIndex, endIndex);
+  };
 
   return (
     <Container>
@@ -110,14 +153,16 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">Đang tải...</TableCell>
+                  <TableCell colSpan={3} align="center">
+                    <LoadingSpinner />
+                  </TableCell>
                 </TableRow>
               ) : banners.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} align="center">Không có banner nào</TableCell>
                 </TableRow>
               ) : (
-                banners.map((banner) => (
+                getCurrentPageItems().map((banner) => (
                   <TableRow key={banner._id}>
                     <TableCell>
                       <img
@@ -144,6 +189,28 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
           </Table>
         </StyledPaper>
       </StyledTableContainer>
+
+      {/* Add pagination controls */}
+      {!isLoading && banners.length > 0 && (
+        <PaginationWrapper>
+          <Pagination
+            count={Math.ceil(banners.length / itemsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+            sx={{
+              '& .MuiPaginationItem-root': {
+                color: '#666',
+              },
+              '& .Mui-selected': {
+                backgroundColor: '#e31837 !important',
+                color: 'white !important',
+              },
+            }}
+          />
+        </PaginationWrapper>
+      )}
     </Container>
   );
 };

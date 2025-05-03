@@ -10,6 +10,7 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Pagination,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,10 +29,32 @@ const Header = styled.div`
   margin-bottom: 20px;
 `;
 
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
+`;
+
 const Title = styled.h1`
   color: #333;
   font-size: 24px;
   margin: 0;
+`;
+
+const LoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #e31837;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 `;
 
 const SearchInput = styled.input`
@@ -101,15 +124,29 @@ interface Product {
 }
 
 interface Props {
-  onEdit: (product: Product) => void;
+    onEdit: (product: Product) => void;
 }
 
 const EditProduct: React.FC<Props> = ({ onEdit }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const showToast = useToast();
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
+    // Add pagination handler
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setCurrentPage(value);
+    };
+
+    const getPaginatedProducts = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+    };
+
     const [formData, setFormData] = useState<EditFormData>({
         name: '',
         price: '',
@@ -132,11 +169,17 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                 description: selectedProduct.description
             });
         }
+
+        const loadingTimer = setTimeout(() => {
+            setIsLoading(false);
+        }, 2000);
+
+        // Cleanup timer
+        return () => clearTimeout(loadingTimer);
     }, [selectedProduct]);
 
     const fetchProducts = async () => {
         try {
-            setIsLoading(true);
             const response = await getAllProductsAPI();
             if (Array.isArray(response)) {
                 setProducts(response);
@@ -146,8 +189,6 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
         } catch (err) {
             showToast('Không thể tải danh sách sản phẩm!', 'error');
             console.error('Error fetching products:', err);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -185,20 +226,20 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
 
     // Add these new states after existing useState declarations
     const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-    
+
     // Update the filteredProducts logic
     const filteredProducts = products.filter(product => {
         const nameMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
         const categoryMatch = product.category_id.name.toLowerCase().includes(searchTerm.toLowerCase());
         const descriptionMatch = product.description.toLowerCase().includes(searchTerm.toLowerCase());
-        
+
         // Price range filter
         const priceInRange = (!priceRange.min || product.price >= Number(priceRange.min)) &&
-                            (!priceRange.max || product.price <= Number(priceRange.max));
-    
+            (!priceRange.max || product.price <= Number(priceRange.max));
+
         return (nameMatch || categoryMatch || descriptionMatch) && priceInRange;
     });
-    
+
     // Add this in the return statement after the existing SearchInput
     return (
         <Container>
@@ -249,14 +290,16 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                         <TableBody>
                             {isLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} align="center">Đang tải...</TableCell>
+                                    <TableCell colSpan={7} align="center">
+                                        <LoadingSpinner />
+                                    </TableCell>
                                 </TableRow>
                             ) : filteredProducts.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} align="center">Không tìm thấy sản phẩm nào</TableCell>
                                 </TableRow>
                             ) : (
-                                filteredProducts.map((product) => (
+                                getPaginatedProducts().map((product) => (
                                     <TableRow key={product._id}>
                                         <TableCell>
                                             <ImageCell src={product.image || '/placeholder-image.jpg'} alt={product.name} />
@@ -294,6 +337,27 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                     </Table>
                 </StyledPaper>
             </StyledTableContainer>
+
+            {!isLoading && filteredProducts.length > 0 && (
+                <PaginationWrapper>
+                    <Pagination
+                        count={Math.ceil(filteredProducts.length / itemsPerPage)}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
+                        size="large"
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                                color: '#666',
+                            },
+                            '& .Mui-selected': {
+                                backgroundColor: '#e31837 !important',
+                                color: 'white !important',
+                            },
+                        }}
+                    />
+                </PaginationWrapper>
+            )}
         </Container>
     );
 };

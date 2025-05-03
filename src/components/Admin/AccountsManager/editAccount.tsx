@@ -8,6 +8,7 @@ import {
 import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
 import { getCurrentUser } from '../../Utils/auth';
+import { Pagination } from '@mui/material';
 import {
     IconButton,
     Table,
@@ -42,6 +43,13 @@ const Title = styled.h1`
   margin: 0;
 `;
 
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
+`;
+
 const SearchInput = styled.input`
   padding: 8px 12px;
   border: 1px solid #ddd;
@@ -65,6 +73,21 @@ const StyledTableContainer = styled(TableContainer)`
   .MuiTableCell-head {
     font-weight: 600;
     background-color: #f5f5f5;
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #e31837;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 `;
 
@@ -111,9 +134,11 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [searchTerm, setSearchTerm] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const showToast = useToast();
     const [isMaster, setIsMaster] = useState(false);
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         fetchAccounts();
@@ -122,11 +147,17 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             setIsMaster(isMasterUser);
         };
         checkMasterRole();
+
+        const loadingTimer = setTimeout(() => {
+            setIsLoading(false);
+        }, 2000);
+
+        // Cleanup timer
+        return () => clearTimeout(loadingTimer);
     }, []);
 
     const fetchAccounts = async () => {
         try {
-            setIsLoading(true);
             const response = await getAllAccountsAPI();
             if (Array.isArray(response)) {
                 setAccounts(response);
@@ -136,8 +167,6 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
         } catch (err: any) {
             console.error('Error fetching accounts:', err);
             showToast('Không thể tải danh sách tài khoản!', 'error');
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -150,6 +179,16 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
         if (onSuccess) {
             onSuccess();
         }
+    };
+
+    const paginatedAccounts = () => {
+        const filteredAccounts = getFilteredAndSortedAccounts();
+        const startIndex = (page - 1) * itemsPerPage;
+        return filteredAccounts.slice(startIndex, startIndex + itemsPerPage);
+    };
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
     };
 
     const handleDelete = async (accountId: string) => {
@@ -295,14 +334,16 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         <TableBody>
                             {isLoading ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} align="center">Đang tải...</TableCell>
+                                    <TableCell colSpan={6} align="center">
+                                        <LoadingSpinner />
+                                    </TableCell>
                                 </TableRow>
                             ) : getFilteredAndSortedAccounts().length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={6} align="center">Không tìm thấy tài khoản nào</TableCell>
                                 </TableRow>
                             ) : (
-                                getFilteredAndSortedAccounts().map((account) => (
+                                paginatedAccounts().map((account) => (
                                     <TableRow key={account._id}>
                                         <TableCell>{account.fullName}</TableCell>
                                         <TableCell>{account.email}</TableCell>
@@ -337,6 +378,26 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                     </Table>
                 </StyledPaper>
             </StyledTableContainer>
+            {!isLoading && getFilteredAndSortedAccounts().length > 0 && (
+                <PaginationWrapper>
+                    <Pagination
+                        count={Math.ceil(getFilteredAndSortedAccounts().length / itemsPerPage)}
+                        page={page}
+                        onChange={handlePageChange}
+                        color="primary"
+                        size="large"
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                              color: '#666',
+                            },
+                            '& .Mui-selected': {
+                              backgroundColor: '#e31837 !important',
+                              color: 'white !important',
+                            },
+                          }}
+                    />
+                </PaginationWrapper>
+            )}
         </Container>
     );
 };

@@ -17,6 +17,7 @@ import {
 import { getCurrentUser } from '../../Utils/auth';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useSearchParams } from 'react-router-dom';
+import { Pagination } from '@mui/material'; // Add this import
 
 const PageWrapper = styled.div`
     background-color: #fff;
@@ -55,7 +56,6 @@ const InfoCard = styled(Paper)`
   }
 `;
 
-// Update the AddToCartButton styling
 const AddToCartButton = styled(Button)`
   background-color: #e31837 !important;
   color: white !important;
@@ -417,6 +417,15 @@ const Products = () => {
     }));
   };
 
+  const [page, setPage] = useState(1);
+  const productsPerPage = 8;
+
+  // Add pagination handler
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const getFilteredAndSortedProducts = () => {
     let filtered = [...products];
 
@@ -449,7 +458,10 @@ const Products = () => {
         break;
     }
 
-    return filtered;
+    // Apply pagination
+    const startIndex = (page - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    return filtered.slice(startIndex, endIndex);
   };
 
   return (
@@ -594,6 +606,31 @@ const Products = () => {
               </InfoCard>
             ))}
           </ProductGrid>
+
+          {/* Add pagination */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            marginTop: '40px',
+            marginBottom: '20px'
+          }}>
+            <Pagination
+              count={Math.ceil(products.length / productsPerPage)}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              size="large"
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  color: '#666',
+                },
+                '& .Mui-selected': {
+                  backgroundColor: '#e31837 !important',
+                  color: 'white !important',
+                },
+              }}
+            />
+          </div>
         </ProductSection>
       </MainContainer>
     </PageWrapper>
