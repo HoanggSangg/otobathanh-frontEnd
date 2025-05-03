@@ -15,6 +15,8 @@ import { registerAPI } from '../../API';
 import VerifyAccountForm from './VerifyAccount';
 import ForgotPasswordForm from './ForgotPassword';
 import { useToast } from '../../Styles/ToastProvider';
+import { useGoogleLogin } from '@react-oauth/google';
+import { googleLoginAPI } from '../../API';
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
@@ -155,6 +157,38 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ open, onClose }) => {
     }));
   };
 
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (response) => {
+      try {
+        // Truyền đúng access_token nhận được từ Google
+        const result = await googleLoginAPI(response.access_token);
+
+        // Phần xử lý kết quả không thay đổi
+        if (result.token) {
+          localStorage.setItem('token', result.token);
+          localStorage.setItem('user', JSON.stringify({
+            id: result.user._id,
+            fullName: result.user.fullName,
+            email: result.user.email,
+            image: result.user.image,
+            roles: result.user.roles
+          }));
+
+          showToast('Đăng nhập Google thành công!', 'success');
+          onClose();
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Google login error:', error);
+        showToast('Đăng nhập Google thất bại', 'error');
+      }
+    },
+    onError: () => {
+      showToast('Đăng nhập Google thất bại', 'error');
+    },
+    flow: 'implicit'
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -185,8 +219,51 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ open, onClose }) => {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`${provider} login clicked`);
+  const handleSocialLogin = async (provider: 'facebook' | 'google') => {
+    if (provider === 'facebook') {
+      if (!window.FB) {
+        showToast('Không thể khởi tạo Facebook SDK', 'error');
+        return;
+      }
+
+      window.FB.login(function (response: any) {
+        if (response.authResponse) {
+          const accessToken = response.authResponse.accessToken;
+
+          fetch('http://localhost:3000/api/accounts/facebook-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ access_token: accessToken })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                showToast(data.message || 'Đăng nhập thành công!', 'success');
+                onClose();
+                window.location.reload();
+              } else {
+                showToast(data.message || 'Lỗi đăng nhập Facebook', 'error');
+              }
+            })
+            .catch(err => {
+              console.error('Facebook login error:', err);
+              showToast('Không thể đăng nhập bằng Facebook', 'error');
+            });
+        } else {
+          showToast('Bạn đã hủy đăng nhập Facebook', 'info');
+        }
+      }, { scope: 'email,public_profile' });
+
+    } else if (provider === 'google') {
+      try {
+        handleGoogleLogin();
+      } catch (error) {
+        console.error('Google login error:', error);
+        showToast('Đăng nhập Google thất bại', 'error');
+      }
+    }
   };
 
   return (

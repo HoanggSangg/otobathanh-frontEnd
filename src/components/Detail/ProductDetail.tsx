@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import { getProductByIdAPI, addToCartAPI, getAllProductsAPI, createCommentAPI, getCommentsByProductIdAPI, getCartItemsAPI } from '../API';
 import { getCurrentUser } from '../Utils/auth';
 import { useToast } from '../Styles/ToastProvider';
-
+import DeleteIcon from '@mui/icons-material/Delete';
+import { IconButton } from '@mui/material';
+import { deleteCommentAPI } from '../API';
 // Styled Components for layout and design
 const ProductContainer = styled.div`
   max-width: 1200px;
@@ -31,6 +33,13 @@ const ProductContent = styled.div`
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
+  }
+`;
+
+const DeleteCommentButton = styled(IconButton)`
+  padding: 4px;
+  &:hover {
+    color: #e31837;
   }
 `;
 
@@ -259,6 +268,27 @@ const ProductPage = () => {
     }
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await deleteCommentAPI(commentId);
+      if (response.message) {
+        setComments(comments.filter(comment => comment._id !== commentId));
+        showToast(response.message, 'success');
+      }
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        showToast(err.response.data.message, 'error'); // Comment not found
+      } else if (err.response?.status === 403) {
+        showToast(err.response.data.message, 'error'); // Permission denied
+      } else if (err.response?.status === 500) {
+        showToast(err.response.data.message, 'error'); // Server error
+      } else {
+        showToast('Có lỗi khi xóa bình luận!', 'error');
+      }
+      console.error('Error deleting comment:', err);
+    }
+  };
+
   // Add this useEffect after your existing useEffect
   useEffect(() => {
     const fetchComments = async () => {
@@ -407,7 +437,17 @@ const ProductPage = () => {
                       <CommentItem key={comment._id}>
                         <CommentHeader>
                           <span>{comment.account?.fullName || 'Anonymous'}</span>
-                          <span>{new Date(comment.createdAt).toLocaleDateString('vi-VN')}</span>
+                          <div>
+                            <span>{new Date(comment.createdAt).toLocaleDateString('vi-VN')}</span>
+                            {user?.id === comment.account._id && (
+                              <DeleteCommentButton
+                                onClick={() => handleDeleteComment(comment._id)}
+                                size="small"
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </DeleteCommentButton>
+                            )}
+                          </div>
                         </CommentHeader>
                         <p>{comment.comment}</p>
                       </CommentItem>

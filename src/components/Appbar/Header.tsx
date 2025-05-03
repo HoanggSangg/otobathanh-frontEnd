@@ -545,7 +545,7 @@ const Header = () => {
             </NavLink>
             {isManager && (
               <ManagerDropdown>
-                <NavLink to="/manager" onClick={closeMenu}>
+                <NavLink to="#" onClick={closeMenu}>
                   Quản lý
                 </NavLink>
                 <DropdownContent $isOpen={isDropdownOpen}>
