@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { getAccountByIdAPI, loginAPI } from '../../API';
+import { forgotPasswordAPI, resetPasswordAPI } from '../../API';
 import { getCurrentUser } from '../../Utils/auth';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useToast } from '../../Styles/ToastProvider';
 
 const Container = styled.div`
@@ -71,29 +71,17 @@ const Button = styled.button`
   }
 `;
 
-const ErrorMessage = styled.p`
-  color: #e31837;
-  margin-top: 5px;
-  font-size: 14px;
-`;
-
-const SuccessMessage = styled.p`
-  color: #28a745;
-  margin-top: 5px;
-  font-size: 14px;
-`;
-
 const ChangePass = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
   const [userData, setUserData] = useState<any>(null);
   const [formData, setFormData] = useState({
-    email: '',
     oldPassword: '',
+    verificationCode: '',
     newPassword: '',
     confirmPassword: '',
   });
-  const [isVerified, setIsVerified] = useState(false);
+  const [step, setStep] = useState(1);
   const showToast = useToast();
 
   useEffect(() => {
@@ -103,6 +91,10 @@ const ChangePass = () => {
           const response = await getAccountByIdAPI(user.id);
           if (response && response.account) {
             setUserData(response.account);
+            if (response.account.type === 'google' || response.account.type === 'facebook') {
+              showToast(`Tài khoản ${response.account.type} không thể đổi mật khẩu trực tiếp!`, 'warning');
+              navigate('/');
+            }
           }
         }
       } catch (err) {
@@ -113,25 +105,37 @@ const ChangePass = () => {
     fetchUserData();
   }, []);
 
-  const handleVerify = async (e: React.FormEvent) => {
+  const handleVerifyOldPassword = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.oldPassword) {
-      showToast('Vui lòng nhập đấy đủ thông tin!', 'error');
+    if (!userData?.email || !formData.oldPassword) {
+      showToast('Vui lòng nhập mật khẩu hiện tại!', 'error');
       return;
     }
 
     try {
-      const response = await loginAPI(formData.email, formData.oldPassword);
-      console.log(response);
+      // Verify old password
+      await loginAPI(userData.email, formData.oldPassword);
 
-      if (response) {
-        setIsVerified(true);
-        showToast('Xác thực thành công vui lòng nhập mật khẩu mới!', 'success');
-      }
+      // Send verification code
+      await forgotPasswordAPI(userData.email);
+
+      setStep(2);
+      showToast('Mã xác nhận đã được gửi đến email của bạn!', 'success');
     } catch (err) {
-      showToast('Email hoặc mật khẩu không chính xác!', 'error');
+      showToast('Mật khẩu hiện tại không chính xác!', 'error');
     }
+  };
+
+  const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.verificationCode) {
+      showToast('Vui lòng nhập mã xác nhận!', 'error');
+      return;
+    }
+
+    setStep(3);
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -143,16 +147,16 @@ const ChangePass = () => {
     }
 
     try {
-      const response = await axios.put(`http://localhost:3000/api/accounts/${user?.id}/change-password`, {
-        newPassword: formData.newPassword,
-      });
+      await resetPasswordAPI(
+        userData.email,
+        formData.verificationCode,
+        formData.newPassword
+      );
 
-      if (response.data) {
-        showToast('Đổi mật khẩu thành công!', 'success');
-        setTimeout(() => {
-          navigate('/account/profile');
-        }, 2000);
-      }
+      showToast('Đổi mật khẩu thành công!', 'success');
+      setTimeout(() => {
+        navigate('/account/profile');
+      }, 2000);
     } catch (err) {
       showToast('Không thể đổi mật khẩu!', 'error');
     }
@@ -165,20 +169,17 @@ const ChangePass = () => {
     });
   };
 
-  return (
-    <Container>
-      <Title>Đổi Mật Khẩu</Title>
-      <Form onSubmit={isVerified ? handleChangePassword : handleVerify}>
-        {!isVerified ? (
+  const renderForm = () => {
+    switch (step) {
+      case 1:
+        return (
           <>
             <FormGroup>
               <Label>Email</Label>
               <Input
                 type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Nhập email của bạn"
+                value={userData?.email || ''}
+                disabled
               />
             </FormGroup>
             <FormGroup>
@@ -192,7 +193,22 @@ const ChangePass = () => {
               />
             </FormGroup>
           </>
-        ) : (
+        );
+      case 2:
+        return (
+          <FormGroup>
+            <Label>Mã xác nhận</Label>
+            <Input
+              type="text"
+              name="verificationCode"
+              value={formData.verificationCode}
+              onChange={handleInputChange}
+              placeholder="Nhập mã xác nhận từ email"
+            />
+          </FormGroup>
+        );
+      case 3:
+        return (
           <>
             <FormGroup>
               <Label>Mật khẩu mới</Label>
@@ -215,10 +231,25 @@ const ChangePass = () => {
               />
             </FormGroup>
           </>
-        )}
+        );
+      default:
+        return null;
+    }
+  };
 
+  return (
+    <Container>
+      <Title>Đổi Mật Khẩu</Title>
+      <Form onSubmit={
+        step === 1 ? handleVerifyOldPassword :
+          step === 2 ? handleVerifyCode :
+            handleChangePassword
+      }>
+        {renderForm()}
         <Button type="submit">
-          {isVerified ? 'Đổi mật khẩu' : 'Xác thực'}
+          {step === 1 ? 'Xác thực' :
+            step === 2 ? 'Tiếp tục' :
+              'Đổi mật khẩu'}
         </Button>
       </Form>
     </Container>

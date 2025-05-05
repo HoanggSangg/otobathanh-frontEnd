@@ -190,7 +190,11 @@ interface Product {
   quantity: number;
   image: string;
   description: string;
-  likes?: number; // Add this
+  likes?: number;
+  category_id: {
+    _id: string;
+    name: string;
+  };
 }
 
 interface Category {
@@ -201,6 +205,7 @@ interface Category {
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [productLikes, setProductLikes] = useState<Record<string, number>>({});
   const [sortOption, setSortOption] = useState('default');
   const [priceFilters, setPriceFilters] = useState({
@@ -253,6 +258,11 @@ const Products = () => {
       console.error('Failed to fetch categories:', error);
       showToast('Không thể tải danh mục sản phẩm', 'error');
     }
+  };
+
+  const handleCategoryClick = (categoryId: string) => {
+    setSelectedCategory(prev => prev === categoryId ? '' : categoryId);
+    setPage(1);
   };
 
   // Separate useEffect for initial data loading
@@ -366,33 +376,6 @@ const Products = () => {
     }
   };
 
-  // Add missing handleAddToCart function
-  const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
-    e.stopPropagation();
-
-    if (!user || !user.id) {
-      showToast('Vui lòng đăng nhập để mua hàng', 'warning');
-      return;
-    }
-
-    if (product.quantity <= 0) {
-      showToast('Sản phẩm đã hết hàng', 'error');
-      return;
-    }
-
-    try {
-      await addToCartAPI({
-        account_id: user.id,
-        product_id: product._id,
-        quantity: 1
-      });
-      showToast('Thêm vào giỏ hàng thành công', 'success');
-    } catch (error) {
-      console.error('Failed to add to cart:', error);
-      showToast('Không thể thêm vào giỏ hàng', 'error');
-    }
-  };
-
   // Helper function for price filter labels
   const getPriceFilterLabel = (key: string) => {
     switch (key) {
@@ -429,6 +412,10 @@ const Products = () => {
   const getFilteredAndSortedProducts = () => {
     let filtered = [...products];
 
+    console.log('Selected category:', selectedCategory);
+    if (selectedCategory) {
+      filtered = filtered.filter(product => product.category_id._id === selectedCategory);
+    }
     // Apply price filters
     const activePriceFilters = Object.entries(priceFilters).filter(([_, isActive]) => isActive);
 
@@ -476,11 +463,15 @@ const Products = () => {
               <ListItem
                 key={category._id}
                 value={category._id}
+                onClick={() => handleCategoryClick(category._id)}
                 sx={{
                   color: 'black',
                   cursor: 'pointer',
+                  backgroundColor: selectedCategory === category._id ? 'rgba(227, 24, 55, 0.1)' : 'transparent',
                   '&:hover': {
-                    backgroundColor: 'rgba(253, 248, 248, 0.1)'
+                    backgroundColor: selectedCategory === category._id
+                      ? 'rgba(227, 24, 55, 0.1)'
+                      : 'rgba(253, 248, 248, 0.1)'
                   },
                   padding: '8px 16px',
                   borderRadius: '4px'
@@ -594,13 +585,6 @@ const Products = () => {
                         : <FavoriteBorderIcon />
                       }
                     </LikeButton>
-                    {/* <AddToCartButton
-                      variant="contained"
-                      startIcon={<ShoppingCartIcon />}
-                      onClick={(e) => handleAddToCart(e, product)}
-                    >
-                      Mua ngay
-                    </AddToCartButton> */}
                   </ButtonGroup>
                 </ProductContent>
               </InfoCard>
@@ -608,9 +592,9 @@ const Products = () => {
           </ProductGrid>
 
           {/* Add pagination */}
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
             marginTop: '40px',
             marginBottom: '20px'
           }}>

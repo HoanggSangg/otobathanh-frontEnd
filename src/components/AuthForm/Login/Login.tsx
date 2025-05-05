@@ -192,7 +192,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const response = await loginAPI(formData.email, formData.password);
       if (response.status === "thành công") {
@@ -234,21 +234,25 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
       roles: user.roles
     }));
   };
-  
+
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
         const result = await googleLoginAPI(response.access_token);
-  
+
         if (result.token) {
           saveUserToLocalStorage(result.token, result.user);
           showToast('Đăng nhập Google thành công!', 'success');
           onClose();
           window.location.reload();
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Google login error:', error);
-        showToast('Đăng nhập Google thất bại', 'error');
+        if (error.response?.status === 403) {
+          showToast('Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để mở khóa.', 'error');
+        } else {
+          showToast('Đăng nhập Google thất bại', 'error');
+        }
       }
     },
     onError: () => {
@@ -256,18 +260,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     },
     flow: 'implicit'
   });
-  
+
   const handleSocialLogin = async (provider: 'facebook' | 'google') => {
     if (provider === 'facebook') {
       if (!window.FB) {
         showToast('Không thể khởi tạo Facebook SDK', 'error');
         return;
       }
-  
+
       window.FB.login(function (response: any) {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
-  
+
           fetch('http://localhost:3000/api/accounts/facebook-login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -292,7 +296,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
           showToast('Bạn đã hủy đăng nhập Facebook', 'info');
         }
       }, { scope: 'email,public_profile' });
-  
+
     } else if (provider === 'google') {
       try {
         handleGoogleLogin();

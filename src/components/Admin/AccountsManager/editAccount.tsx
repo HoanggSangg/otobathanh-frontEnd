@@ -10,6 +10,12 @@ import styled from 'styled-components';
 import { getCurrentUser } from '../../Utils/auth';
 import { Pagination } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
 import {
     IconButton,
     Table,
@@ -55,6 +61,42 @@ const SearchControls = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     width: 100%;
+  }
+`;
+
+const StyledButton = styled(Button)`
+  &.MuiButton-root {
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-transform: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    
+    &.MuiButton-contained {
+      background-color: ${props => props.color === 'error' ? '#e31837' : '#666'};
+      color: white;
+      box-shadow: none;
+      
+      &:hover {
+        background-color: ${props => props.color === 'error' ? '#c41730' : '#555'};
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+    
+    &.MuiButton-outlined {
+      border: 1px solid #ddd;
+      color: #666;
+      
+      &:hover {
+        background-color: #f9f9f9;
+        border-color: #ccc;
+      }
+    }
   }
 `;
 
@@ -213,6 +255,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [isMaster, setIsMaster] = useState(false);
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         fetchAccounts();
@@ -277,12 +321,16 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             return;
         }
 
-        if (window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+        setAccountToDelete(accountId);
+        setDeleteConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (accountToDelete) {
             try {
-                const response = await deleteAccountAPI(accountId);
-                console.log(response);
+                const response = await deleteAccountAPI(accountToDelete);
                 if (response.status === 'thành công') {
-                    setAccounts(prev => prev.filter(a => a._id !== accountId));
+                    setAccounts(prev => prev.filter(a => a._id !== accountToDelete));
                     showToast(response.message, 'success');
                 } else {
                     showToast(response.message, 'error');
@@ -292,6 +340,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 showToast('Không thể xóa tài khoản!', 'error');
             }
         }
+        setDeleteConfirmOpen(false);
+        setAccountToDelete(null);
     };
 
     const handleToggleStatus = async (account: Account) => {
@@ -484,6 +534,56 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                     />
                 </PaginationWrapper>
             )}
+            <Dialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                PaperProps={{
+                    style: {
+                        backgroundColor: '#fff',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                        minWidth: '600px'
+                    }
+                }}
+            >
+                <DialogTitle style={{
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    color: '#333',
+                    padding: '0 0 16px 0'
+                }}>
+                    Xác nhận xóa tài khoản
+                </DialogTitle>
+                <DialogContent style={{ padding: '8px 0 24px 0' }}>
+                    <DialogContentText style={{
+                        fontSize: '16px',
+                        color: '#555',
+                        lineHeight: '1.5'
+                    }}>
+                        Bạn có chắc chắn muốn xóa tài khoản này? Hành động này không thể hoàn tác.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions style={{
+                    padding: '0',
+                    justifyContent: 'flex-end',
+                    gap: '12px'
+                }}>
+                    <StyledButton
+                        variant="outlined"
+                        onClick={() => setDeleteConfirmOpen(false)}
+                    >
+                        Hủy
+                    </StyledButton>
+                    <StyledButton
+                        variant="contained"
+                        color="error"
+                        onClick={confirmDelete}
+                    >
+                        Xóa
+                    </StyledButton>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

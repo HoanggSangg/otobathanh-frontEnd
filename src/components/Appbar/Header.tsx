@@ -7,12 +7,17 @@ import RegisterForm from '../AuthForm/Register/Register';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import { getCurrentUser } from '../Utils/auth';
-import { getAccountByIdAPI, getCartItemsAPI } from '../API';
+import { getAccountByIdAPI } from '../API';
 import { useNavigate } from 'react-router-dom';
 import InputBase from '@mui/material/InputBase';
 import PersonIcon from '@mui/icons-material/Person';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const HeaderContainer = styled.header`
   background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
@@ -45,6 +50,46 @@ const HeaderContent = styled.div`
 const LogoContainer = styled.div`
   flex: 0 0 auto;
   z-index: 1001;
+`;
+
+const StyledDialog = styled(Dialog)`
+  .MuiDialog-paper {
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 600px;
+    width: 100%;
+  }
+`;
+
+const DialogTitleStyled = styled(DialogTitle)`
+  padding: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+`;
+
+const DialogContentStyled = styled(DialogContent)`
+  padding: 0;
+  color: #666;
+`;
+
+const DialogActionsStyled = styled(DialogActions)`
+  padding: 16px 0 0 0;
+  gap: 8px;
+`;
+
+const ActionButton = styled.button<{ $primary?: boolean }>`
+  padding: 8px 24px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background-color: ${props => props.$primary ? '#e31837' : '#f5f5f5'};
+  color: ${props => props.$primary ? 'white' : '#333'};
+
+  &:hover {
+    background-color: ${props => props.$primary ? '#c41730' : '#e6e6e6'};
+  }
 `;
 
 const UserAvatar = styled.img`
@@ -374,17 +419,6 @@ const MobileNavOverlay = styled.div<{ $isOpen: boolean }>`
   }
 `;
 
-interface CartItem {
-  _id: string;
-  quantity: number;
-  product_id: {
-    _id: string;
-    name: string;
-    price: number;
-    image: string;
-  };
-}
-
 interface Role {
   _id: string;
   name: string;
@@ -458,7 +492,14 @@ const Header = () => {
     }
   };
 
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  // Update the handleLogout function
   const handleLogout = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const confirmLogout = () => {
     localStorage.clear();
     sessionStorage.clear();
     document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -710,6 +751,27 @@ const Header = () => {
           </SearchContainer>
         </AuthContainer>
       </HeaderContent>
+      <StyledDialog
+        open={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+      >
+        <DialogTitleStyled>
+          Xác nhận đăng xuất
+        </DialogTitleStyled>
+        <DialogContentStyled>
+          <DialogContentText style={{ margin: 0, color: 'inherit' }}>
+            Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?
+          </DialogContentText>
+        </DialogContentStyled>
+        <DialogActionsStyled>
+          <ActionButton onClick={() => setIsLogoutModalOpen(false)}>
+            Hủy
+          </ActionButton>
+          <ActionButton $primary onClick={confirmLogout}>
+            Đăng xuất
+          </ActionButton>
+        </DialogActionsStyled>
+      </StyledDialog>
       <LoginForm
         open={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
