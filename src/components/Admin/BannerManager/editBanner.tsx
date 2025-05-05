@@ -20,6 +20,10 @@ const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
 
 const StyledTableContainer = styled(TableContainer)`
@@ -28,6 +32,75 @@ const StyledTableContainer = styled(TableContainer)`
   .MuiTableCell-head {
     font-weight: 600;
     background-color: #f5f5f5;
+
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 14px;
+    }
+  }
+
+  .MuiTableCell-body {
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    overflow-x: auto;
+  }
+`;
+
+const ImageModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  cursor: pointer;
+`;
+
+const ModalImage = styled.img`
+  max-width: 90%;
+  max-height: 90vh;
+  object-fit: contain;
+`;
+
+const BannerImage = styled.img`
+  width: 200px;
+  height: auto;
+  object-fit: cover;
+
+  @media (max-width: 768px) {
+    width: 120px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100px;
+  }
+`;
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
+
+  @media (max-width: 768px) {
+    padding: 10px 0;
+    
+    .MuiPagination-ul {
+      .MuiPaginationItem-root {
+        min-width: 28px;
+        height: 28px;
+        font-size: 13px;
+      }
+    }
   }
 `;
 
@@ -60,17 +133,11 @@ interface Props {
   onEdit: (banner: Banner) => void;
 }
 
-const PaginationWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  padding: 20px 0;
-`;
-
 const EditBanner: React.FC<Props> = ({ onEdit }) => {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBanners();
@@ -122,6 +189,14 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
     }
   };
 
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImageUrl(imageUrl);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImageUrl(null);
+  };
+
   // Add new state for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -165,10 +240,11 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
                 getCurrentPageItems().map((banner) => (
                   <TableRow key={banner._id}>
                     <TableCell>
-                      <img
+                      <BannerImage
                         src={banner.image}
                         alt="Banner"
-                        style={{ width: '200px', height: 'auto', objectFit: 'cover' }}
+                        onClick={() => handleImageClick(banner.image)}
+                        style={{ cursor: 'pointer' }}
                       />
                     </TableCell>
                     <TableCell>
@@ -189,6 +265,11 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
           </Table>
         </StyledPaper>
       </StyledTableContainer>
+      {selectedImageUrl && (
+        <ImageModal onClick={handleCloseModal}>
+          <ModalImage src={selectedImageUrl} alt="Enlarged view" />
+        </ImageModal>
+      )}
 
       {/* Add pagination controls */}
       {!isLoading && banners.length > 0 && (

@@ -11,6 +11,8 @@ import { getAccountByIdAPI, getCartItemsAPI } from '../API';
 import { useNavigate } from 'react-router-dom';
 import InputBase from '@mui/material/InputBase';
 import PersonIcon from '@mui/icons-material/Person';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const HeaderContainer = styled.header`
   background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
@@ -68,6 +70,16 @@ const UserInfoMobi = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  width: 100%;
+  position: relative;
+`;
+
+const MobileDropdownContent = styled.div<{ $isOpen: boolean }>`
+  display: ${props => props.$isOpen ? 'block' : 'none'};
+  width: 100%;
+  margin-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const Logo = styled.img`
@@ -104,13 +116,14 @@ const NavContainer = styled.div<{ $isOpen: boolean }>`
     position: fixed;
     top: 0;
     right: 0;
-    bottom: 0;
-    width: 210px;
+    width: 250px;
+    height: 100vh;
     background-color: #000;
     margin: 0;
     padding-top: 80px;
     flex-direction: column;
     justify-content: flex-start;
+    overflow-y: auto;
     transform: ${props => props.$isOpen ? 'translateX(0)' : 'translateX(100%)'};
     transition: transform 0.3s ease;
     z-index: 1099;
@@ -167,10 +180,6 @@ const NavLink = styled(RouterNavLink)`
   position: relative;
   transition: color 0.3s ease;
 
-  &:hover {
-    color: rgb(22, 18, 19);
-  }
-
   &.active {
     color: rgb(229, 229, 245);
     
@@ -211,7 +220,7 @@ const AuthButton = styled.button<{ $primary?: boolean }>`
 `;
 
 const UserName = styled.span`
-  color: #e31837;
+  color: #fff;
   font-weight: 500;
   white-space: nowrap;
 `;
@@ -247,7 +256,24 @@ const ManagerDropdown = styled.div`
   }
 
   @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const ManagerDropdownMobile = styled.div`
+  position: relative;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: inline-block;
     width: 100%;
+
+    > a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
   }
 `;
 
@@ -371,28 +397,16 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userImage, setUserImage] = useState('');
   const user = getCurrentUser();
-  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isMaster, setIsMaster] = useState(false);
   const [isManager, setIsManager] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  const [isManagerMobileDropdownOpen, setIsManagerMobileDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        if (user?.id) {
-          const items = await getCartItemsAPI(user.id);
-          setCartItems(items);
-          setCartCount(items.length);
-        }
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-      }
-    };
-
     const fetchUserData = async () => {
       try {
         if (user?.id) {
@@ -416,7 +430,6 @@ const Header = () => {
       }
     };
 
-    fetchCartItems();
     fetchUserData();
   }, []);
 
@@ -466,7 +479,7 @@ const Header = () => {
         <LogoContainer>
           <Logo
             src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png"
-            alt="Ô Tô Bá Thành"
+            alt="Bá Thành"
             onClick={() => navigate('/')}
             style={{ cursor: 'pointer' }}
           />
@@ -495,35 +508,40 @@ const Header = () => {
             </SearchContainer>
 
             {user && (
-              <UserInfoMobi>
-                {(userImage || user.image) ? (
-                  <UserAvatar src={userImage || user.image} alt={user.fullName} />
-                ) : (
-                  <DefaultAvatar>
-                    <PersonIcon />
-                  </DefaultAvatar>
-                )}
-                <UserName>{user.fullName}</UserName>
-              </UserInfoMobi>
-            )}
-
-            {user && (
               <>
-                <DropdownItem to="/account/profile" onClick={closeMenu}>
-                  Thông tin tài khoản
-                </DropdownItem>
-                <DropdownItem to="/account/update" onClick={closeMenu}>
-                  Cập nhật tài khoản
-                </DropdownItem>
-                <DropdownItem to="/account/changePass" onClick={closeMenu}>
-                  Thay đổi mật khẩu
-                </DropdownItem>
-                <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
-                  Sản phẩm yêu thích
-                </DropdownItem>
-                <DropdownButton onClick={handleLogout}>
-                  Đăng xuất
-                </DropdownButton>
+                <UserInfoMobi onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}>
+                  {(userImage || user.image) ? (
+                    <UserAvatar src={userImage || user.image} alt={user.fullName} />
+                  ) : (
+                    <DefaultAvatar>
+                      <PersonIcon />
+                    </DefaultAvatar>
+                  )}
+                  <UserName>{user.fullName}</UserName>
+                  {isMobileDropdownOpen ? (
+                    <KeyboardArrowUpIcon style={{ color: '#e31837' }} />
+                  ) : (
+                    <KeyboardArrowDownIcon style={{ color: '#fff' }} />
+                  )}
+                </UserInfoMobi>
+
+                <MobileDropdownContent $isOpen={isMobileDropdownOpen}>
+                  <DropdownItem to="/account/profile" onClick={closeMenu}>
+                    Thông tin tài khoản
+                  </DropdownItem>
+                  <DropdownItem to="/account/update" onClick={closeMenu}>
+                    Cập nhật tài khoản
+                  </DropdownItem>
+                  <DropdownItem to="/account/changePass" onClick={closeMenu}>
+                    Thay đổi mật khẩu
+                  </DropdownItem>
+                  <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
+                    Sản phẩm yêu thích
+                  </DropdownItem>
+                  <DropdownButton onClick={handleLogout}>
+                    Đăng xuất
+                  </DropdownButton>
+                </MobileDropdownContent>
               </>
             )}
           </MobileMenu>
@@ -545,7 +563,7 @@ const Header = () => {
             </NavLink>
             {isManager && (
               <ManagerDropdown>
-                <NavLink to="#" onClick={closeMenu}>
+                <NavLink to="/manager" onClick={closeMenu}>
                   Quản lý
                 </NavLink>
                 <DropdownContent $isOpen={isDropdownOpen}>
@@ -571,6 +589,47 @@ const Header = () => {
                   </DropdownItem>
                 </DropdownContent>
               </ManagerDropdown>
+            )}
+            {isManager && (
+              <>
+                <ManagerDropdownMobile>
+                  <NavLink to="/manager" onClick={(e) => {
+                    e.preventDefault();
+                    if (window.innerWidth <= 768) {
+                      setIsManagerMobileDropdownOpen(!isManagerMobileDropdownOpen);
+                    }
+                  }}>
+                    Quản lý
+                    {window.innerWidth <= 768 && (
+                      isManagerMobileDropdownOpen ?
+                        <KeyboardArrowUpIcon style={{ color: '#e31837' }} /> :
+                        <KeyboardArrowDownIcon style={{ color: '#fff' }} />
+                    )}
+                  </NavLink>
+                  <MobileDropdownContent $isOpen={isManagerMobileDropdownOpen}>
+                    {isMaster && (
+                      <DropdownItem to="/manager/accounts" onClick={closeMenu}>
+                        Quản lý tài khoản
+                      </DropdownItem>
+                    )}
+                    <DropdownItem to="/manager/products" onClick={closeMenu}>
+                      Quản lý sản phẩm
+                    </DropdownItem>
+                    <DropdownItem to="/manager/news" onClick={closeMenu}>
+                      Quản lý tin tức
+                    </DropdownItem>
+                    <DropdownItem to="/manager/banner" onClick={closeMenu}>
+                      Quản lý banner
+                    </DropdownItem>
+                    <DropdownItem to="/manager/category" onClick={closeMenu}>
+                      Quản lý danh mục
+                    </DropdownItem>
+                    <DropdownItem to="/manager/booking" onClick={closeMenu}>
+                      Quản lý lịch hẹn
+                    </DropdownItem>
+                  </MobileDropdownContent>
+                </ManagerDropdownMobile>
+              </>
             )}
           </NavLinks>
         </NavContainer>

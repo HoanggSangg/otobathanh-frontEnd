@@ -18,17 +18,18 @@ const BannerContainer = styled(Box)`
   @media (max-width: 1024px) {
     height: 500px;
     margin-top: 80px;
+    padding: 0; 
   }
 
   @media (max-width: 768px) {
     height: 350px;
-    margin-top: 70px;
-    padding: 0 10px;
+    margin-top: 100px;
+    padding: 0;
   }
 
   @media (max-width: 480px) {
     height: 200px;
-    margin-top: 60px;
+    margin-top: 95px;
     padding: 0;
   }
 `;

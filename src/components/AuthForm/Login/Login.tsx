@@ -192,7 +192,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
       const response = await loginAPI(formData.email, formData.password);
       if (response.status === "thành công") {
@@ -224,23 +224,24 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     }
   };
 
+  const saveUserToLocalStorage = (token: string, user: any) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify({
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      image: user.image,
+      roles: user.roles
+    }));
+  };
+  
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (response) => {
       try {
-        // Truyền đúng access_token nhận được từ Google
         const result = await googleLoginAPI(response.access_token);
-        
-        // Phần xử lý kết quả không thay đổi
-        if (result.token) {
-          localStorage.setItem('token', result.token);
-          localStorage.setItem('user', JSON.stringify({
-            id: result.user._id,
-            fullName: result.user.fullName,
-            email: result.user.email,
-            image: result.user.image,
-            roles: result.user.roles
-          }));
   
+        if (result.token) {
+          saveUserToLocalStorage(result.token, result.user);
           showToast('Đăng nhập Google thành công!', 'success');
           onClose();
           window.location.reload();
@@ -255,18 +256,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     },
     flow: 'implicit'
   });
-
+  
   const handleSocialLogin = async (provider: 'facebook' | 'google') => {
     if (provider === 'facebook') {
       if (!window.FB) {
         showToast('Không thể khởi tạo Facebook SDK', 'error');
         return;
       }
-
+  
       window.FB.login(function (response: any) {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
-
+  
           fetch('http://localhost:3000/api/accounts/facebook-login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -275,8 +276,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
             .then(res => res.json())
             .then(data => {
               if (data.token) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                saveUserToLocalStorage(data.token, data.user);
                 showToast(data.message || 'Đăng nhập thành công!', 'success');
                 onClose();
                 navigate('/');
@@ -292,7 +292,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
           showToast('Bạn đã hủy đăng nhập Facebook', 'info');
         }
       }, { scope: 'email,public_profile' });
-
+  
     } else if (provider === 'google') {
       try {
         handleGoogleLogin();
@@ -302,7 +302,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
       }
     }
   };
-
 
   const handleForgotPassword = () => {
     setShowForgotPassword(true);

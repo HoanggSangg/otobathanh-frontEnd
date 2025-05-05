@@ -30,25 +30,71 @@ import { getAllContactsAPI, getContactsByDateAPI, getContactsByTimeSlotAPI, upda
 
 const PageContainer = styled(Container)`
   padding: 40px 0;
+  
+  @media (max-width: 768px) {
+    padding: 20px 10px;
+  }
 `;
 
 const Title = styled(Typography)`
   margin-bottom: 40px !important;
   color: #e31837;
   font-weight: bold !important;
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px !important;
+    font-size: 1.5rem !important;
+  }
+`;
+
+const StyledTableContainer = styled(TableContainer) <StyledTableContainerProps>`
+  margin-top: 20px;
+  overflow-x: auto;
+
+  .MuiTableCell-head {
+    font-weight: 600;
+    background-color: #f5f5f5;
+    
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  }
+
+  .MuiTableCell-body {
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+  }
+`;
+
+const ImageThumbnail = styled.img`
+  max-width: 200px;
+  max-height: 200px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    max-width: 150px;
+    max-height: 150px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 100px;
+    max-height: 100px;
+  }
 `;
 
 type StyledTableContainerProps = {
     component?: React.ComponentType<any>;
 };
-
-const StyledTableContainer = styled(TableContainer) <StyledTableContainerProps>`
-  margin-top: 20px;
-  .MuiTableCell-head {
-    font-weight: 600;
-    background-color: #f5f5f5;
-  }
-`;
 
 interface Contact {
     _id: string;
@@ -61,16 +107,6 @@ interface Contact {
     status: keyof typeof ContactStatus;
     createdAt: string;
 }
-
-const ImageThumbnail = styled.img`
-    max-width: 200px;
-    max-height: 200px;
-    cursor: pointer;
-    transition: transform 0.2s;
-    &:hover {
-        transform: scale(1.05);
-    }
-`;
 
 const TIME_SLOTS = [
     '08:00', '09:00', '10:00', '11:00',
@@ -207,7 +243,17 @@ const IndexBooking = () => {
     return (
         <PageContainer maxWidth="lg">
             <Title variant="h4">Quản lý Lịch Hẹn</Title>
-            <Paper sx={{ p: 2, mb: 2, display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+            <Paper sx={{
+                p: 2,
+                mb: 2,
+                display: 'flex',
+                gap: 2,
+                alignItems: 'flex-start',
+                flexDirection: { xs: 'column', sm: 'row' },
+                '& .MuiFormControl-root': {
+                    minWidth: { xs: '100%', sm: 200 }
+                }
+            }}>
                 <FormControl sx={{ minWidth: 200 }}>
                     <TextField
                         type="date"
@@ -234,11 +280,16 @@ const IndexBooking = () => {
                     </Select>
                 </FormControl>
 
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{
+                    display: 'flex',
+                    gap: '10px',
+                    width: '100%'
+                }}>
                     <Button
                         onClick={handleCombinedSearch}
                         variant="contained"
-                        sx={{ height: 40 }}
+                        fullWidth
+                        sx={{ height: { xs: 40, sm: 40 } }}
                     >
                         Tìm kiếm
                     </Button>
@@ -249,7 +300,8 @@ const IndexBooking = () => {
                             fetchContacts();
                         }}
                         variant="outlined"
-                        sx={{ height: 40 }}
+                        fullWidth
+                        sx={{ height: { xs: 40, sm: 40 } }}
                     >
                         Đặt lại
                     </Button>

@@ -9,6 +9,7 @@ import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
 import { getCurrentUser } from '../../Utils/auth';
 import { Pagination } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 import {
     IconButton,
     Table,
@@ -28,6 +29,10 @@ const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
 
 const Header = styled.div`
@@ -35,19 +40,50 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    gap: 15px;
+  }
 `;
 
-const Title = styled.h1`
-  color: #333;
-  font-size: 24px;
-  margin: 0;
-`;
-
-const PaginationWrapper = styled.div`
+const SearchControls = styled.div`
   display: flex;
+  gap: 12px;
+  align-items: center;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+  }
+`;
+
+const ImageCell = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
+`;
+
+const AvatarContainer = styled.div`
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-top: 20px;
-  padding: 20px 0;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  color: #666;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 const SearchInput = styled.input`
@@ -57,23 +93,74 @@ const SearchInput = styled.input`
   width: 300px;
   font-size: 14px;
   
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+  
   &:focus {
     outline: none;
     border-color: #0066cc;
   }
 `;
 
-const ActionButton = styled(IconButton)`
-  padding: 6px !important;
-  margin-left: 8px !important;
+const FilterSelect = styled.select`
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const StyledTableContainer = styled(TableContainer)`
   margin-top: 20px;
+  overflow-x: auto;
+  
   .MuiTableCell-head {
     font-weight: 600;
     background-color: #f5f5f5;
+    
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 14px;
+    }
   }
+
+  .MuiTableCell-body {
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 13px;
+    }
+  }
+`;
+
+const ActionButton = styled(IconButton)`
+  padding: 6px !important;
+  margin-left: 8px !important;
+
+  @media (max-width: 768px) {
+    padding: 4px !important;
+    margin-left: 4px !important;
+  }
+`;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 24px;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+`;
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 20px 0;
 `;
 
 const LoadingSpinner = styled.div`
@@ -93,19 +180,6 @@ const LoadingSpinner = styled.div`
 
 const StyledPaper = styled(Paper)`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-`;
-
-const SearchControls = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-`;
-
-const FilterSelect = styled.select`
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
 `;
 
 interface Account {
@@ -345,6 +419,18 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                             ) : (
                                 paginatedAccounts().map((account) => (
                                     <TableRow key={account._id}>
+                                        <TableCell>
+                                            {account.image ? (
+                                                <ImageCell
+                                                    src={account.image}
+                                                    alt={account.fullName}
+                                                />
+                                            ) : (
+                                                <AvatarContainer>
+                                                    <PersonIcon />
+                                                </AvatarContainer>
+                                            )}
+                                        </TableCell>
                                         <TableCell>{account.fullName}</TableCell>
                                         <TableCell>{account.email}</TableCell>
                                         <TableCell>{account.roles.map(role => role.name).join(', ')}</TableCell>
@@ -388,13 +474,13 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         size="large"
                         sx={{
                             '& .MuiPaginationItem-root': {
-                              color: '#666',
+                                color: '#666',
                             },
                             '& .Mui-selected': {
-                              backgroundColor: '#e31837 !important',
-                              color: 'white !important',
+                                backgroundColor: '#e31837 !important',
+                                color: 'white !important',
                             },
-                          }}
+                        }}
                     />
                 </PaginationWrapper>
             )}

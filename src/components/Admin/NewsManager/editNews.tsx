@@ -20,6 +20,10 @@ const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
 `;
 
 const Header = styled.div`
@@ -27,6 +31,108 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+`;
+
+const Title = styled.h1`
+  color: #333;
+  font-size: 24px;
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    text-align: center;
+  }
+`;
+
+const SearchControls = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
+  }
+`;
+
+const ImageModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  cursor: pointer;
+`;
+
+const ModalImage = styled.img`
+  max-width: 90%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+`;
+
+const SearchInput = styled.input`
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 300px;
+  font-size: 14px;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #0066cc;
+  }
+`;
+
+const SearchSelect = styled.select`
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const StyledTableContainer = styled(TableContainer)`
+  margin-top: 20px;
+  overflow-x: auto;
+  
+  .MuiTableCell-head {
+    font-weight: 600;
+    background-color: #f5f5f5;
+    
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  }
+
+  .MuiTableCell-body {
+    @media (max-width: 768px) {
+      padding: 8px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+  }
 `;
 
 const PaginationWrapper = styled.div`
@@ -34,6 +140,18 @@ const PaginationWrapper = styled.div`
   justify-content: center;
   margin-top: 20px;
   padding: 20px 0;
+
+  @media (max-width: 768px) {
+    padding: 10px 0;
+    
+    .MuiPagination-ul {
+      .MuiPaginationItem-root {
+        min-width: 28px;
+        height: 28px;
+        font-size: 13px;
+      }
+    }
+  }
 `;
 
 const LoadingSpinner = styled.div`
@@ -50,51 +168,19 @@ const LoadingSpinner = styled.div`
     100% { transform: rotate(360deg); }
   }
 `;
-
-const Title = styled.h1`
-  color: #333;
-  font-size: 24px;
-  margin: 0;
-`;
-
-const SearchInput = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 300px;
-  font-size: 14px;
-  
-  &:focus {
-    outline: none;
-    border-color: #0066cc;
-  }
-`;
-
-// Add styled components for the search controls
-const SearchControls = styled.div`
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  `;
-
-const SearchSelect = styled.select`
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  `;
-
-const StyledTableContainer = styled(TableContainer)`
-  margin-top: 20px;
-  
-  .MuiTableCell-head {
-    font-weight: 600;
-    background-color: #f5f5f5;
-  }
-`;
-
 const StyledPaper = styled(Paper)`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+`;
+
+const NewsImage = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 interface News {
@@ -115,6 +201,7 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNews();
@@ -139,6 +226,15 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
       showToast('Không thể tải danh sách tin tức!', 'error');
       console.error('Error fetching news:', err);
     }
+  };
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImageUrl(imageUrl);
+  };
+
+  // Add this handler to close the modal
+  const handleCloseModal = () => {
+    setSelectedImageUrl(null);
   };
 
   const handleEdit = (newsItem: News) => {
@@ -257,12 +353,13 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
               ) : (
                 getPaginatedNews().map((item) => (
                   <TableRow key={item._id}>
-                    <TableCell>{item.title}</TableCell>
+                    <TableCell>{item.title.substring(0, 30)} ...</TableCell>
                     <TableCell>
-                      <img
+                      <NewsImage
                         src={item.image}
                         alt={item.title}
-                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                        onClick={() => handleImageClick(item.image)}
+                        style={{ cursor: 'pointer' }}
                       />
                     </TableCell>
                     <TableCell>{item.content.substring(0, 100)}...</TableCell>
@@ -284,6 +381,11 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
           </Table>
         </StyledPaper>
       </StyledTableContainer>
+      {selectedImageUrl && (
+        <ImageModal onClick={handleCloseModal}>
+          <ModalImage src={selectedImageUrl} alt="Enlarged view" />
+        </ImageModal>
+      )}
       {!isLoading && filteredAndSortedNews.length > 0 && (
         <PaginationWrapper>
           <Pagination
