@@ -93,8 +93,8 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
 `;
 
 const UserAvatar = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 8px;
@@ -123,7 +123,6 @@ const UserInfoMobi = styled.div`
 const MobileDropdownContent = styled.div<{ $isOpen: boolean }>`
   display: ${props => props.$isOpen ? 'block' : 'none'};
   width: 100%;
-  margin-top: 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
@@ -288,7 +287,6 @@ const DropdownContent = styled.div<{ $isOpen: boolean }>`
     width: 100%;
     box-shadow: none;
     background-color: transparent;
-    margin-top: 5px;
   }
 `;
 
@@ -350,7 +348,7 @@ const DropdownItem = styled(NavLink)`
   }
 
   @media (max-width: 768px) {
-    padding: 10px 0;
+    padding: 10px 30px;
     font-size: 16px;
   }
 `;
@@ -373,7 +371,7 @@ const DropdownButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    padding: 10px 0;
+    padding: 10px 30px;
     font-size: 16px;
   }
 `;
@@ -595,6 +593,9 @@ const Header = () => {
             </NavLink>
             <NavLink to="/products" onClick={closeMenu}>
               Sản phẩm
+            </NavLink>
+            <NavLink to="/news" onClick={closeMenu}>
+              Tin Tức
             </NavLink>
             <NavLink to="/about" onClick={closeMenu}>
               Giới thiệu

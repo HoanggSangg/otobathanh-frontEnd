@@ -258,6 +258,10 @@ const Contact = () => {
 
 
 
+  const handleRemoveImage = (index: number) => {
+    setImages(prevImages => prevImages.filter((_, i) => i !== index));
+  };
+
   return (
     <ContactContainer>
       <ContactGrid>
@@ -373,12 +377,33 @@ const Contact = () => {
           </FormGroup>
           <div style={{ marginTop: '20px' }}>
             {images.map((image, index) => (
-              <img
-                key={index}
-                src={URL.createObjectURL(image)} // Hiển thị ảnh đã chọn
-                alt={`Selected ${index}`}
-                style={{ width: '100px', height: '100px', objectFit: 'cover', marginRight: '10px', borderRadius: '8px' }}
-              />
+              <div key={index} style={{ display: 'inline-block', position: 'relative', marginRight: '10px' }}>
+                <img
+                  src={URL.createObjectURL(image)}
+                  alt={`Selected ${index}`}
+                  style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }}
+                />
+                <button
+                  onClick={() => handleRemoveImage(index)}
+                  style={{
+                    position: 'absolute',
+                    top: '-10px',
+                    right: '-10px',
+                    background: '#e31837',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '24px',
+                    height: '24px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
             ))}
           </div>
           <SubmitButton type="submit" disabled={isSubmitting}>

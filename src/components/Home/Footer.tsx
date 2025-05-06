@@ -4,9 +4,7 @@ import { Container, Typography, Link, IconButton } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import YouTubeIcon from '@mui/icons-material/YouTube';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import { SiTiktok } from 'react-icons/si';
 
 const FooterWrapper = styled.footer`
   background-color: #1e2124;
@@ -91,7 +89,7 @@ const SocialIcons = styled.div`
       background-color: #e31837;
     }
     
-    .MuiSvgIcon-root {
+    svg {
       font-size: 24px;
     }
   }
@@ -118,14 +116,8 @@ const Footer = () => {
             <SocialMediaSection>
               <Title variant="h6">THEO DÕI CHÚNG TÔI</Title>
               <SocialIcons>
-                <IconButton href="https://facebook.com" target="_blank" aria-label="Facebook">
-                  <FacebookIcon />
-                </IconButton>
-                <IconButton href="https://youtube.com" target="_blank" aria-label="YouTube">
-                  <YouTubeIcon />
-                </IconButton>
-                <IconButton href="https://linkedin.com" target="_blank" aria-label="LinkedIn">
-                  <LinkedInIcon />
+                <IconButton href="https://www.tiktok.com/@congtytnhhbathanh" target="_blank" aria-label="TikTok">
+                  <SiTiktok />
                 </IconButton>
               </SocialIcons>
             </SocialMediaSection>
@@ -168,4 +160,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

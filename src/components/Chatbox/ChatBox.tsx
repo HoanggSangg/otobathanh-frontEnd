@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { IconButton, Paper, TextField, Button } from '@mui/material';
-import ChatIcon from '@mui/icons-material/Chat';
+import { IconButton, Paper, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 
 const ChatContainer = styled.div`
   position: fixed;
-  bottom: 20px;
+  bottom: 40px;
   right: 20px;
   z-index: 1000;
 `;
 
 const ChatButton = styled(IconButton)`
-  background-color: #e31837 !important;
+  background-color: #ff0000 !important;
   color: white !important;
-  width: 56px;
-  height: 56px;
+  width: 76px;
+  height: 76px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  padding: 8px !important;
   &:hover {
-    background-color: #c41730 !important;
+    background-color: #0060d1 !important;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
   }
 `;
 
@@ -27,16 +32,17 @@ const ChatWindow = styled(Paper)`
   position: absolute;
   bottom: 70px;
   right: 0;
-  width: 300px;
-  height: 400px;
+  width: 320px;
+  height: 460px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 `;
 
 const ChatHeader = styled.div`
-  background-color: #e31837;
+  background-color: #ff0000;
   color: white;
   padding: 12px 16px;
   display: flex;
@@ -44,9 +50,32 @@ const ChatHeader = styled.div`
   align-items: center;
 `;
 
-const ChatTitle = styled.h3`
-  margin: 0;
-  font-size: 16px;
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+`;
+
+const Avatar = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+`;
+
+const ChatTitle = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+
+  & span:first-child {
+    font-weight: bold;
+  }
+
+  & span:last-child {
+    font-size: 12px;
+    color: #b2f2bb;
+  }
 `;
 
 const MessagesContainer = styled.div`
@@ -63,8 +92,17 @@ const Message = styled.div<{ $isUser?: boolean }>`
   padding: 8px 12px;
   border-radius: 12px;
   align-self: ${props => props.$isUser ? 'flex-end' : 'flex-start'};
-  background-color: ${props => props.$isUser ? '#e31837' : '#f0f0f0'};
+  background-color: ${props => props.$isUser ? '#007AFF' : '#f1f1f1'};
   color: ${props => props.$isUser ? 'white' : 'black'};
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const BotAvatarInline = styled(Avatar)`
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
 `;
 
 const InputContainer = styled.div`
@@ -79,7 +117,7 @@ const StyledTextField = styled(TextField)`
 `;
 
 const SendButton = styled(IconButton)`
-  color: #e31837 !important;
+  color: #ff0000 !important;
 `;
 
 interface ChatMessage {
@@ -111,7 +149,7 @@ const ChatBox = () => {
     // Find auto response
     const lowerInput = inputText.toLowerCase();
     let responseText = autoResponses.default;
-    
+
     for (const [key, value] of Object.entries(autoResponses)) {
       if (lowerInput.includes(key)) {
         responseText = value;
@@ -139,7 +177,13 @@ const ChatBox = () => {
       {isOpen && (
         <ChatWindow elevation={3}>
           <ChatHeader>
-            <ChatTitle>Hỗ trợ trực tuyến</ChatTitle>
+            <HeaderLeft>
+              <Avatar src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot" />
+              <ChatTitle>
+                <span>Trợ lý ảo của 2HM</span>
+                <span>● Online</span>
+              </ChatTitle>
+            </HeaderLeft>
             <IconButton size="small" onClick={() => setIsOpen(false)} style={{ color: 'white' }}>
               <CloseIcon />
             </IconButton>
@@ -147,6 +191,7 @@ const ChatBox = () => {
           <MessagesContainer>
             {messages.map((message, index) => (
               <Message key={index} $isUser={message.isUser}>
+                {!message.isUser && <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot" />}
                 {message.text}
               </Message>
             ))}
@@ -168,10 +213,10 @@ const ChatBox = () => {
         </ChatWindow>
       )}
       <ChatButton onClick={() => setIsOpen(true)}>
-        <ChatIcon />
+        <img src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Chat" />
       </ChatButton>
     </ChatContainer>
   );
 };
 
-export default ChatBox; 
+export default ChatBox;

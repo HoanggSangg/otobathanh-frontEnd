@@ -122,7 +122,7 @@ const App = () => {
               <Route path="/services" element={<Services />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              {/* Protected manager routes */}
+              <Route path="/news" element={<News />} />
               <Route
                 path="/manager/products"
                 element={
