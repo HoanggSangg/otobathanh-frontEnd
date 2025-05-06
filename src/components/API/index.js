@@ -81,7 +81,7 @@ export const deleteProductAPI = async (productId) => {
     const response = await axios.delete(`${API_URL}/api/products/${productId}`,
       { headers: getAuthHeaders() }
     );
-    return response.data;
+    return response;
   } catch (error) {
     throw error;
   }
@@ -245,7 +245,7 @@ export const deleteNewsAPI = async (newsId) => {
     const response = await axios.delete(`${API_URL}/api/news/${newsId}`,
       { headers: getAuthHeaders() }
     );
-    return response.data;
+    return response;
   } catch (error) {
     throw error;
   }
@@ -384,7 +384,7 @@ export const updateOrderStatusAPI = async (orderId, status) => {
 export const deleteOrderAPI = async (orderId) => {
   try {
     const response = await axios.delete(`${API_URL}/api/orders/${orderId}`);
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error deleting order:', error);
     throw error;
@@ -580,7 +580,7 @@ export const deleteCategoryAPI = async (categoryId) => {
     const response = await axios.delete(`${API_URL}/api/categories/${categoryId}`,
       { headers: getAuthHeaders() }
     );
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error deleting category:', error);
     throw error;
@@ -690,7 +690,7 @@ export const deleteBannerAPI = async (bannerId) => {
       }
     );
 
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error deleting banner:', error);
     throw error;
@@ -769,7 +769,7 @@ export const deleteContactAPI = async (contactId) => {
     const response = await axios.delete(`${API_URL}/api/contacts/${contactId}`, {
       headers: getAuthHeaders()
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error deleting contact:', error);
     throw error;

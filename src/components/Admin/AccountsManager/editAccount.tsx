@@ -257,6 +257,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const itemsPerPage = 10;
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
+    const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
+    const [accountToToggle, setAccountToToggle] = useState<Account | null>(null);
 
     useEffect(() => {
         fetchAccounts();
@@ -362,21 +364,34 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 return;
             }
 
-            const apiCall = account.status ? disableAccountAPI : enableAccountAPI;
-            const response = await apiCall(account._id);
-            showToast(response.message, 'success');
-
-            setAccounts(prev =>
-                prev.map(a =>
-                    a._id === account._id ? { ...a, status: !account.status } : a
-                )
-            );
+            setAccountToToggle(account);
+            setStatusConfirmOpen(true);
         } catch (err: any) {
             console.error('Error toggling account status:', err);
             showToast('Không thể thay đổi trạng thái tài khoản!', 'error');
         }
     };
 
+    const confirmToggleStatus = async () => {
+        if (accountToToggle) {
+            try {
+                const apiCall = accountToToggle.status ? disableAccountAPI : enableAccountAPI;
+                const response = await apiCall(accountToToggle._id);
+                showToast(response.message, 'success');
+
+                setAccounts(prev =>
+                    prev.map(a =>
+                        a._id === accountToToggle._id ? { ...a, status: !accountToToggle.status } : a
+                    )
+                );
+            } catch (err: any) {
+                console.error('Error toggling account status:', err);
+                showToast('Không thể thay đổi trạng thái tài khoản!', 'error');
+            }
+        }
+        setStatusConfirmOpen(false);
+        setAccountToToggle(null);
+    };
 
     const getFilteredAndSortedAccounts = () => {
         return accounts
@@ -447,7 +462,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Tên đăng nhập</TableCell>
+                                <TableCell>Hình ảnh</TableCell>
+                                <TableCell>Họ và tên</TableCell>
                                 <TableCell>Email</TableCell>
                                 <TableCell>Vai trò</TableCell>
                                 <TableCell>Trạng thái</TableCell>
@@ -581,6 +597,57 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         onClick={confirmDelete}
                     >
                         Xóa
+                    </StyledButton>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={statusConfirmOpen}
+                onClose={() => setStatusConfirmOpen(false)}
+                PaperProps={{
+                    style: {
+                        backgroundColor: '#fff',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                        minWidth: '600px'
+                    }
+                }}
+            >
+                <DialogTitle style={{
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    color: '#333',
+                    padding: '0 0 16px 0'
+                }}>
+                    Xác nhận thay đổi trạng thái
+                </DialogTitle>
+                <DialogContent style={{ padding: '8px 0 24px 0' }}>
+                    <DialogContentText style={{
+                        fontSize: '16px',
+                        color: '#555',
+                        lineHeight: '1.5'
+                    }}>
+                        Bạn có chắc chắn muốn {accountToToggle?.status ? 'khóa' : 'mở khóa'} tài khoản này?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions style={{
+                    padding: '0',
+                    justifyContent: 'flex-end',
+                    gap: '12px'
+                }}>
+                    <StyledButton
+                        variant="outlined"
+                        onClick={() => setStatusConfirmOpen(false)}
+                    >
+                        Hủy
+                    </StyledButton>
+                    <StyledButton
+                        variant="contained"
+                        color="error"
+                        onClick={confirmToggleStatus}
+                    >
+                        Xác nhận
                     </StyledButton>
                 </DialogActions>
             </Dialog>

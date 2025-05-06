@@ -15,6 +15,12 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getAllNewsAPI, deleteNewsAPI } from '../../API';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
 
 const Container = styled.div`
   padding: 20px;
@@ -36,6 +42,42 @@ const Header = styled.div`
     flex-direction: column;
     gap: 15px;
     align-items: stretch;
+  }
+`;
+
+const StyledButton = styled(Button)`
+  &.MuiButton-root {
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-transform: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    
+    &.MuiButton-contained {
+      background-color: ${props => props.color === 'error' ? '#e31837' : '#666'};
+      color: white;
+      box-shadow: none;
+      
+      &:hover {
+        background-color: ${props => props.color === 'error' ? '#c41730' : '#555'};
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+    
+    &.MuiButton-outlined {
+      border: 1px solid #ddd;
+      color: #666;
+      
+      &:hover {
+        background-color: #f9f9f9;
+        border-color: #ccc;
+      }
+    }
   }
 `;
 
@@ -202,6 +244,8 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
   const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNews();
@@ -242,12 +286,19 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
   };
 
   const handleDelete = async (newsId: string) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa tin tức này?')) {
+    setNewsToDelete(newsId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (newsToDelete) {
       try {
-        const response = await deleteNewsAPI(newsId);
-        if (response.message) {
-          setNews(news.filter(n => n._id !== newsId));
-          showToast(response.message, 'success');
+        const response = await deleteNewsAPI(newsToDelete);
+        if (response.status === 200) {
+          setNews(prev => prev.filter(a => a._id !== newsToDelete));
+          showToast(response.data.message, 'success');
+        } else {
+          showToast(response.data.message, 'error');
         }
       } catch (err: any) {
         if (err.response?.status === 404) {
@@ -260,6 +311,8 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
         console.error('Error deleting news:', err);
       }
     }
+    setDeleteConfirmOpen(false);
+    setNewsToDelete(null);
   };
 
   // Add these new states after existing useState declarations
@@ -406,6 +459,57 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
           />
         </PaginationWrapper>
       )}
+
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        PaperProps={{
+          style: {
+            backgroundColor: '#fff',
+            borderRadius: '12px',
+            padding: '24px',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+            minWidth: '600px'
+          }
+        }}
+      >
+        <DialogTitle style={{
+          fontSize: '20px',
+          fontWeight: '600',
+          color: '#333',
+          padding: '0 0 16px 0'
+        }}>
+          Xác nhận xóa tin tức
+        </DialogTitle>
+        <DialogContent style={{ padding: '8px 0 24px 0' }}>
+          <DialogContentText style={{
+            fontSize: '16px',
+            color: '#555',
+            lineHeight: '1.5'
+          }}>
+            Bạn có chắc chắn muốn xóa tin tức này? Hành động này không thể hoàn tác.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions style={{
+          padding: '0',
+          justifyContent: 'flex-end',
+          gap: '12px'
+        }}>
+          <StyledButton
+            variant="outlined"
+            onClick={() => setDeleteConfirmOpen(false)}
+          >
+            Hủy
+          </StyledButton>
+          <StyledButton
+            variant="contained"
+            color="error"
+            onClick={confirmDelete}
+          >
+            Xóa
+          </StyledButton>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

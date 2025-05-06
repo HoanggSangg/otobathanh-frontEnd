@@ -97,9 +97,9 @@ const HistoryOrder = () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {
         try {
             const response = await deleteOrderAPI(orderId);
-            if (response.message) {
+            if (response.data.message) {
                 setOrders(orders.filter((order: any) => order._id !== orderId));
-                showToast(response.message, 'success');
+                showToast(response.data.message, 'success');
             }
         } catch (err: any) {
             if (err.response?.status === 404) {

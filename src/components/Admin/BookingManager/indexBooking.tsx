@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
+import DialogContentText from '@mui/material/DialogContentText';
 import {
     Container,
     Typography,
@@ -92,6 +93,42 @@ const ImageThumbnail = styled.img`
   }
 `;
 
+const StyledButton = styled(Button)`
+  &.MuiButton-root {
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-transform: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    
+    &.MuiButton-contained {
+      background-color: ${props => props.color === 'error' ? '#e31837' : '#666'};
+      color: white;
+      box-shadow: none;
+      
+      &:hover {
+        background-color: ${props => props.color === 'error' ? '#c41730' : '#555'};
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+    
+    &.MuiButton-outlined {
+      border: 1px solid #ddd;
+      color: #666;
+      
+      &:hover {
+        background-color: #f9f9f9;
+        border-color: #ccc;
+      }
+    }
+  }
+`;
+
 type StyledTableContainerProps = {
     component?: React.ComponentType<any>;
 };
@@ -129,6 +166,8 @@ const IndexBooking = () => {
     const [searchDate, setSearchDate] = useState('');
     const [searchTimeSlot, setSearchTimeSlot] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [contactToDelete, setContactToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         fetchContacts();
@@ -213,18 +252,27 @@ const IndexBooking = () => {
     };
 
     const handleDelete = async (contactId: string) => {
-        if (!window.confirm('Bạn có chắc chắn muốn xóa lịch hẹn này?')) return;
+        setContactToDelete(contactId);
+        setDeleteConfirmOpen(true);
+    };
 
-        try {
-            const response = await deleteContactAPI(contactId);
-            if (response) {
-                setContacts(contacts.filter(contact => contact._id !== contactId));
-                showToast('Xóa lịch hẹn thành công', 'success');
+    const confirmDelete = async () => {
+        if (contactToDelete) {
+            try {
+                const response = await deleteContactAPI(contactToDelete);
+                if (response.status === 200) {
+                    setContacts(prev => prev.filter(a => a._id !== contactToDelete));
+                    showToast(response.data.message, 'success');
+                } else {
+                    showToast(response.data.message, 'error');
+                }
+            } catch (err: any) {
+                console.error('Error deleting account:', err);
+                showToast('Không thể xóa tài khoản!', 'error');
             }
-        } catch (err: any) {
-            showToast('Không thể xóa lịch hẹn', 'error');
-            console.error('Error deleting contact:', err);
         }
+        setDeleteConfirmOpen(false);
+        setContactToDelete(null);
     };
 
     const getStatusColor = (status: keyof typeof ContactStatus) => {
@@ -549,6 +597,57 @@ const IndexBooking = () => {
                             </Button>
                         </>
                     )}
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                PaperProps={{
+                    style: {
+                        backgroundColor: '#fff',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                        minWidth: '600px'
+                    }
+                }}
+            >
+                <DialogTitle style={{
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    color: '#333',
+                    padding: '0 0 16px 0'
+                }}>
+                    Xác nhận xóa lịch hẹn
+                </DialogTitle>
+                <DialogContent style={{ padding: '8px 0 24px 0' }}>
+                    <DialogContentText style={{
+                        fontSize: '16px',
+                        color: '#555',
+                        lineHeight: '1.5'
+                    }}>
+                        Bạn có chắc chắn muốn xóa lịch hẹn này? Hành động này không thể hoàn tác.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions style={{
+                    padding: '0',
+                    justifyContent: 'flex-end',
+                    gap: '12px'
+                }}>
+                    <StyledButton
+                        variant="outlined"
+                        onClick={() => setDeleteConfirmOpen(false)}
+                    >
+                        Hủy
+                    </StyledButton>
+                    <StyledButton
+                        variant="contained"
+                        color="error"
+                        onClick={confirmDelete}
+                    >
+                        Xóa
+                    </StyledButton>
                 </DialogActions>
             </Dialog>
         </PageContainer>
