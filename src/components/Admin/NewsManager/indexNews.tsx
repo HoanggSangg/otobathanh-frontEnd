@@ -63,8 +63,6 @@ const IndexNews = () => {
 
   return (
     <PageContainer maxWidth="lg">
-      <Title variant="h4">Quản lý tin tức</Title>
-
       <StyledTabs value={tabValue} onChange={handleTabChange}>
         <StyledTab label={selectedNews ? "Chỉnh sửa tin tức" : "Thêm tin tức mới"} />
         <StyledTab label="Danh sách tin tức" />

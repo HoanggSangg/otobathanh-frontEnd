@@ -2,10 +2,9 @@
 import { getCurrentUser } from '../../Utils/auth';
 import { useToast } from '../../Styles/ToastProvider';
 import styled, { keyframes } from 'styled-components';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import React, { useState, useEffect, useRef } from 'react';
 import { Typography, CardContent, CardMedia, Button, Paper } from '@mui/material';
-import { addToCartAPI, getCartItemsAPI, getFavoriteProductsAPI } from '../../API';
+import { getFavoriteProductsAPI } from '../../API';
 import { likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI } from '../../API';
 import { useNavigate } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -14,7 +13,7 @@ import { Pagination } from '@mui/material';
 
 const Container = styled.div`
   max-width: 1200px;
-  margin: 120px auto 40px;
+  margin: 30px auto 40px;
   padding: 20px;
 `;
 
@@ -30,17 +29,6 @@ const PaginationContainer = styled.div`
   margin-top: 20px;
 `;
 
-const rippleEffect = keyframes`
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-`;
-
 const InfoCard = styled(Paper)`
   height: 100%;
   display: flex;
@@ -52,32 +40,6 @@ const InfoCard = styled(Paper)`
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-// Update the AddToCartButton styling
-const AddToCartButton = styled(Button)`
-  background-color: #e31837 !important;
-  color: white !important;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  
-  &:hover {
-    background-color: #cc1630 !important;
-  }
-
-  &:active::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation: ${rippleEffect} 0.4s ease-out;
   }
 `;
 
@@ -169,17 +131,6 @@ interface Product {
   image: string;
   quantity: number;
   description: string;
-}
-
-interface CartItem {
-  _id: string;
-  quantity: number;
-  product_id: {
-    _id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  };
 }
 
 const LikeProducts = () => {
@@ -333,53 +284,6 @@ const LikeProducts = () => {
     }
   };
 
-  const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
-    e.stopPropagation();
-    if (!user || !user.id) {
-      navigate('/');
-      return;
-    }
-    try {
-      if (product.quantity < 1) {
-        showToast('Sản phẩm hết hàng!', 'info');
-        return;
-      }
-
-      // Get current cart items to check quantity
-      const cartItems = await getCartItemsAPI(user.id);
-      const existingCartItem = cartItems.find((item: CartItem) => item.product_id._id === product._id);
-      const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
-
-      // Check if adding one more would exceed available quantity
-      if (currentCartQuantity + 1 > product.quantity) {
-        showToast(`Không thể thêm vào giỏ hàng. Chỉ còn ${product.quantity} sản phẩm trong kho!`, 'info');
-        return;
-      }
-
-      const cartData = {
-        quantity: 1,
-        product_id: product._id,
-        account_id: user.id
-      };
-
-      const response = await addToCartAPI(cartData);
-      if (response.message) {
-        showToast(response.message, 'success');
-      }
-    } catch (err: any) {
-      if (err.response?.status === 400) {
-        showToast(err.response.data.message, 'error'); // Invalid ID
-      } else if (err.response?.status === 404) {
-        showToast(err.response.data.message, 'error'); // Product or account not found
-      } else if (err.response?.status === 500) {
-        showToast(err.response.data.message, 'error'); // Server error
-      } else {
-        showToast('Không thể thêm vào giỏ hàng!', 'error');
-      }
-      console.error('Failed to add to cart:', err);
-    }
-  };
-
   const handleViewDetail = (productId: string) => {
     navigate(`/products/${productId}`);
   };
@@ -434,13 +338,6 @@ const LikeProducts = () => {
                         : <FavoriteBorderIcon />
                       }
                     </LikeButton>
-                    {/* <AddToCartButton
-                    variant="contained"
-                    startIcon={<ShoppingCartIcon />}
-                    onClick={(e) => handleAddToCart(e, product)}
-                  >
-                    Mua ngay
-                  </AddToCartButton> */}
                   </ButtonGroup>
                 </ProductContent>
               </InfoCard>

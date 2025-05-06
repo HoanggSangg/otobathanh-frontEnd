@@ -6,38 +6,82 @@ interface Step {
   title: string;
   description: string;
   icon: string;
-  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  position: string;
 }
 
 const steps: Step[] = [
   {
-    title: 'CUỘC HẸN',
-    description:
-      'Bạn có thể trực tiếp đến xưởng dịch vụ của chúng tôi hoặc để lại thông tin để đội ngũ chúng tôi liên lạc.',
+    title: 'TIẾP NHẬN',
+    description: 'Tiếp nhận thông tin và yêu cầu từ khách hàng',
     icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure4_iwxdd1.jpg',
-    position: 'top-left',
+    position: 'position-1'
+  },
+  {
+    title: 'KIỂM TRA',
+    description: 'Kiểm tra tổng thể tình trạng xe',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure3_volt4l.jpg',
+    position: 'position-2'
   },
   {
     title: 'CHẨN ĐOÁN',
-    description:
-      'Chúng tôi đã đầu tư vào các công cụ và phần mềm chẩn đoán hiện đại cho xe của bạn.',
+    description: 'Chẩn đoán chính xác các vấn đề của xe',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure1_m6oigh.jpg',
+    position: 'position-3'
+  },
+  {
+    title: 'BÁO GIÁ',
+    description: 'Báo giá chi tiết và minh bạch',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure2_sqbwvm.jpg',
+    position: 'position-4'
+  },
+  {
+    title: 'XÁC NHẬN',
+    description: 'Xác nhận đồng ý từ khách hàng',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure4_iwxdd1.jpg',
+    position: 'position-5'
+  },
+  {
+    title: 'CHUẨN BỊ',
+    description: 'Chuẩn bị phụ tùng và thiết bị cần thiết',
     icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure3_volt4l.jpg',
-    position: 'top-right',
+    position: 'position-6'
   },
   {
     title: 'SỬA CHỮA',
-    description:
-      'Chúng tôi là xưởng sửa chữa hàng đầu với thợ có trình độ cao tại Sài Gòn.',
+    description: 'Tiến hành sửa chữa theo quy trình',
     icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure1_m6oigh.jpg',
-    position: 'bottom-left',
+    position: 'position-7'
   },
   {
-    title: 'HOÀN THÀNH',
-    description:
-      'Xe của bạn sẽ được vệ sinh sạch sẽ và trả đúng hẹn sau khi hoàn thành.',
+    title: 'KIỂM TRA LẠI',
+    description: 'Kiểm tra kỹ lưỡng sau sửa chữa',
     icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure2_sqbwvm.jpg',
-    position: 'bottom-right',
+    position: 'position-8'
   },
+  {
+    title: 'VỆ SINH',
+    description: 'Vệ sinh xe sạch sẽ trước khi giao',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure4_iwxdd1.jpg',
+    position: 'position-9'
+  },
+  {
+    title: 'NGHIỆM THU',
+    description: 'Nghiệm thu cùng khách hàng',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure3_volt4l.jpg',
+    position: 'position-10'
+  },
+  {
+    title: 'BÀN GIAO',
+    description: 'Bàn giao xe cho khách hàng',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure1_m6oigh.jpg',
+    position: 'position-11'
+  },
+  {
+    title: 'BẢO HÀNH',
+    description: 'Theo dõi và hỗ trợ bảo hành',
+    icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure2_sqbwvm.jpg',
+    position: 'position-12'
+  }
 ];
 
 const images = [

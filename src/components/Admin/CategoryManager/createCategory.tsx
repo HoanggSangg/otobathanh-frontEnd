@@ -66,7 +66,7 @@ const CreateCategory: React.FC<CreateCategoryProps> = ({ selectedCategory, onSuc
 
   return (
     <FormContainer>
-      <Typography variant="h5" sx={{ mb: 4, color: '#e31837', fontWeight: 'bold' }}>
+      <Typography variant="h5" sx={{ mb: 4, color: '#333', fontWeight: 'bold' }}>
         {selectedCategory ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}
       </Typography>
 

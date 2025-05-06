@@ -7,7 +7,7 @@ import { useToast } from '../../Styles/ToastProvider';
 
 const Container = styled.div`
   max-width: 800px;
-  margin: 120px auto 40px;
+  margin: 30px auto 40px;
   padding: 20px;
 `;
 

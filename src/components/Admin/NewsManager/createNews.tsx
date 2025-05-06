@@ -118,7 +118,7 @@ const CreateNews: React.FC<CreateNewsProps> = ({ selectedNews, onSuccess }) => {
 
   return (
     <FormContainer>
-      <Typography variant="h5" sx={{ mb: 4, color: '#e31837', fontWeight: 'bold' }}>
+      <Typography variant="h5" sx={{ mb: 4, color: '#333', fontWeight: 'bold' }}>
         {selectedNews ? "Chỉnh sửa tin tức" : "Thêm tin tức mới"}
       </Typography>
 

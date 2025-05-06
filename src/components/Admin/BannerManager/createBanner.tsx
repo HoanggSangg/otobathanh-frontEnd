@@ -86,7 +86,7 @@ const CreateBanner: React.FC<CreateBannerProps> = ({ selectedBanner, onSuccess }
 
   return (
     <FormContainer>
-      <Typography variant="h5" sx={{ mb: 4, color: '#e31837', fontWeight: 'bold' }}>
+      <Typography variant="h5" sx={{ mb: 4, color: '#333', fontWeight: 'bold' }}>
         {selectedBanner ? "Chỉnh sửa banner" : "Thêm banner mới"}
       </Typography>
 

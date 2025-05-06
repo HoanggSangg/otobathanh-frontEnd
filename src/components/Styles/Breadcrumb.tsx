@@ -82,6 +82,16 @@ const Breadcrumb = () => {
         return 'Sản phẩm';
       case 'accounts':
         return 'Tài khoản';
+      case 'account':
+        return 'Tài khoản';
+      case 'profile':
+        return 'Thông tin cá nhân';
+      case 'update':
+        return 'Cập nhật thông tin';
+      case 'likeProducts':
+        return 'Sản phẩm yêu thích';
+      case 'changePass':
+        return 'Thay đổi mật khẩu';
       case 'booking':
         return 'Đặt lịch';
       case 'category':

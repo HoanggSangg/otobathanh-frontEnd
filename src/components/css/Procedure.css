@@ -1,110 +1,252 @@
 .work-process-wrapper {
+  position: relative;
+  width: 1300px;
+  height: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.car-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.car-center img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.5s ease-in-out, transform 0.3s ease;
+}
+
+.step-box {
+  position: absolute;
+  width: 180px;
+  text-align: center;
+  transform-origin: center;
+  left: 50%;
+  top: 50%;
+}
+
+.position-1  { transform: translate(-50%, -50%) rotate(0deg) translate(-100px, -280px) rotate(0deg); }
+.position-2  { transform: translate(-50%, -50%) rotate(30deg) translate(-70px, -280px) rotate(-30deg); }
+
+.position-3  { transform: translate(-50%, -50%) rotate(60deg) translate(-40px, -370px) rotate(-60deg); }
+
+.position-4  { transform: translate(-50%, -50%) rotate(90deg) translate(-70px, -480px) rotate(-90deg); }
+.position-5  { transform: translate(-50%, -50%) rotate(120deg) translate(-130px, -480px) rotate(-120deg); }
+
+.position-6  { transform: translate(-50%, -50%) rotate(150deg) translate(-130px, -370px) rotate(-150deg); }
+
+.position-7  { transform: translate(-50%, -50%) rotate(180deg) translate(-80px, -310px) rotate(-180deg); }
+.position-8  { transform: translate(-50%, -50%) rotate(210deg) translate(-70px, -320px) rotate(-210deg); }
+
+.position-9  { transform: translate(-50%, -50%) rotate(240deg) translate(-70px, -390px) rotate(-240deg); }
+
+.position-10 { transform: translate(-50%, -50%) rotate(270deg) translate(-130px, -480px) rotate(-270deg); }
+.position-11 { transform: translate(-50%, -50%) rotate(300deg) translate(-180px, -450px) rotate(-300deg); }
+
+.position-12 { transform: translate(-50%, -50%) rotate(330deg) translate(-150px, -350px) rotate(-330deg); }
+
+.step-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.step-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #e31837;
+}
+
+.step-description {
+  font-size: 14px;
+  color: #666;
+}
+
+.work-process-container {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.work-process-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1a365d;
+  margin-bottom: 1rem;
+}
+
+.work-process-subtitle {
+  color: #4a5568;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Base styles remain the same until media queries */
+
+/* New Responsive Design */
+@media (max-width: 1440px) {
+  .work-process-wrapper {
+    width: 1200px;
+    height: 750px;
+    transform: scale(0.9);
+  }
+}
+
+@media (max-width: 1200px) {
+  .work-process-wrapper {
+    width: 1000px;
+    height: 700px;
+    transform: scale(0.85);
+  }
+
+  .car-center {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .work-process-wrapper {
+    width: 900px;
+    height: 650px;
+    transform: scale(0.8);
+  }
+
+  .car-center {
+    width: 280px;
+    height: 280px;
+  }
+
+  .step-box {
+    width: 160px;
+  }
+
+  .step-icon {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 900px) {
+  .work-process-wrapper {
+    width: 100%;
+    height: auto;
+    transform: none;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .car-center {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 30px auto;
+    transform: none;
+  }
+
+  .step-box {
     position: relative;
     width: 100%;
-    height: 600px;
-    margin: 0 auto;
+    max-width: 320px;
+    margin: 20px auto;
+    left: auto;
+    top: auto;
+    transform: none !important;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
-  
-  .car-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-  
-  .car-center img {
-    width: 300px;
-    max-width: 100%;
-    height: auto;
-  }
-  
-  .step-box {
-    position: absolute;
-    width: 350px;
-    padding: 0 20px;
-    background: #fff;
-    border-radius: 12px;
-    text-align: center;
-  }
-  
+
   .step-icon {
     width: 60px;
     height: 60px;
-    margin-bottom: 16px;
-  }
-  
-  .step-title {
-    font-size: 20px;
-    color: #0d47a1;
-    margin-bottom: 10px;
-    font-weight: bold;
-  }
-  
-  .step-description {
-    font-size: 15px;
-    color: #333;
-    line-height: 1.4;
+    margin: 0 15px 0 0;
   }
 
-  .work-process-container {
-    padding: 60px 0;
-    text-align: center;
+  .step-content {
+    flex: 1;
   }
-  
+
+  .step-title {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+  }
+
+  .step-description {
+    margin: 0;
+    font-size: 14px;
+  }
+
   .work-process-title {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #1a365d;
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
   }
-  
+
   .work-process-subtitle {
-    color: #4a5568;
-    margin-bottom: 3rem;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    font-size: 1rem;
+    padding: 0 20px;
   }
-  
-  /* Positioning for 4 corners */
-  .top-left {
-    top: 6%;
-    left: 6%;
+}
+
+@media (max-width: 480px) {
+  .car-center {
+    width: 200px;
+    height: 200px;
+    left: 2%;
   }
-  
-  .top-right {
-    top: 6%;
-    right: 6%;
+
+  .car-center img {
+    width: 90%;
+    height: 90%;
+    padding: 0;
+    margin: 0;
+    object-fit: contain;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
   }
-  
-  .bottom-left {
-    bottom: 6%;
-    left: 6%;
+
+  .step-box {
+    max-width: 280px;
   }
-  
-  .bottom-right {
-    bottom: 6%;
-    right: 6%;
+
+  .step-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 12px 0 0;
   }
-  
-  /* Responsive fallback */
-  @media (max-width: 768px) {
-    .work-process-wrapper {
-      height: auto;
-      padding-bottom: 40px;
-    }
-  
-    .step-box {
-      position: static;
-      margin: 20px auto;
-    }
-  
-    .car-center {
-      position: static;
-      transform: none;
-      display: flex;
-      justify-content: center;
-      margin: 40px 0;
-    }
+
+  .step-title {
+    font-size: 14px;
   }
-  
+
+  .step-description {
+    font-size: 12px;
+  }
+
+  .work-process-title {
+    font-size: 1.5rem;
+  }
+}

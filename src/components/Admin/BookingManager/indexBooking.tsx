@@ -37,10 +37,10 @@ const PageContainer = styled(Container)`
   }
 `;
 
-const Title = styled(Typography)`
-  margin-bottom: 40px !important;
-  color: #e31837;
-  font-weight: bold !important;
+const Title = styled.h1`
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
 
   @media (max-width: 768px) {
     margin-bottom: 20px !important;
@@ -290,7 +290,7 @@ const IndexBooking = () => {
 
     return (
         <PageContainer maxWidth="lg">
-            <Title variant="h4">Quản lý Lịch Hẹn</Title>
+            <Title>Quản lý Lịch Hẹn</Title>
             <Paper sx={{
                 p: 2,
                 mb: 2,
