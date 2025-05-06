@@ -8,7 +8,10 @@ import {
   Button,
   Box,
   FormControl, 
-  InputLabel
+  InputLabel,
+  Dialog,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import { createProductAPI, getAllCategoriesAPI, updateProductAPI } from '../../API';
 import { getCommentsByProductIdAPI, deleteCommentAPI } from '../../API';
@@ -124,10 +127,13 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
     description: ''
   });
   const [image, setImage] = useState<File | null>(null);
-  const showToast = useToast();
+  const [subImages, setSubImages] = useState<File[]>([]);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [currentSubImages, setCurrentSubImages] = useState<string[]>([]);
+  const showToast = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
   // Add new useEffect to fetch comments when editing
   useEffect(() => {
@@ -140,6 +146,7 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
         description: editingProduct.description || ''
       });
       setCurrentImage(editingProduct.image);
+      setCurrentSubImages(editingProduct.subImages || []);
     }
 
     const fetchComments = async () => {
@@ -205,6 +212,39 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCurrentImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSubImages(prev => [...prev, ...files]);
+      
+      // Preview subImages
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setCurrentSubImages(prev => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeSubImage = (index: number) => {
+    setSubImages(prev => prev.filter((_, i) => i !== index));
+    setCurrentSubImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -215,8 +255,16 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
 
     try {
       let base64Image = null;
+      let base64SubImages: string[] = [];
+
       if (image) {
         base64Image = await convertToBase64(image);
+      }
+
+      // Convert subImages to base64
+      for (const subImage of subImages) {
+        const base64 = await convertToBase64(subImage);
+        base64SubImages.push(base64);
       }
 
       const newProduct = {
@@ -225,14 +273,17 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
         price: Number(formData.price),
         quantity: Number(formData.quantity),
         category_id: formData.category_id,
-        image: base64Image
+        image: base64Image,
+        subImages: base64SubImages
       };
 
       await createProductAPI(newProduct);
       showToast('Thêm sản phẩm thành công!', 'success');
 
       setImage(null);
+      setSubImages([]);
       setCurrentImage(null);
+      setCurrentSubImages([]);
       onSuccess();
     } catch (error) {
       console.error('Error:', error);
@@ -250,8 +301,16 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
 
     try {
       let base64Image = null;
+      let base64SubImages: string[] = [];
+
       if (image) {
         base64Image = await convertToBase64(image);
+      }
+
+      // Convert new subImages to base64
+      for (const subImage of subImages) {
+        const base64 = await convertToBase64(subImage);
+        base64SubImages.push(base64);
       }
 
       const updatedProduct = {
@@ -260,8 +319,11 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
         price: Number(formData.price),
         quantity: Number(formData.quantity),
         category_id: formData.category_id,
-        image: base64Image || currentImage
+        image: base64Image || currentImage,
+        subImages: base64SubImages.length > 0 ? base64SubImages : currentSubImages
       };
+
+      console.log(updatedProduct);
 
       if (editingProduct) {
         await updateProductAPI(editingProduct._id, updatedProduct);
@@ -271,12 +333,6 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
     } catch (error) {
       console.error('Error:', error);
       showToast('Có lỗi khi cập nhật sản phẩm!', 'error');
-    }
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]);
     }
   };
 
@@ -371,7 +427,7 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
             <Box sx={{ gridColumn: '1 / -1', mb: 3 }}>
               {currentImage && (
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="subtitle1" sx={{ mb: 1 }}>Ảnh hiện tại:</Typography>
+                  <Typography variant="subtitle1" sx={{ mb: 1 }}>Ảnh chính:</Typography>
                   <img
                     src={currentImage}
                     alt="Current product"
@@ -397,15 +453,68 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
                   variant="outlined"
                   component="span"
                   fullWidth
+                  sx={{ mb: 2 }}
                 >
-                  {editingProduct ? "Thay đổi ảnh" : "Chọn ảnh sản phẩm"}
+                  {editingProduct ? "Thay đổi ảnh chính" : "Chọn ảnh chính"}
                 </Button>
               </label>
-              {image && (
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  Đã chọn: {image.name}
-                </Typography>
-              )}
+
+              {/* Sub Images Section */}
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>Ảnh phụ:</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                  {currentSubImages.map((img, index) => (
+                    <Box key={index} sx={{ position: 'relative' }}>
+                      <img
+                        src={img}
+                        alt={`Sub image ${index + 1}`}
+                        style={{
+                          width: '100px',
+                          height: '100px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => {
+                          // Show full size image in modal
+                          setSelectedImageUrl(img);
+                        }}
+                      />
+                      <IconButton
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          top: -8,
+                          right: -8,
+                          bgcolor: 'white',
+                          '&:hover': { bgcolor: 'white' }
+                        }}
+                        onClick={() => removeSubImage(index)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  ))}
+                </Box>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleSubImagesChange}
+                  style={{ display: 'none' }}
+                  id="sub-images-upload"
+                />
+                <label htmlFor="sub-images-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    fullWidth
+                  >
+                    Thêm ảnh phụ mới
+                  </Button>
+                </label>
+              </Box>
             </Box>
           </Box>
 
@@ -421,7 +530,9 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
                   description: ''
                 });
                 setImage(null);
+                setSubImages([]);
                 setCurrentImage(null);
+                setCurrentSubImages([]);
               }}
             >
               Làm mới
@@ -436,6 +547,31 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
           </Box>
         </form>
       </FormContainer>
+
+      {/* Image Preview Modal */}
+      {selectedImageUrl && (
+        <Dialog
+          open={!!selectedImageUrl}
+          onClose={() => setSelectedImageUrl(null)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogContent sx={{ p: 0 }}>
+            <img
+              src={selectedImageUrl}
+              alt="Preview"
+              style={{
+                width: '100%',
+                height: 'auto',
+                objectFit: 'contain'
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setSelectedImageUrl(null)}>Đóng</Button>
+          </DialogActions>
+        </Dialog>
+      )}
 
       {/* Add comments section after the form */}
       {editingProduct && (

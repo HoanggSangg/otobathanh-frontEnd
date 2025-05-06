@@ -11,6 +11,8 @@ import {
   TableRow,
   Paper,
   Pagination,
+  Typography,
+  Box,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -274,6 +276,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
   const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [selectedSubImages, setSelectedSubImages] = useState<string[] | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
@@ -400,6 +403,14 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
     return (nameMatch || categoryMatch || descriptionMatch) && priceInRange;
   });
 
+  const handleSubImagesClick = (subImages: string[]) => {
+    setSelectedSubImages(subImages);
+  };
+
+  const handleCloseSubImagesModal = () => {
+    setSelectedSubImages(null);
+  };
+
   // Update the search section in the return statement
   return (
     <Container>
@@ -443,6 +454,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                 <TableCell>Số lượng</TableCell>
                 <TableCell>Danh mục</TableCell>
                 <TableCell>Mô tả</TableCell>
+                <TableCell>Ảnh phụ</TableCell>
                 <TableCell>Ngày tạo</TableCell>
                 <TableCell align="right">Thao tác</TableCell>
               </TableRow>
@@ -495,6 +507,24 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                       )}
                     </TableCell>
                     <TableCell>
+                      {product.subImages && product.subImages.length > 0 ? (
+                        <Typography
+                          sx={{
+                            color: '#0066cc',
+                            cursor: 'pointer',
+                            '&:hover': { textDecoration: 'underline' }
+                          }}
+                          onClick={() => handleSubImagesClick(product.subImages)}
+                        >
+                          Xem {product.subImages.length} ảnh phụ
+                        </Typography>
+                      ) : (
+                        <Typography sx={{ color: '#999' }}>
+                          Không có ảnh phụ
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       {new Date(product.createdAt).toLocaleDateString('vi-VN')}
                     </TableCell>
                     <TableCell align="right">
@@ -515,6 +545,52 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
       {selectedImageUrl && (
         <ImageModal onClick={handleCloseModal}>
           <ModalImage src={selectedImageUrl} alt="Enlarged view" />
+        </ImageModal>
+      )}
+
+      {selectedSubImages && (
+        <ImageModal onClick={handleCloseSubImagesModal}>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            maxWidth: '100%',
+            maxHeight: '90vh',
+            overflow: 'auto',
+            bgcolor: 'white',
+            p: 2,
+            borderRadius: 2
+          }}>
+            <Typography variant="h6" sx={{ color: '#333', mb: 2 }}>
+              Ảnh phụ của sản phẩm
+            </Typography>
+            <Box sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 2,
+              justifyContent: 'flex-start'
+            }}>
+              {selectedSubImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`Sub image ${index + 1}`}
+                  style={{
+                    width: '300px',
+                    height: '300px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
+                    cursor: 'pointer'
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedImageUrl(img);
+                    setSelectedSubImages(null);
+                  }}
+                />
+              ))}
+            </Box>
+          </Box>
         </ImageModal>
       )}
 
@@ -539,7 +615,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
         </PaginationWrapper>
       )}
 
-<Dialog
+      <Dialog
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
         PaperProps={{

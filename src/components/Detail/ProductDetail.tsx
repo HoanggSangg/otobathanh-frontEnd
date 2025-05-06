@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { getProductByIdAPI, addToCartAPI, getAllProductsAPI, createCommentAPI, getCommentsByProductIdAPI, getCartItemsAPI } from '../API';
+import { getProductByIdAPI, getAllProductsAPI, createCommentAPI, getCommentsByProductIdAPI } from '../API';
 import { getCurrentUser } from '../Utils/auth';
 import { useToast } from '../Styles/ToastProvider';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import { deleteCommentAPI } from '../API';
-// Styled Components for layout and design
+
 const ProductContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -119,7 +119,6 @@ const Sidebar = styled.div`
   }
 `;
 
-// Add these styled components after your existing styled components
 const CommentSection = styled.div`
   margin-top: 40px;
   padding-top: 20px;
@@ -173,7 +172,6 @@ const CommentHeader = styled.div`
   color: #666;
 `;
 
-// Add this styled component for related products
 const RelatedProductsList = styled.ul`
   list-style: none;
   padding: 0;
@@ -191,32 +189,27 @@ const RelatedProductsList = styled.ul`
   }
 `;
 
-// Interface for Product data structure
 interface Product {
   _id: string;
   name: string;
   price: number;
   quantity: number;
+  category_id: {
+    _id: string;
+    name: string;
+  };
   description: string;
   image: string;
+  subImages: string[];
   specifications: {
     label: string;
     value: string;
   }[];
+  date: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-interface CartItem {
-  _id: string;
-  quantity: number;
-  product_id: {
-    _id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  };
-}
-
-// Update the Comment interface
 interface Comment {
   _id: string;
   comment: string;
@@ -236,6 +229,7 @@ const ProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const user = getCurrentUser();
   const showToast = useToast();
 
@@ -277,11 +271,11 @@ const ProductPage = () => {
       }
     } catch (err: any) {
       if (err.response?.status === 404) {
-        showToast(err.response.data.message, 'error'); // Comment not found
+        showToast(err.response.data.message, 'error');
       } else if (err.response?.status === 403) {
-        showToast(err.response.data.message, 'error'); // Permission denied
+        showToast(err.response.data.message, 'error');
       } else if (err.response?.status === 500) {
-        showToast(err.response.data.message, 'error'); // Server error
+        showToast(err.response.data.message, 'error');
       } else {
         showToast('Có lỗi khi xóa bình luận!', 'error');
       }
@@ -289,7 +283,7 @@ const ProductPage = () => {
     }
   };
 
-  // Add this useEffect after your existing useEffect
+
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -306,71 +300,36 @@ const ProductPage = () => {
   }, [id]);
 
   useEffect(() => {
-    // Function to fetch product details and related products
     const fetchProductDetails = async () => {
       try {
         if (id) {
-          // Fetch current product details
           const productData = await getProductByIdAPI(id);
           setProduct(productData);
+          setSelectedImage(productData.image);
 
-          // Fetch all products and filter for related products
           const allProducts = await getAllProductsAPI();
           const filtered = allProducts
-            .filter((p: Product) => p._id !== id) // Exclude current product
-            .slice(0, 8); // Get only 3 related products
+            .filter((p: Product) => 
+              p._id !== id && 
+              p.category_id._id === productData.category_id._id
+            )
+            .slice(0, 8);
           setRelatedProducts(filtered);
         }
       } catch (error) {
         console.error('Error fetching product:', error);
-        navigate('/products'); // Redirect to products page on error
+        navigate('/products');
       }
     };
 
     fetchProductDetails();
-    // Scroll to top when loading new product
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [id, navigate]); // Re-run effect when ID changes
+  }, [id, navigate]);
 
-  const handleAddToCart = async (e: React.MouseEvent, product: Product) => {
-    e.stopPropagation();
-
-    if (!user || !user.id) {
-      navigate('/');
-      return;
-    }
-
-    try {
-      if (product.quantity < 1) {
-        showToast('Sản phẩm đã hết hàng!', 'info');
-        return;
-      }
-
-      // Get current cart items to check quantity
-      const cartItems = await getCartItemsAPI(user.id);
-      const existingCartItem = cartItems.find((item: CartItem) => item.product_id._id === product._id);
-      const currentCartQuantity = existingCartItem ? existingCartItem.quantity : 0;
-
-      // Check if adding one more would exceed available quantity
-      if (currentCartQuantity + 1 > product.quantity) {
-        showToast(`Không thể thêm vào giỏ hàng. Chỉ còn ${product.quantity} sản phẩm trong kho!`, 'info');
-        return;
-      }
-
-      const cartData = {
-        quantity: 1,
-        product_id: product._id,
-        account_id: user.id
-      };
-
-      await addToCartAPI(cartData);
-    } catch (error) {
-      console.error('Failed to add to cart:', error);
-      showToast('Không thể thêm vào của hàng!', 'error');
-    }
+  const handleThumbnailClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl); // Cập nhật ảnh chính khi nhấp vào thumbnail
   };
 
-  // Show loading state while fetching data
   if (!product && id) {
     return <div>Loading...</div>;
   }
@@ -379,7 +338,6 @@ const ProductPage = () => {
     <ProductContainer>
       {product ? (
         <>
-          {/* Product Header Section */}
           <ProductHeader>
             <ProductTitle>{product.name}</ProductTitle>
             <ProductPrice>
@@ -388,15 +346,44 @@ const ProductPage = () => {
           </ProductHeader>
 
           <ProductContent>
-            {/* Main Product Content */}
             <MainContent>
-              {/* Product Image */}
-              <img src={product.image} alt={product.name} />
+              <img src={selectedImage || product.image} alt={product.name} />
+              {product.subImages && product.subImages.length > 0 && (
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <img
+                    src={product.image}
+                    alt="Main Thumbnail"
+                    onClick={() => handleThumbnailClick(product.image)}
+                    style={{
+                      width: '80px',
+                      height: '80px',
+                      objectFit: 'cover',
+                      cursor: 'pointer',
+                      border: selectedImage === product.image ? '2px solid #e31837' : '1px solid #ddd',
+                      borderRadius: '4px',
+                    }}
+                  />
+                  {product.subImages.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Thumbnail ${index}`}
+                      onClick={() => handleThumbnailClick(image)}
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        objectFit: 'cover',
+                        cursor: 'pointer',
+                        border: selectedImage === image ? '2px solid #e31837' : '1px solid #ddd',
+                        borderRadius: '4px',
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
 
-              {/* Product Description */}
               <ProductDescription>{product.description}</ProductDescription>
 
-              {/* Technical Specifications */}
               {product.specifications && product.specifications.length > 0 && (
                 <SpecificationList>
                   {product.specifications.map((spec, index) => (
@@ -408,17 +395,10 @@ const ProductPage = () => {
                 </SpecificationList>
               )}
 
-              {/* Contact Button */}
-              {/* <ContactButton
-                onClick={(e) => handleAddToCart(e, product)}
-              >
-                Mua ngay
-              </ContactButton> */}
               <ContactButton onClick={() => navigate('/contact')}>
                 Liên hệ tư vấn
               </ContactButton>
 
-              {/* Add Comment Section */}
               <CommentSection>
                 <h3>Bình luận</h3>
                 <CommentForm onSubmit={handleCommentSubmit}>
@@ -459,7 +439,6 @@ const ProductPage = () => {
               </CommentSection>
             </MainContent>
 
-            {/* Sidebar with Related Products */}
             <Sidebar>
               <h3>Sản phẩm liên quan</h3>
               <RelatedProductsList>
