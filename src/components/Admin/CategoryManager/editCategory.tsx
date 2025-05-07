@@ -30,10 +30,41 @@ const Container = styled.div`
 
 const StyledTableContainer = styled(TableContainer)`
   margin-top: 20px;
+  overflow-x: auto;
   
   .MuiTableCell-head {
     font-weight: 600;
     background-color: #f5f5f5;
+    
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  .MuiTableCell-body {
+    @media (max-width: 768px) {
+      display: block;
+      padding: 8px 16px;
+      text-align: left;
+      border: none;
+      
+      &:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .MuiTableRow-root {
+    @media (max-width: 768px) {
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
   }
 `;
 

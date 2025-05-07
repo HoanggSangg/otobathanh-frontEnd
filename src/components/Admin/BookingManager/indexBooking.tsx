@@ -27,6 +27,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { getMonthlyContactCountAPI } from '../../API';
 import { getAllContactsAPI, getContactsByDateAPI, getContactsByTimeSlotAPI, updateContactAPI, updateContactStatusAPI, deleteContactAPI, getContactByIdAPI } from '../../API';
 
 const PageContainer = styled(Container)`
@@ -51,23 +52,39 @@ const Title = styled.h1`
 const StyledTableContainer = styled(TableContainer) <StyledTableContainerProps>`
   margin-top: 20px;
   overflow-x: auto;
-
+  
   .MuiTableCell-head {
     font-weight: 600;
     background-color: #f5f5f5;
     
     @media (max-width: 768px) {
-      padding: 8px;
-      font-size: 14px;
-      white-space: nowrap;
+      display: none;
     }
   }
 
   .MuiTableCell-body {
     @media (max-width: 768px) {
-      padding: 8px;
-      font-size: 13px;
-      white-space: nowrap;
+      display: block;
+      padding: 8px 16px;
+      text-align: left;
+      border: none;
+      
+      &:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .MuiTableRow-root {
+    @media (max-width: 768px) {
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
   }
 `;
@@ -168,6 +185,10 @@ const IndexBooking = () => {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [contactToDelete, setContactToDelete] = useState<string | null>(null);
+    const [isMonthlyModalOpen, setIsMonthlyModalOpen] = useState(false);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [monthlyCount, setMonthlyCount] = useState(0);
 
     useEffect(() => {
         fetchContacts();
@@ -179,6 +200,15 @@ const IndexBooking = () => {
             setContacts(response);
         } catch (error) {
             showToast('Không thể tải danh sách lịch hẹn', 'error');
+        }
+    };
+
+    const handleMonthlyCount = async () => {
+        try {
+            const response = await getMonthlyContactCountAPI(selectedMonth, selectedYear);
+            setMonthlyCount(response.count);
+        } catch (error) {
+            showToast('Không thể lấy thống kê tháng', 'error');
         }
     };
 
@@ -302,7 +332,15 @@ const IndexBooking = () => {
                     minWidth: { xs: '100%', sm: 200 }
                 }
             }}>
-                <FormControl sx={{ minWidth: 200 }}>
+                <FormControl sx={{
+                    minWidth: 200,
+                    '& .MuiInputBase-root': {
+                        height: '44px'
+                    },
+                    '& .MuiOutlinedInput-input': {
+                        padding: '0 14px'
+                    }
+                }}>
                     <TextField
                         type="date"
                         label="Tìm theo ngày"
@@ -312,7 +350,18 @@ const IndexBooking = () => {
                     />
                 </FormControl>
 
-                <FormControl sx={{ minWidth: 200 }}>
+                <FormControl sx={{
+                    minWidth: 200,
+                    '& .MuiInputBase-root': {
+                        height: '44px'
+                    },
+                    '& .MuiInputLabel-root': {
+                        transform: 'translate(18px, 10px) scale(1)'
+                    },
+                    '& .MuiInputLabel-shrink': {
+                        transform: 'translate(14px, -9px) scale(0.75)'
+                    }
+                }}>
                     <InputLabel>Tìm theo giờ hẹn</InputLabel>
                     <Select
                         value={searchTimeSlot}
@@ -330,14 +379,27 @@ const IndexBooking = () => {
 
                 <div style={{
                     display: 'flex',
-                    gap: '10px',
-                    width: '100%'
+                    gap: '16px',
+                    width: '100%',
+                    justifyContent: 'flex-end',
+                    flexWrap: 'wrap'
                 }}>
                     <Button
                         onClick={handleCombinedSearch}
                         variant="contained"
-                        fullWidth
-                        sx={{ height: { xs: 40, sm: 40 } }}
+                        sx={{
+                            flex: '1',
+                            minWidth: '120px',
+                            height: '44px',
+                            backgroundColor: '#1976d2',
+                            '&:hover': {
+                                backgroundColor: '#1565c0',
+                            },
+                            fontSize: '15px',
+                            fontWeight: 500,
+                            textTransform: 'none',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
                     >
                         Tìm kiếm
                     </Button>
@@ -348,10 +410,41 @@ const IndexBooking = () => {
                             fetchContacts();
                         }}
                         variant="outlined"
-                        fullWidth
-                        sx={{ height: { xs: 40, sm: 40 } }}
+                        sx={{
+                            flex: '1',
+                            minWidth: '120px',
+                            height: '44px',
+                            borderColor: '#1976d2',
+                            color: '#1976d2',
+                            '&:hover': {
+                                borderColor: '#1565c0',
+                                backgroundColor: 'rgba(25, 118, 210, 0.04)'
+                            },
+                            fontSize: '15px',
+                            fontWeight: 500,
+                            textTransform: 'none'
+                        }}
                     >
                         Đặt lại
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={() => setIsMonthlyModalOpen(true)}
+                        sx={{
+                            flex: '1',
+                            minWidth: '120px',
+                            height: '44px',
+                            backgroundColor: '#2e7d32',
+                            '&:hover': {
+                                backgroundColor: '#1b5e20',
+                            },
+                            fontSize: '15px',
+                            fontWeight: 500,
+                            textTransform: 'none',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                    >
+                        Thống kê tháng
                     </Button>
                 </div>
             </Paper>
@@ -438,7 +531,6 @@ const IndexBooking = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Status Update Dialog */}
             <Dialog open={isStatusDialogOpen} onClose={() => setIsStatusDialogOpen(false)}>
                 <DialogTitle>Cập nhật trạng thái lịch hẹn</DialogTitle>
                 <DialogContent>
@@ -465,7 +557,6 @@ const IndexBooking = () => {
                 </DialogActions>
             </Dialog>
 
-            {/* Contact Detail Dialog */}
             <Dialog
                 open={isDetailDialogOpen}
                 onClose={() => {
@@ -648,6 +739,103 @@ const IndexBooking = () => {
                     >
                         Xóa
                     </StyledButton>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={isMonthlyModalOpen}
+                onClose={() => setIsMonthlyModalOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>Thống kê lịch hẹn theo tháng</DialogTitle>
+                <DialogContent>
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '16px' }}>
+                        <FormControl fullWidth>
+                            <InputLabel>Tháng</InputLabel>
+                            <Select
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                                label="Tháng"
+                            >
+                                {Array.from({ length: 12 }, (_, i) => (
+                                    <MenuItem key={i + 1} value={i + 1}>
+                                        Tháng {i + 1}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth>
+                            <InputLabel>Năm</InputLabel>
+                            <Select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                label="Năm"
+                            >
+                                {Array.from({ length: 5 }, (_, i) => {
+                                    const year = new Date().getFullYear() - 3 + i;
+                                    return (
+                                        <MenuItem key={year} value={year}>
+                                            {year}
+                                        </MenuItem>
+                                    );
+                                })}
+                            </Select>
+                        </FormControl>
+                    </div>
+                    {monthlyCount > 0 && (
+                        <TableContainer component={Paper} sx={{ mt: 3 }}>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Họ và tên</TableCell>
+                                        <TableCell>Số điện thoại</TableCell>
+                                        <TableCell>Ngày hẹn</TableCell>
+                                        <TableCell>Giờ hẹn</TableCell>
+                                        <TableCell>Trạng thái</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {contacts
+                                        .filter(contact => {
+                                            const contactDate = new Date(contact.date);
+                                            return (
+                                                contactDate.getMonth() + 1 === selectedMonth &&
+                                                contactDate.getFullYear() === selectedYear
+                                            );
+                                        })
+                                        .map((contact) => (
+                                            <TableRow key={contact._id}>
+                                                <TableCell>{contact.fullName}</TableCell>
+                                                <TableCell>{contact.numberPhone}</TableCell>
+                                                <TableCell>{formatDate(contact.date)}</TableCell>
+                                                <TableCell>{contact.timeSlot}</TableCell>
+                                                <TableCell>
+                                                    <span style={{
+                                                        color: getStatusColor(contact.status),
+                                                        fontWeight: 'bold'
+                                                    }}>
+                                                        {ContactStatus[contact.status]}
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsMonthlyModalOpen(false)}>
+                        Đóng
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleMonthlyCount}
+                        color="primary"
+                    >
+                        Xem thống kê
+                    </Button>
                 </DialogActions>
             </Dialog>
         </PageContainer>

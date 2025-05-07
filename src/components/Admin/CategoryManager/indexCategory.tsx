@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   Container,
-  Typography,
   Tabs,
   Tab,
   Box,
@@ -14,10 +13,16 @@ const PageContainer = styled(Container)`
   padding: 40px 0;
 `;
 
-const Title = styled(Typography)`
-  margin-bottom: 40px !important;
-  color: #e31837;
-  font-weight: bold !important;
+const Title = styled.h1`
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-left: 20px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px !important;
+    font-size: 1.5rem !important;
+  }
 `;
 
 const StyledTabs = styled(Tabs)`
@@ -25,11 +30,27 @@ const StyledTabs = styled(Tabs)`
   .MuiTabs-indicator {
     background-color: #e31837;
   }
+  
+  @media (max-width: 768px) {
+    .MuiTabs-flexContainer {
+      display: flex;
+      width: 100%;
+    }
+  }
 `;
 
 const StyledTab = styled(Tab)`
   &.Mui-selected {
     color: #e31837 !important;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 8px 12px;
+    min-height: 40px;
+    flex: 1;
+    min-width: auto;
+    white-space: nowrap;
   }
 `;
 
@@ -68,10 +89,15 @@ const IndexCategory = () => {
 
   return (
     <PageContainer maxWidth="lg">
-      <Title variant="h4">Quản lý Danh mục</Title>
+      <Title>Quản lý Danh mục</Title>
 
-      <StyledTabs value={tabValue} onChange={handleTabChange}>
-        <StyledTab label={selectedCategory ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"} />
+      <StyledTabs 
+        value={tabValue} 
+        onChange={handleTabChange}
+        variant="scrollable"
+        scrollButtons="auto"
+      >
+        <StyledTab label={selectedCategory ? "Chỉnh sửa danh mục" : "Thêm danh mục"} />
         <StyledTab label="Danh sách danh mục" />
       </StyledTabs>
 

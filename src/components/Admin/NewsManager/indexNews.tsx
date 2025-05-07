@@ -14,12 +14,6 @@ const PageContainer = styled(Container)`
   padding: 40px 0;
 `;
 
-const Title = styled(Typography)`
-  margin-bottom: 40px !important;
-  color: #e31837;
-  font-weight: bold !important;
-`;
-
 const StyledTabs = styled(Tabs)`
   margin-bottom: 20px;
   .MuiTabs-indicator {

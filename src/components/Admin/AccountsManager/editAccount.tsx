@@ -61,6 +61,16 @@ const SearchControls = styled.div`
   @media (max-width: 768px) {
     flex-direction: column;
     width: 100%;
+
+    .sort-controls {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+
+      select {
+        flex: 1;
+      }
+    }
   }
 `;
 
@@ -150,9 +160,11 @@ const FilterSelect = styled.select`
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+  margin-left: 12px;
 
   @media (max-width: 768px) {
     width: 100%;
+    margin-left: 0;
   }
 `;
 
@@ -165,15 +177,33 @@ const StyledTableContainer = styled(TableContainer)`
     background-color: #f5f5f5;
     
     @media (max-width: 768px) {
-      padding: 8px;
-      font-size: 14px;
+      display: none;
     }
   }
 
   .MuiTableCell-body {
     @media (max-width: 768px) {
-      padding: 8px;
-      font-size: 13px;
+      display: block;
+      padding: 8px 16px;
+      text-align: left;
+      border: none;
+      
+      &:before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        margin-right: 1rem;
+      }
+    }
+  }
+
+  .MuiTableRow-root {
+    @media (max-width: 768px) {
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
   }
 `;
@@ -440,20 +470,22 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <FilterSelect
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
-                    >
-                        <option value="date">Sắp xếp theo ngày</option>
-                        <option value="name">Sắp xếp theo tên</option>
-                    </FilterSelect>
-                    <FilterSelect
-                        value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                    >
-                        <option value="desc">Giảm dần</option>
-                        <option value="asc">Tăng dần</option>
-                    </FilterSelect>
+                    <div className="sort-controls">
+                        <FilterSelect
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
+                        >
+                            <option value="date">Sắp xếp theo ngày</option>
+                            <option value="name">Sắp xếp theo tên</option>
+                        </FilterSelect>
+                        <FilterSelect
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                        >
+                            <option value="desc">Giảm dần</option>
+                            <option value="asc">Tăng dần</option>
+                        </FilterSelect>
+                    </div>
                 </SearchControls>
             </Header>
 

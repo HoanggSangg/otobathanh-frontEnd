@@ -14,8 +14,8 @@ const ChatContainer = styled.div`
 const ChatButton = styled(IconButton)`
   background-color: #ff0000 !important;
   color: white !important;
-  width: 76px;
-  height: 76px;
+  width: 50px;
+  height: 50px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   padding: 8px !important;
   &:hover {
@@ -57,8 +57,8 @@ const HeaderLeft = styled.div`
 `;
 
 const Avatar = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: white;
 `;

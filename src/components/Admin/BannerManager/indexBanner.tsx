@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   Container,
-  Typography,
   Tabs,
   Tab,
   Box,
@@ -14,10 +13,16 @@ const PageContainer = styled(Container)`
   padding: 40px 0;
 `;
 
-const Title = styled(Typography)`
-  margin-bottom: 40px !important;
-  color: #e31837;
-  font-weight: bold !important;
+const Title = styled.h1`
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-left: 20px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px !important;
+    font-size: 1.5rem !important;
+  }
 `;
 
 const StyledTabs = styled(Tabs)`
@@ -63,7 +68,7 @@ const IndexBanner = () => {
 
   return (
     <PageContainer maxWidth="lg">
-      <Title variant="h4">Quản lý Banner</Title>
+      <Title>Quản lý Banner</Title>
 
       <StyledTabs value={tabValue} onChange={handleTabChange}>
         <StyledTab label={selectedBanner ? "Chỉnh sửa banner" : "Thêm banner mới"} />

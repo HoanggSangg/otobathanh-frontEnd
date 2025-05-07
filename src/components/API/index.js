@@ -865,5 +865,18 @@ export const googleLoginAPI = async (access_token) => {  // Đổi tên tham s�
   }
 };
 
+export const getMonthlyContactCountAPI = async (month, year) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/contacts/monthly-count`, {
+      params: { month, year },
+      headers: getAuthHeaders()
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error getting monthly contact count:', error);
+    throw error;
+  }
+};
+
 
 

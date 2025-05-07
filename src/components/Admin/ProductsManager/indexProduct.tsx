@@ -74,7 +74,21 @@ export default function ProductManager() {
   return (
     <Container>
       <Box sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Box sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          '& .MuiTabs-root': {
+            minHeight: { xs: 'auto', sm: '48px' }
+          },
+          '& .MuiTab-root': {
+            fontSize: { xs: '14px', sm: '16px' },
+            minHeight: { xs: '40px', sm: '48px' },
+            minWidth: { xs: 'auto', sm: '160px' },
+            textTransform: 'none',
+            flexShrink: 1,
+            whiteSpace: 'nowrap'
+          }
+        }}>
           <Tabs value={value} onChange={handleChange} aria-label="product management tabs">
             <Tab label={editingProduct ? "Chỉnh sửa sản phẩm" : "Thêm sản phẩm"} {...a11yProps(0)} />
             <Tab label="Danh sách sản phẩm" {...a11yProps(1)} />
