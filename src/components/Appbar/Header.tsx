@@ -35,6 +35,10 @@ const AuthButtons = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const HeaderContent = styled.div`
@@ -545,6 +549,17 @@ const Header = () => {
                 }}
               />
             </SearchContainer>
+
+            {!user && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <AuthButton onClick={() => setIsLoginOpen(true)}>
+                  Đăng nhập
+                </AuthButton>
+                <AuthButton $primary onClick={() => setIsRegisterOpen(true)}>
+                  Đăng ký
+                </AuthButton>
+              </div>
+            )}
 
             {user && (
               <>

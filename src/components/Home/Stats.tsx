@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { SectionTitle } from '../Styles/StylesComponents';
 
 const Container = styled.div`
-  background-color: white;
+  background-color: #f5f5f5;
   padding: 40px 0;
   position: relative;
   overflow: hidden;

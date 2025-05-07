@@ -7,7 +7,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import { SiTiktok } from 'react-icons/si';
 
 const FooterWrapper = styled.footer`
-  background-color: #1e2124;
+  background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
   color: white;
   padding: 60px 0 20px 0;
 `;
@@ -44,7 +44,7 @@ const Title = styled(Typography)`
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 40px;
+    width: 230px;
     height: 3px;
     background: #e31837;
   }
@@ -56,7 +56,7 @@ const ContactItem = styled.div`
   margin-bottom: 15px;
   
   .MuiSvgIcon-root {
-    color: #e31837;
+    color: #000;
     margin-right: 10px;
     margin-top: 4px;
   }
@@ -66,9 +66,9 @@ const Copyright = styled.div`
   text-align: center;
   margin-top: 40px;
   padding-top: 20px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  border-top: 1px dashed #fff;
   font-size: 14px;
-  color: #888;
+  color: #fff;
 `;
 
 const SocialMediaSection = styled.div`
@@ -81,13 +81,10 @@ const SocialIcons = styled.div`
   margin-top: 15px;
   
   .MuiIconButton-root {
-    color: white;
-    border: 2px solid #e31837;
+    color: #fff;
+    border: 2px solid #fff;
     padding: 8px;
-    
-    &:hover {
-      background-color: #e31837;
-    }
+    background-color: #000;
     
     svg {
       font-size: 24px;
