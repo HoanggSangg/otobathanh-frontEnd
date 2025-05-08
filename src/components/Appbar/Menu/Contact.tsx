@@ -8,7 +8,6 @@ import { useToast } from '../../Styles/ToastProvider';
 import React, { useState } from 'react';
 
 const ContactContainer = styled.div`
-  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 `;
@@ -17,10 +16,11 @@ const ContactGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  margin-top: 30px;
+  margin: clamp(20px, 5vw, 50px);
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
+    margin: clamp(5px, 3vw, 10px);
   }
 `;
 
@@ -50,11 +50,26 @@ const MapContainer = styled.div`
 `;
 
 const ContactInfo = styled.div`
+  background: #fff;
+  padding: 30px;
+
   h2 {
     color: #e31837;
     font-size: 24px;
     margin-bottom: 20px;
     text-transform: uppercase;
+    position: relative;
+    padding-bottom: 10px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: #e31837;
+    }
   }
 
   p {
@@ -62,29 +77,48 @@ const ContactInfo = styled.div`
     font-size: 16px;
     line-height: 1.8;
     margin-bottom: 20px;
+    text-align: justify;
   }
 `;
 
 const InfoList = styled.div`
   margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
 `;
 
 const InfoItem = styled.div`
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20px;
+  padding: 15px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  transition: all 0.3s ease;
   
   svg {
     color: #e31837;
     margin-right: 15px;
     margin-top: 3px;
+    font-size: 24px;
+    transition: all 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateX(10px);
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    svg {
+      transform: scale(1.1);
+    }
   }
 
   div {
     h3 {
       color: #333;
       font-size: 16px;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-weight: 600;
     }
 
@@ -92,6 +126,7 @@ const InfoItem = styled.div`
       color: #666;
       font-size: 15px;
       margin: 0;
+      line-height: 1.6;
     }
   }
 `;
@@ -100,12 +135,25 @@ const ContactForm = styled.form`
   background: #f8f8f8;
   padding: 30px;
   border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
   h2 {
     color: #e31837;
     font-size: 24px;
     margin-bottom: 20px;
     text-transform: uppercase;
+    position: relative;
+    padding-bottom: 10px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: #e31837;
+    }
   }
 `;
 
@@ -117,18 +165,25 @@ const FormGroup = styled.div`
     color: #333;
     margin-bottom: 8px;
     font-size: 15px;
+    font-weight: 500;
   }
 
-  input, textarea {
+  input, textarea, select {
     width: 100%;
-    padding: 10px;
+    padding: 12px 15px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 15px;
+    transition: all 0.3s ease;
 
     &:focus {
       outline: none;
       border-color: #e31837;
+      box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+    }
+
+    &::placeholder {
+      color: #999;
     }
   }
 
@@ -142,14 +197,52 @@ const SubmitButton = styled.button`
   background: #e31837;
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 4px;
+  padding: 14px 35px;
+  border-radius: 6px;
   font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  margin-top: 10px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    transition: all 0.6s;
+  }
 
   &:hover {
     background: #c41230;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(227, 24, 55, 0.3);
+
+    &:before {
+      left: 100%;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 `;
 

@@ -4,27 +4,26 @@ import {
   Typography, CardContent, CardMedia, Button, Paper, List, ListItem, ListItemText,
   FormControl, FormControlLabel, Checkbox, Select, MenuItem,
 } from '@mui/material';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../Styles/ToastProvider';
 import {
-  getAllProductsAPI, addToCartAPI, getAllCategoriesAPI,
+  getAllProductsAPI, getAllCategoriesAPI,
   likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI,
   searchProductsAPI
 } from '../../API';
 import { getCurrentUser } from '../../Utils/auth';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useSearchParams } from 'react-router-dom';
-import { Pagination } from '@mui/material'; // Add this import
+import { Pagination } from '@mui/material';
 
 const PageWrapper = styled.div`
     background-color: #fff;
     min-height: 100vh;
     padding-top: 80px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  `;
+`;
 
 const MainContainer = styled.div`
     max-width: 1400px;

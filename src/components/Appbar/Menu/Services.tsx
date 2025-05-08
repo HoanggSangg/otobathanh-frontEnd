@@ -3,36 +3,38 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { SectionTitle } from '../../Styles/StylesComponents';
 import BuildIcon from '@mui/icons-material/Build';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import ColorLensIcon from '@mui/icons-material/ColorLens';
-import EngineeringIcon from '@mui/icons-material/Engineering';
+import HandymanIcon from '@mui/icons-material/Handyman';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+
+// Add interface for type safety
+interface SubService {
+  name: string;
+  path: string;
+}
+
+interface Service {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  subServices: SubService[];
+}
 
 const ServicesSection = styled.section`
-  padding: 60px 0;
-  background-color: #f5f5f5;
+  padding: clamp(40px, 5vw, 60px) 0;
+  background: linear-gradient(to bottom, #f8f9fa, #fff);
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 clamp(15px, 3vw, 30px);
 `;
 
 const ServicesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  margin-top: 40px;
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(20px, 3vw, 30px);
+  margin-top: clamp(30px, 4vw, 50px);
 `;
 
 const IconWrapper = styled.div`
@@ -140,37 +142,90 @@ const ServiceCard = styled.div`
   }
 `;
 
+const SubServicesList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 15px 0 0;
+  display: none;
+  text-align: left;
+
+  ${ServiceCard}:hover & {
+    display: block;
+  }
+`;
+
+const SubServiceItem = styled.li`
+  padding: 8px 15px;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+
+  &:hover {
+    background: rgba(227, 24, 55, 0.1);
+    color: #e31837;
+    padding-left: 20px;
+  }
+`;
+
+const services: Service[] = [
+  {
+    icon: <BuildIcon />,
+    title: 'Sửa Chữa Tổng Quát',
+    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    subServices: [
+      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
+      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
+      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
+      { name: 'Sửa chữa điện', path: '/services/electrical' }
+    ]
+  },
+  {
+    icon: <HandymanIcon />,
+    title: 'Sửa Chữa Tổng Quát',
+    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    subServices: [
+      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
+      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
+      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
+      { name: 'Sửa chữa điện', path: '/services/electrical' }
+    ]
+  },
+  {
+    icon: <LocalShippingIcon />,
+    title: 'Sửa Chữa Tổng Quát',
+    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    subServices: [
+      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
+      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
+      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
+      { name: 'Sửa chữa điện', path: '/services/electrical' }
+    ]
+  },
+  {
+    icon: <LocalShippingIcon />,
+    title: 'Sửa Chữa Tổng Quát',
+    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    subServices: [
+      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
+      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
+      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
+      { name: 'Sửa chữa điện', path: '/services/electrical' }
+    ]
+  }
+];
+
 const HomeServices = () => {
   const navigate = useNavigate();
 
-  const services = [
-    {
-      icon: <BuildIcon />,
-      title: 'Sửa Chữa Tổng Quát',
-      description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
-      path: '/services#repair'
-    },
-    {
-      icon: <DirectionsCarIcon />,
-      title: 'Chăm Sóc Xe',
-      description: 'Dịch vụ chăm sóc xe toàn diện, từ rửa xe đến đánh bóng, phục hồi nội thất.',
-      path: '/services#care'
-    },
-    {
-      icon: <ColorLensIcon />,
-      title: 'Sơn & Phục Hồi',
-      description: 'Dịch vụ sơn xe, phục hồi xe tai nạn với công nghệ hiện đại nhất.',
-      path: '/services#paint'
-    },
-    {
-      icon: <EngineeringIcon />,
-      title: 'Bảo Dưỡng Định Kỳ',
-      description: 'Dịch vụ bảo dưỡng định kỳ theo tiêu chuẩn nhà sản xuất, đảm bảo xe luôn trong tình trạng tốt nhất.',
-      path: '/services#maintenance'
+  const handleServiceClick = (service: Service) => {
+    if (service.subServices && service.subServices.length > 0) {
+      navigate(`/services`);
     }
-  ];
+  };
 
-  const handleServiceClick = (path: string) => {
+  const handleSubServiceClick = (e: React.MouseEvent, path: string) => {
+    e.stopPropagation();
     navigate(path);
   };
 
@@ -182,13 +237,23 @@ const HomeServices = () => {
           {services.map((service, index) => (
             <ServiceCard
               key={index}
-              onClick={() => handleServiceClick(service.path)}
+              onClick={() => handleServiceClick(service)}
             >
               <IconWrapper>
                 {service.icon}
               </IconWrapper>
               <ServiceTitle>{service.title}</ServiceTitle>
               <ServiceDescription>{service.description}</ServiceDescription>
+              <SubServicesList>
+                {service.subServices.map((subService, subIndex) => (
+                  <SubServiceItem
+                    key={subIndex}
+                    onClick={(e) => handleSubServiceClick(e, subService.path)}
+                  >
+                    {subService.name}
+                  </SubServiceItem>
+                ))}
+              </SubServicesList>
             </ServiceCard>
           ))}
         </ServicesGrid>
@@ -197,4 +262,4 @@ const HomeServices = () => {
   );
 };
 
-export default HomeServices; 
+export default HomeServices;

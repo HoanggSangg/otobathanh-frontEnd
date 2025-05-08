@@ -8,10 +8,87 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { IconButton } from '@mui/material';
 import { deleteCommentAPI } from '../API';
 
+const ThumbnailContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+`;
+
+const StyledThumbnailWrapper = styled.div`
+  width: 100%;
+  height: 80px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &[data-selected='true'] {
+    border-color: #e31837;
+  }
+`;
+
+// Replace ThumbnailWrapper usage with:
+const ThumbnailWrapper: React.FC<{ isSelected: boolean; onClick: () => void; children: React.ReactNode }> = ({
+  isSelected,
+  onClick,
+  children
+}) => (
+  <StyledThumbnailWrapper data-selected={isSelected} onClick={onClick}>
+    {children}
+  </StyledThumbnailWrapper>
+);
+const ThumbnailImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+`;
+
+const MainImage = styled.img`
+  width: 100%;
+  height: 500px;
+  object-fit: contain;
+  border-radius: 8px;
+  background-color: #f8f8f8;
+`;
+
+const CommentHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  
+  span {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+`;
+
+// Update ProductContainer styles
 const ProductContainer = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 `;
 
 const ProductHeader = styled.div`
@@ -116,6 +193,18 @@ const Sidebar = styled.div`
     font-size: 18px;
     margin-bottom: 15px;
     text-transform: uppercase;
+    position: relative;
+    padding-bottom: 10px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background-color: #e31837;
+    }
   }
 `;
 
@@ -123,6 +212,24 @@ const CommentSection = styled.div`
   margin-top: 40px;
   padding-top: 20px;
   border-top: 1px solid #eee;
+
+  h3 {
+    color: #e31837;
+    font-size: 18px;
+    margin-bottom: 15px;
+    position: relative;
+    padding-bottom: 10px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background-color: #e31837;
+    }
+  }
 `;
 
 const CommentForm = styled.form`
@@ -160,16 +267,14 @@ const CommentList = styled.div`
 
 const CommentItem = styled.div`
   background-color: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-`;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
 
-const CommentHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #666;
+  &:hover {
+    transform: translateY(-2px);
+  }
 `;
 
 const RelatedProductsList = styled.ul`
@@ -178,13 +283,22 @@ const RelatedProductsList = styled.ul`
   margin: 0;
 
   li {
-    padding: 10px;
+    padding: 15px;
     border-bottom: 1px solid #eee;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
     &:hover {
       background-color: #f5f5f5;
+      padding-left: 20px;
+    }
+
+    &::before {
+      content: "•";
+      color: #e31837;
     }
   }
 `;
@@ -309,8 +423,8 @@ const ProductPage = () => {
 
           const allProducts = await getAllProductsAPI();
           const filtered = allProducts
-            .filter((p: Product) => 
-              p._id !== id && 
+            .filter((p: Product) =>
+              p._id !== id &&
               p.category_id._id === productData.category_id._id
             )
             .slice(0, 8);
@@ -347,39 +461,22 @@ const ProductPage = () => {
 
           <ProductContent>
             <MainContent>
-              <img src={selectedImage || product.image} alt={product.name} />
+              <MainImage src={selectedImage || product.image} alt={product.name} />
+
               {product.subImages && product.subImages.length > 0 && (
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                  <img
-                    src={product.image}
-                    alt="Main Thumbnail"
+                <ThumbnailContainer>
+                  <ThumbnailWrapper
+                    isSelected={selectedImage === product.image}
                     onClick={() => handleThumbnailClick(product.image)}
-                    style={{
-                      width: '80px',
-                      height: '80px',
-                      objectFit: 'cover',
-                      cursor: 'pointer',
-                      border: selectedImage === product.image ? '2px solid #e31837' : '1px solid #ddd',
-                      borderRadius: '4px',
-                    }}
-                  />
+                  >
+                    <ThumbnailImage src={product.image} alt="Main Thumbnail" />
+                  </ThumbnailWrapper>
                   {product.subImages.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Thumbnail ${index}`}
-                      onClick={() => handleThumbnailClick(image)}
-                      style={{
-                        width: '80px',
-                        height: '80px',
-                        objectFit: 'cover',
-                        cursor: 'pointer',
-                        border: selectedImage === image ? '2px solid #e31837' : '1px solid #ddd',
-                        borderRadius: '4px',
-                      }}
-                    />
+                    <ThumbnailWrapper key={index} isSelected={selectedImage === image} onClick={() => handleThumbnailClick(image)}>
+                      <ThumbnailImage src={image} alt={`Thumbnail ${index}`} />
+                    </ThumbnailWrapper>
                   ))}
-                </div>
+                </ThumbnailContainer>
               )}
 
               <ProductDescription>{product.description}</ProductDescription>

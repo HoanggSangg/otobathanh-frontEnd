@@ -25,41 +25,53 @@ const Container = styled.div`
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: #f8f9fa;
+  border-radius: 12px;
 `;
 
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 32px;
+  padding: 20px 0;
   
   @media (max-width: 960px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
   }
   
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 `;
 
 const InfoCard = styled(Paper)`
-  padding: 20px;
+  padding: 30px 20px;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 
   &:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15) !important;
   }
 `;
 
 const IconWrapper = styled.div<{ $iconType: string }>`
-  color: #ff0000;
-  margin-bottom: 15px;
+  color: #e53935;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: rgba(229, 57, 53, 0.1);
+  border-radius: 50%;
+  
   .MuiSvgIcon-root {
-    font-size: 40px;
+    font-size: 45px;
     animation: ${props => {
       switch(props.$iconType) {
         case 'home':
@@ -78,9 +90,11 @@ const IconWrapper = styled.div<{ $iconType: string }>`
 `;
 
 const InfoTitle = styled(Typography)`
-  color: #ff0000;
-  font-weight: bold !important;
-  margin-bottom: 15px !important;
+  color: #e53935;
+  font-weight: 600 !important;
+  margin-bottom: 20px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `;
 
 const Information = () => {
@@ -144,4 +158,4 @@ const Information = () => {
   );
 };
 
-export default Information; 
+export default Information;

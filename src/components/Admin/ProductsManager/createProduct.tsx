@@ -323,8 +323,6 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
         subImages: base64SubImages.length > 0 ? base64SubImages : currentSubImages
       };
 
-      console.log(updatedProduct);
-
       if (editingProduct) {
         await updateProductAPI(editingProduct._id, updatedProduct);
         showToast('Cập nhật sản phẩm thành công!', 'success');

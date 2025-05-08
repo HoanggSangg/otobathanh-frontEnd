@@ -778,7 +778,7 @@ export const deleteContactAPI = async (contactId) => {
 
 export const updateContactStatusAPI = async (contactId, status) => {
   try {
-    const response = await axios.patch(`${API_URL}/api/contacts/${contactId}/status`,
+    const response = await axios.put(`${API_URL}/api/contacts/${contactId}/status`,
       { status },
       { headers: getAuthHeaders() }
     );
@@ -871,7 +871,7 @@ export const getMonthlyContactCountAPI = async (month, year) => {
       params: { month, year },
       headers: getAuthHeaders()
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error getting monthly contact count:', error);
     throw error;

@@ -3,10 +3,82 @@ import styled from 'styled-components';
 import { SectionTitle } from '../Styles/StylesComponents';
 
 const Container = styled.div`
-  background-color: #f5f5f5;
-  padding: 40px 0;
-  position: relative;
-  overflow: hidden;
+  background-color: #f8f9fa;
+  padding: 60px 0;
+`;
+
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  
+  @media (max-width: 960px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+`;
+
+const StatItem = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+`;
+
+const IconWrapper = styled.div`
+  width: 70px;
+  height: 70px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: rgba(227, 24, 55, 0.1);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: #e31837;
+  }
+
+  &:hover {
+    transform: rotate(10deg);
+  }
+`;
+
+const StatNumber = styled.div`
+  font-size: 42px;
+  font-weight: bold;
+  color: #e31837;
+  margin-bottom: 15px;
+  
+  @media (max-width: 768px) {
+    font-size: 36px;
+  }
+`;
+
+const StatTitle = styled.div`
+  font-size: 18px;
+  color: #444;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const Content = styled.div`
@@ -20,62 +92,6 @@ const Content = styled.div`
     color: #e31837;
     margin-bottom: 40px;
     text-align: center;
-  }
-`;
-
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-  
-  @media (max-width: 960px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
-  }
-  
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-`;
-
-const StatItem = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-const IconWrapper = styled.div`
-  width: 60px;
-  height: 60px;
-  margin-bottom: 20px;
-  
-  svg {
-    width: 100%;
-    height: 100%;
-    fill: #e31837;
-  }
-`;
-
-const StatNumber = styled.div`
-  font-size: 36px;
-  font-weight: bold;
-  color: #e31837;
-  margin-bottom: 10px;
-  
-  @media (max-width: 768px) {
-    font-size: 30px;
-  }
-`;
-
-const StatTitle = styled.div`
-  font-size: 18px;
-  color: #333;
-  font-weight: 500;
-  
-  @media (max-width: 768px) {
-    font-size: 16px;
   }
 `;
 
@@ -143,4 +159,4 @@ const HomeStats = () => {
   );
 };
 
-export default HomeStats; 
+export default HomeStats;

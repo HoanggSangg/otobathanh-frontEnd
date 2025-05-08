@@ -176,10 +176,12 @@ const ContactStatus = {
 const IndexBooking = () => {
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+    const [editedContact, setEditedContact] = useState<Contact | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [updateReason, setUpdateReason] = useState('');
     const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
     const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
     const [newStatus, setNewStatus] = useState<keyof typeof ContactStatus>('pending');
-    const showToast = useToast();
     const [searchDate, setSearchDate] = useState('');
     const [searchTimeSlot, setSearchTimeSlot] = useState('');
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -189,6 +191,7 @@ const IndexBooking = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [monthlyCount, setMonthlyCount] = useState(0);
+    const showToast = useToast();
 
     useEffect(() => {
         fetchContacts();
@@ -203,81 +206,42 @@ const IndexBooking = () => {
         }
     };
 
-    const handleMonthlyCount = async () => {
-        try {
-            const response = await getMonthlyContactCountAPI(selectedMonth, selectedYear);
-            setMonthlyCount(response.count);
-        } catch (error) {
-            showToast('Không thể lấy thống kê tháng', 'error');
-        }
-    };
-
-    const handleStatusChange = async () => {
-        if (!selectedContact) return;
-        try {
-            const response = await updateContactStatusAPI(selectedContact._id, newStatus);
-
-            if (response) {
-                showToast('Cập nhật trạng thái thành công', 'success');
-                setIsStatusDialogOpen(false);
-                fetchContacts();
-            }
-        } catch (err: any) {
-            showToast('Không thể cập nhật trạng thái lịch hẹn', 'error');
-            console.error('Error updating contact status:', err);
-        }
-    };
-
-    const handleCombinedSearch = async () => {
-        if (!searchDate && !searchTimeSlot) {
-            fetchContacts();
-            return;
-        }
-        try {
-            let response: Contact[];
-            if (searchDate && searchTimeSlot) {
-                // If both filters are set, get by date first then filter by time
-                response = await getContactsByDateAPI(searchDate);
-                response = response.filter((contact: Contact) => contact.timeSlot === searchTimeSlot);
-            } else if (searchDate) {
-                response = await getContactsByDateAPI(searchDate);
-            } else {
-                response = await getContactsByTimeSlotAPI(searchTimeSlot);
-            }
-            setContacts(response);
-        } catch (error) {
-            showToast('Không thể tìm kiếm lịch hẹn', 'error');
-        }
-    };
-    // Add this state for editing mode
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedContact, setEditedContact] = useState<Contact | null>(null);
-
-    // Add this handler for saving edited contact
-    const handleSaveEdit = async () => {
-        if (!editedContact) return;
-        try {
-            const response = await updateContactAPI(editedContact._id, editedContact);
-            if (response) {
-                showToast('Cập nhật thông tin thành công', 'success');
-                setIsEditing(false);
-                fetchContacts();
-                setIsDetailDialogOpen(false);
-            }
-        } catch (error) {
-            showToast('Không thể cập nhật thông tin', 'error');
-        }
-    };
-
-    // Modify handleViewDetails to initialize editedContact
     const handleViewDetails = async (contact: Contact) => {
         try {
             const contactDetails = await getContactByIdAPI(contact._id);
             setSelectedContact(contactDetails);
             setEditedContact(contactDetails);
+            setUpdateReason(''); // Reset lý do mỗi lần mở
             setIsDetailDialogOpen(true);
         } catch (error) {
             showToast('Không thể tải chi tiết lịch hẹn', 'error');
+        }
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editedContact) return;
+
+        if (!updateReason.trim()) {
+            showToast('Vui lòng nhập lý do cập nhật.', 'warning');
+            return;
+        }
+
+        try {
+            const payload = {
+                ...editedContact,
+                updateReason
+            };
+
+            const response = await updateContactAPI(editedContact._id, payload);
+            if (response) {
+                showToast('Cập nhật thông tin thành công', 'success');
+                setIsEditing(false);
+                setIsDetailDialogOpen(false);
+                setUpdateReason('');
+                fetchContacts();
+            }
+        } catch (error) {
+            showToast('Không thể cập nhật thông tin', 'error');
         }
     };
 
@@ -296,13 +260,58 @@ const IndexBooking = () => {
                 } else {
                     showToast(response.data.message, 'error');
                 }
-            } catch (err: any) {
-                console.error('Error deleting account:', err);
-                showToast('Không thể xóa tài khoản!', 'error');
+            } catch (err) {
+                console.error('Error deleting contact:', err);
+                showToast('Không thể xóa lịch hẹn!', 'error');
             }
         }
         setDeleteConfirmOpen(false);
         setContactToDelete(null);
+    };
+
+    const handleStatusChange = async () => {
+        if (!selectedContact) return;
+        try {
+            const response = await updateContactStatusAPI(selectedContact._id, newStatus);
+            if (response) {
+                showToast('Cập nhật trạng thái thành công', 'success');
+                setIsStatusDialogOpen(false);
+                fetchContacts();
+            }
+        } catch (err) {
+            showToast('Không thể cập nhật trạng thái lịch hẹn', 'error');
+            console.error('Error updating contact status:', err);
+        }
+    };
+
+    const handleMonthlyCount = async () => {
+        try {
+            const response = await getMonthlyContactCountAPI(selectedMonth, selectedYear);
+            setMonthlyCount(response.data.count);
+        } catch (error) {
+            showToast('Không thể lấy thống kê tháng', 'error');
+        }
+    };
+
+    const handleCombinedSearch = async () => {
+        if (!searchDate && !searchTimeSlot) {
+            fetchContacts();
+            return;
+        }
+        try {
+            let response: Contact[];
+            if (searchDate && searchTimeSlot) {
+                response = await getContactsByDateAPI(searchDate);
+                response = response.filter((contact: Contact) => contact.timeSlot === searchTimeSlot);
+            } else if (searchDate) {
+                response = await getContactsByDateAPI(searchDate);
+            } else {
+                response = await getContactsByTimeSlotAPI(searchTimeSlot);
+            }
+            setContacts(response);
+        } catch (error) {
+            showToast('Không thể tìm kiếm lịch hẹn', 'error');
+        }
     };
 
     const getStatusColor = (status: keyof typeof ContactStatus) => {
@@ -571,7 +580,7 @@ const IndexBooking = () => {
                     {selectedContact && editedContact && (
                         <>
                             <Typography variant="subtitle1" gutterBottom>
-                                Họ và tên: {isEditing ? (
+                                <strong>Họ và tên:</strong> {isEditing ? (
                                     <TextField
                                         value={editedContact.fullName}
                                         onChange={(e) => setEditedContact({
@@ -580,11 +589,13 @@ const IndexBooking = () => {
                                         })}
                                         fullWidth
                                         margin="dense"
+                                        placeholder="Nhập họ và tên..."
                                     />
                                 ) : selectedContact.fullName}
                             </Typography>
+
                             <Typography variant="subtitle1" gutterBottom>
-                                Số điện thoại: {isEditing ? (
+                                <strong>Số điện thoại:</strong> {isEditing ? (
                                     <TextField
                                         value={editedContact.numberPhone}
                                         onChange={(e) => setEditedContact({
@@ -593,11 +604,13 @@ const IndexBooking = () => {
                                         })}
                                         fullWidth
                                         margin="dense"
+                                        placeholder="Nhập số điện thoại..."
                                     />
                                 ) : selectedContact.numberPhone}
                             </Typography>
+
                             <Typography variant="subtitle1" gutterBottom>
-                                Ngày hẹn: {isEditing ? (
+                                <strong>Ngày hẹn:</strong> {isEditing ? (
                                     <TextField
                                         type="date"
                                         value={editedContact.date.split('T')[0]}
@@ -610,8 +623,9 @@ const IndexBooking = () => {
                                     />
                                 ) : formatDate(selectedContact.date)}
                             </Typography>
+
                             <Typography variant="subtitle1" gutterBottom>
-                                Giờ hẹn: {isEditing ? (
+                                <strong>Giờ hẹn:</strong> {isEditing ? (
                                     <FormControl fullWidth margin="dense">
                                         <Select
                                             value={editedContact.timeSlot}
@@ -629,8 +643,9 @@ const IndexBooking = () => {
                                     </FormControl>
                                 ) : selectedContact.timeSlot}
                             </Typography>
+
                             <Typography variant="subtitle1" gutterBottom>
-                                Mô tả: {isEditing ? (
+                                <strong>Mô tả:</strong> {isEditing ? (
                                     <TextField
                                         value={editedContact.description}
                                         onChange={(e) => setEditedContact({
@@ -641,19 +656,38 @@ const IndexBooking = () => {
                                         multiline
                                         rows={3}
                                         margin="dense"
+                                        placeholder="Nhập mô tả cho lịch hẹn..."
                                     />
                                 ) : selectedContact.description}
                             </Typography>
+
+                            {/* Lý do cập nhật */}
+                            {isEditing && (
+                                <Typography variant="subtitle1" gutterBottom>
+                                    <strong>Lý do cập nhật:</strong>
+                                    <TextField
+                                        value={updateReason}
+                                        onChange={(e) => setUpdateReason(e.target.value)}
+                                        fullWidth
+                                        multiline
+                                        rows={2}
+                                        margin="dense"
+                                        placeholder="Nhập lý do cập nhật lịch hẹn..."
+                                    />
+                                </Typography>
+                            )}
+
                             <Typography variant="subtitle1" gutterBottom sx={{
                                 color: getStatusColor(selectedContact.status),
                                 fontWeight: 'bold'
                             }}>
-                                Trạng thái: {ContactStatus[selectedContact.status]}
+                                <strong>Trạng thái:</strong> {ContactStatus[selectedContact.status]}
                             </Typography>
+
                             {selectedContact.images && selectedContact.images.length > 0 && (
                                 <>
                                     <Typography variant="subtitle1" gutterBottom>
-                                        Hình ảnh:
+                                        <strong>Hình ảnh:</strong> Nhấp vào hình ảnh để xem chi tiết
                                     </Typography>
                                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                         {selectedContact.images.map((image, index) => (
@@ -670,6 +704,7 @@ const IndexBooking = () => {
                         </>
                     )}
                 </DialogContent>
+
                 <DialogActions>
                     {isEditing ? (
                         <>

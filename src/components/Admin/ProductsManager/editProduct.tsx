@@ -524,16 +524,49 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                     </TableCell>
                     <TableCell>
                       {product.subImages && product.subImages.length > 0 ? (
-                        <Typography
-                          sx={{
-                            color: '#0066cc',
-                            cursor: 'pointer',
-                            '&:hover': { textDecoration: 'underline' }
-                          }}
-                          onClick={() => handleSubImagesClick(product.subImages)}
-                        >
-                          Xem {product.subImages.length} ảnh phụ
-                        </Typography>
+                        <Box sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: 1 
+                        }}>
+                          <Box sx={{ 
+                            position: 'relative',
+                            width: 50,
+                            height: 50,
+                            cursor: 'pointer' 
+                          }} 
+                          onClick={() => handleSubImagesClick(product.subImages)}>
+                            <img
+                              src={product.subImages[0]}
+                              alt="First sub image"
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                borderRadius: '4px'
+                              }}
+                            />
+                            {product.subImages.length > 1 && (
+                              <Box sx={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'rgba(0, 0, 0, 0.5)',
+                                color: 'white',
+                                borderRadius: '4px',
+                                fontSize: '14px',
+                                fontWeight: 'bold'
+                              }}>
+                                +{product.subImages.length - 1}
+                              </Box>
+                            )}
+                          </Box>
+                        </Box>
                       ) : (
                         <Typography sx={{ color: '#999' }}>
                           Không có ảnh phụ
