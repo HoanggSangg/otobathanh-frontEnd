@@ -4,7 +4,7 @@ import { useToast } from '../Styles/ToastProvider';
 import { Typography, CardContent, CardMedia, Button, Paper } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { SectionTitle } from '../Styles/StylesComponents';
-import { getAllProductsAPI, addToCartAPI, getCartItemsAPI } from '../API';
+import { getFeaturedProductsAPI, addToCartAPI, getCartItemsAPI } from '../API';
 import { likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI } from '../API';
 import { useNavigate } from 'react-router-dom';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -218,12 +218,13 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const data = await getAllProductsAPI();
+      const data = await getFeaturedProductsAPI();
       setProducts(data);
     } catch (error) {
-      console.error('Failed to fetch products:', error);
+      console.error('Failed to fetch featured products:', error);
     }
   };
+  
 
   const fetchLikeData = async () => {
     if (!user) return;
@@ -363,7 +364,7 @@ const Products = () => {
 
   // In the render section, add quantity display
   return (
-    <ProductSection>
+   <ProductSection>
       <ProductContainer>
         <SectionTitle>SẢN PHẨM NỔI BẬT</SectionTitle>
         <ProductGrid>
@@ -411,13 +412,6 @@ const Products = () => {
                       : <FavoriteBorderIcon />
                     }
                   </LikeButton>
-                  {/* <AddToCartButton
-                    variant="contained"
-                    startIcon={<ShoppingCartIcon />}
-                    onClick={(e) => handleAddToCart(e, product)}
-                  >
-                    Mua ngay
-                  </AddToCartButton> */}
                 </ButtonGroup>
               </ProductContent>
             </InfoCard>

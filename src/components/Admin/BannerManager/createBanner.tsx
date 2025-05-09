@@ -10,7 +10,7 @@ import { createBannerAPI, updateBannerAPI } from '../../API';
 
 const FormContainer = styled(Box)`
   background: white;
-  padding: 40px;
+  padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;

@@ -107,6 +107,49 @@ export const getProductByIdAPI = async (productId) => {
   }
 };
 
+export const getFeaturedProductsAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/products/featured`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting featured products:', error);
+    throw error;
+  }
+};
+export const updateFeaturedStatusAPI = async (productId, isFeatured) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/products/${productId}/featured`,
+      { isFeatured },
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating featured status:', error);
+    throw error;
+  }
+};
+export const getFeaturedProductByIdAPI = async (productId) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/products/featured/${productId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting featured product by ID:', error);
+    throw error;
+  }
+};
+export const countAccountsAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/accounts/count`, {
+      headers: getAuthHeaders(), // Nếu không cần token, có thể bỏ dòng này
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy số lượng tài khoản:', error);
+    throw error;
+  }
+};
+
 // Manager Account APIs
 export const getAllAccountsAPI = async () => {
   try {

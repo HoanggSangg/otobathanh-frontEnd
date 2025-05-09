@@ -4,6 +4,7 @@ import {
     deleteAccountAPI,
     disableAccountAPI,
     enableAccountAPI,
+    countAccountsAPI
 } from '../../API';
 import { useToast } from '../../Styles/ToastProvider';
 import styled from 'styled-components';
@@ -30,7 +31,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { checkIsMasterRole } from '../../Styles/roleUtils';
-
+import GroupIcon from '@mui/icons-material/Group';
 const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
@@ -289,23 +290,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [accountToDelete, setAccountToDelete] = useState<string | null>(null);
     const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
     const [accountToToggle, setAccountToToggle] = useState<Account | null>(null);
-
-    useEffect(() => {
-        fetchAccounts();
-        const checkMasterRole = async () => {
-            const isMasterUser = await checkIsMasterRole();
-            setIsMaster(isMasterUser);
-        };
-        checkMasterRole();
-
-        const loadingTimer = setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
-
-        // Cleanup timer
-        return () => clearTimeout(loadingTimer);
-    }, []);
-
+    const [totalAccounts, setTotalAccounts] = useState<number | null>(null);
+    // 1. Định nghĩa fetchAccounts TRƯỚC useEffect
     const fetchAccounts = async () => {
         try {
             const response = await getAllAccountsAPI();
@@ -319,6 +305,39 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             showToast('Không thể tải danh sách tài khoản!', 'error');
         }
     };
+    
+    const fetchAccountCount = async () => {
+        try {
+            const response = await countAccountsAPI();
+            if (response.totalAccounts !== undefined) {
+                setTotalAccounts(response.totalAccounts);
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy số lượng tài khoản:', error);
+        }
+    };
+    
+    useEffect(() => {
+        fetchAccounts();
+        fetchAccountCount();
+    
+        const checkMasterRole = async () => {
+            const isMasterUser = await checkIsMasterRole();
+            setIsMaster(isMasterUser);
+        };
+        checkMasterRole();
+    
+        const loadingTimer = setTimeout(() => {
+            setIsLoading(false);
+        }, 2000);
+    
+        return () => clearTimeout(loadingTimer);
+    }, []);
+    
+
+
+
+
 
     const handleEdit = (account: Account) => {
         if (!isMaster && account.roles.some(role => role.name.toLowerCase() === 'master')) {
@@ -453,41 +472,68 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
 
     return (
         <Container>
-            <Header>
-                <Title>Quản lý tài khoản</Title>
-                <SearchControls>
-                    <FilterSelect
-                        value={searchType}
-                        onChange={(e) => setSearchType(e.target.value)}
-                    >
-                        <option value="fullName">Tìm theo tên</option>
-                        <option value="email">Tìm theo email</option>
-                        <option value="role">Tìm theo vai trò</option>
-                    </FilterSelect>
-                    <SearchInput
-                        type="text"
-                        placeholder={`Tìm kiếm theo ${searchType === 'fullName' ? 'tên' : searchType === 'email' ? 'email' : 'vai trò'}...`}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <div className="sort-controls">
-                        <FilterSelect
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
-                        >
-                            <option value="date">Sắp xếp theo ngày</option>
-                            <option value="name">Sắp xếp theo tên</option>
-                        </FilterSelect>
-                        <FilterSelect
-                            value={sortOrder}
-                            onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                        >
-                            <option value="desc">Giảm dần</option>
-                            <option value="asc">Tăng dần</option>
-                        </FilterSelect>
-                    </div>
-                </SearchControls>
-            </Header>
+            <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+    <Title style={{ marginRight: '16px' }}>Quản lý tài khoản</Title>
+
+    {totalAccounts !== null && (
+        <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: '#f5f5f5',
+            padding: '6px 12px',
+            borderRadius: '8px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+        }}>
+            <GroupIcon style={{ color: '#1976d2' }} />
+            <span style={{ fontWeight: 'bold', color: '#333', fontSize: '16px' }}>
+                {totalAccounts} người dùng
+            </span>
+        </div>
+    )}
+
+    <SearchControls style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <FilterSelect
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+        >
+            <option value="fullName">Tìm theo tên</option>
+            <option value="email">Tìm theo email</option>
+            <option value="role">Tìm theo vai trò</option>
+        </FilterSelect>
+
+        <SearchInput
+            type="text"
+            placeholder={`Tìm kiếm theo ${
+                searchType === 'fullName'
+                    ? 'tên'
+                    : searchType === 'email'
+                        ? 'email'
+                        : 'vai trò'
+            }...`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <FilterSelect
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
+        >
+            <option value="date">Sắp xếp theo ngày</option>
+            <option value="name">Sắp xếp theo tên</option>
+        </FilterSelect>
+
+        <FilterSelect
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+        >
+            <option value="desc">Giảm dần</option>
+            <option value="asc">Tăng dần</option>
+        </FilterSelect>
+    </SearchControls>
+</Header>
+
+
 
             <StyledTableContainer>
                 <StyledPaper>
@@ -591,21 +637,26 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         borderRadius: '12px',
                         padding: '24px',
                         boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                        minWidth: '600px'
+                        minWidth: window.innerWidth <= 768 ? '90%' : '600px',
+                        margin: window.innerWidth <= 768 ? '16px' : 'auto'
                     }
                 }}
+                fullWidth
+                maxWidth="sm"
             >
                 <DialogTitle style={{
-                    fontSize: '20px',
+                    fontSize: window.innerWidth <= 768 ? '18px' : '20px',
                     fontWeight: '600',
                     color: '#333',
-                    padding: '0 0 16px 0'
+                    padding: window.innerWidth <= 768 ? '0 0 12px 0' : '0 0 16px 0'
                 }}>
                     Xác nhận xóa tài khoản
                 </DialogTitle>
-                <DialogContent style={{ padding: '8px 0 24px 0' }}>
+                <DialogContent style={{ 
+                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+                }}>
                     <DialogContentText style={{
-                        fontSize: '16px',
+                        fontSize: window.innerWidth <= 768 ? '14px' : '16px',
                         color: '#555',
                         lineHeight: '1.5'
                     }}>
@@ -615,11 +666,14 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 <DialogActions style={{
                     padding: '0',
                     justifyContent: 'flex-end',
-                    gap: '12px'
+                    gap: window.innerWidth <= 768 ? '8px' : '12px',
+                    flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+                    width: window.innerWidth <= 768 ? '100%' : 'auto'
                 }}>
                     <StyledButton
                         variant="outlined"
                         onClick={() => setDeleteConfirmOpen(false)}
+                        fullWidth={window.innerWidth <= 768}
                     >
                         Hủy
                     </StyledButton>
@@ -627,6 +681,7 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         variant="contained"
                         color="error"
                         onClick={confirmDelete}
+                        fullWidth={window.innerWidth <= 768}
                     >
                         Xóa
                     </StyledButton>
@@ -642,21 +697,27 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         borderRadius: '12px',
                         padding: '24px',
                         boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                        minWidth: '600px'
+                        minWidth: window.innerWidth <= 768 ? '90%' : '600px',
+                        margin: window.innerWidth <= 768 ? '16px' : 'auto'
                     }
                 }}
+                fullWidth
+                maxWidth="sm"
             >
+                {/* Apply the same responsive styles to the status confirmation dialog */}
                 <DialogTitle style={{
-                    fontSize: '20px',
+                    fontSize: window.innerWidth <= 768 ? '18px' : '20px',
                     fontWeight: '600',
                     color: '#333',
-                    padding: '0 0 16px 0'
+                    padding: window.innerWidth <= 768 ? '0 0 12px 0' : '0 0 16px 0'
                 }}>
                     Xác nhận thay đổi trạng thái
                 </DialogTitle>
-                <DialogContent style={{ padding: '8px 0 24px 0' }}>
+                <DialogContent style={{ 
+                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+                }}>
                     <DialogContentText style={{
-                        fontSize: '16px',
+                        fontSize: window.innerWidth <= 768 ? '14px' : '16px',
                         color: '#555',
                         lineHeight: '1.5'
                     }}>
@@ -666,11 +727,14 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 <DialogActions style={{
                     padding: '0',
                     justifyContent: 'flex-end',
-                    gap: '12px'
+                    gap: window.innerWidth <= 768 ? '8px' : '12px',
+                    flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+                    width: window.innerWidth <= 768 ? '100%' : 'auto'
                 }}>
                     <StyledButton
                         variant="outlined"
                         onClick={() => setStatusConfirmOpen(false)}
+                        fullWidth={window.innerWidth <= 768}
                     >
                         Hủy
                     </StyledButton>
@@ -678,11 +742,13 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         variant="contained"
                         color="error"
                         onClick={confirmToggleStatus}
+                        fullWidth={window.innerWidth <= 768}
                     >
                         Xác nhận
                     </StyledButton>
                 </DialogActions>
             </Dialog>
+
         </Container>
     );
 };

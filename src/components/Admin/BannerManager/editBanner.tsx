@@ -362,23 +362,28 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
           style: {
             backgroundColor: '#fff',
             borderRadius: '12px',
-            padding: '24px',
+            padding: window.innerWidth <= 768 ? '16px' : '24px',
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-            minWidth: '600px'
+            minWidth: window.innerWidth <= 768 ? '90%' : '600px',
+            margin: window.innerWidth <= 768 ? '16px' : 'auto'
           }
         }}
+        fullWidth
+        maxWidth="sm"
       >
         <DialogTitle style={{
-          fontSize: '20px',
+          fontSize: window.innerWidth <= 768 ? '18px' : '20px',
           fontWeight: '600',
           color: '#333',
-          padding: '0 0 16px 0'
+          padding: window.innerWidth <= 768 ? '0 0 12px 0' : '0 0 16px 0'
         }}>
           Xác nhận xóa banner
         </DialogTitle>
-        <DialogContent style={{ padding: '8px 0 24px 0' }}>
+        <DialogContent style={{ 
+          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+        }}>
           <DialogContentText style={{
-            fontSize: '16px',
+            fontSize: window.innerWidth <= 768 ? '14px' : '16px',
             color: '#555',
             lineHeight: '1.5'
           }}>
@@ -388,11 +393,14 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
         <DialogActions style={{
           padding: '0',
           justifyContent: 'flex-end',
-          gap: '12px'
+          gap: window.innerWidth <= 768 ? '8px' : '12px',
+          flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+          width: window.innerWidth <= 768 ? '100%' : 'auto'
         }}>
           <StyledButton
             variant="outlined"
             onClick={() => setDeleteConfirmOpen(false)}
+            fullWidth={window.innerWidth <= 768}
           >
             Hủy
           </StyledButton>
@@ -400,6 +408,7 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
             variant="contained"
             color="error"
             onClick={confirmDelete}
+            fullWidth={window.innerWidth <= 768}
           >
             Xóa
           </StyledButton>

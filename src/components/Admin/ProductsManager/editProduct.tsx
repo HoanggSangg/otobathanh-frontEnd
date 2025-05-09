@@ -13,16 +13,18 @@ import {
   Pagination,
   Typography,
   Box,
+  Switch,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getAllProductsAPI, deleteProductAPI } from '../../API';
+import { getAllProductsAPI, deleteProductAPI, updateFeaturedStatusAPI } from '../../API';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+
 
 const Container = styled.div`
   padding: 20px;
@@ -279,6 +281,7 @@ interface Product {
   date: string;
   createdAt: string;
   updatedAt: string;
+  isFeatured: boolean;
 }
 
 interface Props {
@@ -371,6 +374,29 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
 
   const handleEdit = (product: Product) => {
     onEdit(product);
+  };
+  const handleFeaturedToggle = async (productId: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+
+    setProducts(prev =>
+      prev.map(p =>
+        p._id === productId ? { ...p, isFeatured: newStatus } : p
+      )
+    );
+
+    try {
+      await updateFeaturedStatusAPI(productId, newStatus);
+      fetchProducts();
+
+      showToast('Cập nhật trạng thái nổi bật thành công!', 'success');
+    } catch (error) {
+      setProducts(prev =>
+        prev.map(p =>
+          p._id === productId ? { ...p, isFeatured: currentStatus } : p
+        )
+      );
+      showToast('Không thể cập nhật trạng thái nổi bật!', 'error');
+    }
   };
 
   const handleDelete = async (productId: string) => {
@@ -471,6 +497,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                 <TableCell>Danh mục</TableCell>
                 <TableCell>Mô tả</TableCell>
                 <TableCell>Ảnh phụ</TableCell>
+                <TableCell>Nổi bật</TableCell>
                 <TableCell>Ngày tạo</TableCell>
                 <TableCell align="right">Thao tác</TableCell>
               </TableRow>
@@ -524,18 +551,18 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                     </TableCell>
                     <TableCell>
                       {product.subImages && product.subImages.length > 0 ? (
-                        <Box sx={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: 1 
+                        <Box sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 1
                         }}>
-                          <Box sx={{ 
+                          <Box sx={{
                             position: 'relative',
                             width: 50,
                             height: 50,
-                            cursor: 'pointer' 
-                          }} 
-                          onClick={() => handleSubImagesClick(product.subImages)}>
+                            cursor: 'pointer'
+                          }}
+                            onClick={() => handleSubImagesClick(product.subImages)}>
                             <img
                               src={product.subImages[0]}
                               alt="First sub image"
@@ -574,6 +601,15 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                       )}
                     </TableCell>
                     <TableCell>
+                      <Switch
+                        checked={product.isFeatured}
+                        onChange={() => {
+                          handleFeaturedToggle(product._id, product.isFeatured);
+                        }}
+                        color="primary"
+                      />
+                    </TableCell>
+                    <TableCell>
                       {new Date(product.createdAt).toLocaleDateString('vi-VN')}
                     </TableCell>
                     <TableCell align="right">
@@ -603,21 +639,30 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            maxWidth: '100%',
+            maxWidth: window.innerWidth <= 768 ? '95%' : '80%',
             maxHeight: '90vh',
             overflow: 'auto',
             bgcolor: 'white',
-            p: 2,
-            borderRadius: 2
+            p: window.innerWidth <= 768 ? 2 : 3,
+            borderRadius: 2,
+            m: window.innerWidth <= 768 ? 2 : 'auto'
           }}>
-            <Typography variant="h6" sx={{ color: '#333', mb: 2 }}>
+            <Typography variant="h6" sx={{
+              color: '#333',
+              mb: 2,
+              fontSize: window.innerWidth <= 768 ? '18px' : '20px',
+              textAlign: window.innerWidth <= 768 ? 'center' : 'left'
+            }}>
               Ảnh phụ của sản phẩm
             </Typography>
             <Box sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 2,
-              justifyContent: 'flex-start'
+              display: 'grid',
+              gridTemplateColumns: window.innerWidth <= 768
+                ? 'repeat(auto-fill, minmax(140px, 1fr))'
+                : 'repeat(auto-fill, minmax(250px, 1fr))',
+              gap: window.innerWidth <= 768 ? 1 : 2,
+              justifyContent: 'center',
+              width: '100%'
             }}>
               {selectedSubImages.map((img, index) => (
                 <img
@@ -625,8 +670,8 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                   src={img}
                   alt={`Sub image ${index + 1}`}
                   style={{
-                    width: '300px',
-                    height: '300px',
+                    width: '100%',
+                    height: window.innerWidth <= 768 ? '140px' : '250px',
                     objectFit: 'cover',
                     borderRadius: '8px',
                     cursor: 'pointer'
@@ -667,27 +712,31 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
       <Dialog
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
+        fullWidth
+        maxWidth="sm"
         PaperProps={{
           style: {
             backgroundColor: '#fff',
             borderRadius: '12px',
-            padding: '24px',
+            padding: window.innerWidth <= 768 ? '16px' : '24px',
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-            minWidth: '600px'
+            margin: window.innerWidth <= 768 ? '16px' : 'auto'
           }
         }}
       >
         <DialogTitle style={{
-          fontSize: '20px',
+          fontSize: window.innerWidth <= 768 ? '18px' : '20px',
           fontWeight: '600',
           color: '#333',
-          padding: '0 0 16px 0'
+          padding: window.innerWidth <= 768 ? '0 0 12px 0' : '0 0 16px 0'
         }}>
           Xác nhận xóa sản phẩm
         </DialogTitle>
-        <DialogContent style={{ padding: '8px 0 24px 0' }}>
+        <DialogContent style={{
+          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
+        }}>
           <DialogContentText style={{
-            fontSize: '16px',
+            fontSize: window.innerWidth <= 768 ? '14px' : '16px',
             color: '#555',
             lineHeight: '1.5'
           }}>
@@ -697,11 +746,14 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
         <DialogActions style={{
           padding: '0',
           justifyContent: 'flex-end',
-          gap: '12px'
+          gap: window.innerWidth <= 768 ? '8px' : '12px',
+          flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+          width: window.innerWidth <= 768 ? '100%' : 'auto'
         }}>
           <StyledButton
             variant="outlined"
             onClick={() => setDeleteConfirmOpen(false)}
+            fullWidth={window.innerWidth <= 768}
           >
             Hủy
           </StyledButton>
@@ -709,6 +761,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
             variant="contained"
             color="error"
             onClick={confirmDelete}
+            fullWidth={window.innerWidth <= 768}
           >
             Xóa
           </StyledButton>

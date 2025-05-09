@@ -68,7 +68,7 @@ export default function ProductManager() {
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    setValue(0); // Chuyển về tab create
+    setValue(0);
   };
 
   return (
@@ -86,7 +86,7 @@ export default function ProductManager() {
             minWidth: { xs: 'auto', sm: '160px' },
             textTransform: 'none',
             flexShrink: 1,
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
           }
         }}>
           <Tabs value={value} onChange={handleChange} aria-label="product management tabs">

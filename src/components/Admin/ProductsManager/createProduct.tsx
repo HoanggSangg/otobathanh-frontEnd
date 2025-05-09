@@ -20,7 +20,7 @@ import { IconButton } from '@mui/material';
 import { Select, MenuItem } from '@mui/material';
 
 const PageContainer = styled(Container)`
-  padding: 40px 0;
+  padding: 0;
 `;
 
 const Title = styled.h1`
@@ -45,7 +45,7 @@ const StyledSelect = styled(Select)`
 
 const FormContainer = styled(Box)`
   background: white;
-  padding: 40px;
+  padding: 10px;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
