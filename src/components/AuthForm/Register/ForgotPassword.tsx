@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { forgotPasswordAPI, resetPasswordAPI } from '../../API';
-import { DialogContent, IconButton } from '@mui/material';
+import { DialogContent, IconButton, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -12,18 +12,20 @@ const DialogHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
 `;
 
-const Title = styled.h1`
+const Title = styled(DialogTitle)`
   color: #e31837;
-  font-size: 24px;
-  margin: 0;
+  font-weight: bold !important;
+  padding: 20px !important;
+  font-size: 24px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `;
 
 const CloseButton = styled(IconButton)`
   color: #666 !important;
-  padding: 8px !important;
+  padding: 12px !important;
 `;
 
 const Form = styled.form`
@@ -33,43 +35,47 @@ const Form = styled.form`
 `;
 
 const InputField = styled.div`
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   position: relative;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
   outline: none;
   box-sizing: border-box;
-  
+  transition: border-color 0.3s ease;
+
   &:focus {
     border-color: #e31837;
+    box-shadow: 0 0 4px rgba(227, 24, 55, 0.5); /* Thêm hiệu ứng khi focus */
   }
-  
+
   &::placeholder {
-    color: #666;
+    color: #999; /* Làm placeholder dễ nhìn hơn */
   }
 `;
 
 const SubmitButton = styled.button<{ $loading?: boolean }>`
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: #e31837;
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600; /* Làm chữ đậm hơn */
   cursor: ${props => props.$loading ? 'not-allowed' : 'pointer'};
   margin: 24px 0;
   opacity: ${props => props.$loading ? 0.7 : 1};
-  
+  transition: background 0.3s ease;
+
   &:hover {
     background: ${props => props.$loading ? '#e31837' : '#c41730'};
+    box-shadow: ${props => props.$loading ? 'none' : '0 4px 8px rgba(0, 0, 0, 0.2)'};
   }
 `;
 
@@ -79,6 +85,12 @@ const VisibilityToggle = styled(IconButton)`
   top: 50%;
   transform: translateY(-50%);
   color: #666 !important;
+`;
+
+const ErrorMessage = styled.div`
+  color: #e31837;
+  font-size: 14px;
+  margin-top: 8px;
 `;
 
 interface ForgotPasswordFormProps {
@@ -94,6 +106,9 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const showToast = useToast();
     const [step, setStep] = useState<'email' | 'reset'>('email');
+    const [verificationCodeError, setVerificationCodeError] = useState('');
+    const [newPasswordError, setNewPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
     const handleRequestCode = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -122,10 +137,31 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
 
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (newPassword !== confirmPassword) {
-            showToast('Mật khẩu xác nhận không khớp!', 'error');
-            return;
+        let hasError = false;
+
+        if (!verificationCode) {
+            setVerificationCodeError('Mã xác nhận là bắt buộc!');
+            hasError = true;
+        } else {
+            setVerificationCodeError('');
         }
+
+        if (!newPassword) {
+            setNewPasswordError('Mật khẩu mới là bắt buộc!');
+            hasError = true;
+        } else {
+            setNewPasswordError('');
+        }
+
+        if (newPassword !== confirmPassword) {
+            setConfirmPasswordError('Mật khẩu xác nhận không khớp!');
+            hasError = true;
+        } else {
+            setConfirmPasswordError('');
+        }
+
+        if (hasError) return;
+
         setIsLoading(true);
         try {
             const response = await resetPasswordAPI(email, verificationCode, newPassword);
@@ -187,6 +223,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
                                 onChange={(e) => setVerificationCode(e.target.value)}
                                 required
                             />
+                            {verificationCodeError && <ErrorMessage>{verificationCodeError}</ErrorMessage>}
                         </InputField>
 
                         <InputField>
@@ -200,6 +237,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
                             <VisibilityToggle onClick={() => setShowPassword(!showPassword)}>
                                 {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                             </VisibilityToggle>
+                            {newPasswordError && <ErrorMessage>{newPasswordError}</ErrorMessage>}
                         </InputField>
 
                         <InputField>
@@ -210,6 +248,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
                             />
+                            {confirmPasswordError && <ErrorMessage>{confirmPasswordError}</ErrorMessage>}
                         </InputField>
 
                         <SubmitButton type="submit" $loading={isLoading}>

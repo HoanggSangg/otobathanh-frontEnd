@@ -411,7 +411,6 @@ const Products = () => {
   const getFilteredAndSortedProducts = () => {
     let filtered = [...products];
 
-    console.log('Selected category:', selectedCategory);
     if (selectedCategory) {
       filtered = filtered.filter(product => product.category_id._id === selectedCategory);
     }

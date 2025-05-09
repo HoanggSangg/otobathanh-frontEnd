@@ -23,61 +23,135 @@ import ForgotPasswordForm from '../Register/ForgotPassword';
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
-    width: 400px;
-    border-radius: 12px;
-    padding: 20px;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 16px;
+    padding: 0;
+    background: linear-gradient(to bottom, #ffffff, #f8f8f8);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    overflow: visible;
   }
 `;
 
-const DialogHeader = styled.div`
+const Logo = styled.img`
+  width: min(150px, 40vw);
+  height: auto;
+`;
+
+const SocialButtons = styled.div`
   display: flex;
-  justify-content: space-between;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+const SocialButton = styled.button<{ $provider: 'facebook' | 'google' }>`
+  display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 12px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background-color: ${props => props.$provider === 'facebook' ? '#1877F2' : '#DB4437'};
+  color: white;
+  width: min(180px, 45%);
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 400px) {
+    width: 100%;
+  }
+`;
+
+const LogoContainer = styled.div`
+  text-align: center;
+  margin-bottom: 10px;
 `;
 
 const Title = styled(DialogTitle)`
   color: #e31837;
   font-weight: bold !important;
-  padding: 0 !important;
-`;
-
-const CloseButton = styled(IconButton)`
-  color: #666 !important;
+  padding: 10px !important;
+  font-size: 24px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `;
 
 const StyledTextField = styled(TextField)`
   margin-bottom: 20px !important;
   
   .MuiOutlinedInput-root {
-    border-radius: 8px;
+    border-radius: 12px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
     
-    &:hover .MuiOutlinedInput-notchedOutline {
-      border-color: #e31837;
+    &:hover {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(227, 24, 55, 0.1);
     }
     
-    &.Mui-focused .MuiOutlinedInput-notchedOutline {
-      border-color: #e31837;
+    &.Mui-focused {
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(227, 24, 55, 0.1);
     }
-  }
-  
-  .MuiInputLabel-root.Mui-focused {
-    color: #e31837;
   }
 `;
 
 const LoginButton = styled(Button)`
   background-color: #e31837 !important;
   color: white !important;
-  padding: 12px 24px !important;
-  border-radius: 8px !important;
+  padding: 14px 24px !important;
+  border-radius: 12px !important;
   font-weight: bold !important;
   width: 100%;
-  margin-top: 20px !important;
+  margin-top: 24px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px;
+  transition: all 0.3s ease !important;
   
   &:hover {
     background-color: #c41730 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(227, 24, 55, 0.2);
   }
+`;
+
+const SocialDivider = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+  }
+  
+  span {
+    padding: 0 16px;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+  }
+`;
+
+const DialogHeader = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px 0;
+`;
+
+const StyledDialogContent = styled(DialogContent)`
+  padding: 0 24px 24px !important;
+`;
+
+const CloseButton = styled(IconButton)`
+  color: #666 !important;
 `;
 
 const ForgotPassword = styled(Typography)`
@@ -106,59 +180,6 @@ const VisibilityButton = styled(IconButton)`
 
 const SocialLoginContainer = styled.div`
   margin-top: 0;
-`;
-
-const SocialDivider = styled.div`
-  display: flex;
-  align-items: center;
-  margin: 15px 0;
-  color: white;
-  
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.3);
-  }
-  
-  span {
-    padding: 0 15px;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.8);
-  }
-`;
-
-const SocialButtons = styled.div`
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-`;
-
-const SocialButton = styled.button<{ $provider: 'facebook' | 'google' }>`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  background-color: ${props => props.$provider === 'facebook' ? '#1877F2' : '#999'};
-  color: white;
-  width: 160px;
-  justify-content: center;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: ${props => props.$provider === 'facebook' ? '#1565C0' : '#616161'};
-  }
-
-  .MuiSvgIcon-root {
-    font-size: 20px;
-  }
 `;
 
 const SocialButtonText = styled.span`
@@ -316,12 +337,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
     <>
       <StyledDialog open={open} onClose={onClose}>
         <DialogHeader>
-          <Title>Đăng nhập</Title>
           <CloseButton onClick={onClose}>
             <CloseIcon />
           </CloseButton>
         </DialogHeader>
-        <DialogContent>
+        <StyledDialogContent>
+          <LogoContainer>
+            <Logo
+              src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png"
+              alt="Bá Thành"
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}
+            />
+          </LogoContainer>
+          <Title>Đăng nhập</Title>
           <form onSubmit={handleSubmit}>
             <StyledTextField
               fullWidth
@@ -378,7 +407,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
               </SocialButton>
             </SocialButtons>
           </SocialLoginContainer>
-        </DialogContent>
+        </StyledDialogContent>
       </StyledDialog>
 
       <StyledDialog open={showForgotPassword} onClose={() => setShowForgotPassword(false)}>

@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   IconButton,
+  DialogTitle,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -20,33 +21,38 @@ import { googleLoginAPI } from '../../API';
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
-    width: 400px;
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 16px;
+    padding: 0;
+    background: linear-gradient(to bottom, #ffffff, #f8f8f8);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    overflow: visible;
   }
 `;
 
 const DialogHeader = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  justify-content: flex-end;
+  padding: 4px 24px 0;
 `;
 
-const Title = styled.h1`
+const Title = styled(DialogTitle)`
   color: #e31837;
-  font-size: 24px;
-  margin: 0;
+  font-weight: bold !important;
+  padding: 10px !important;
+  font-size: 24px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `;
 
 const CloseButton = styled(IconButton)`
   color: #666 !important;
-  padding: 8px !important;
+  padding: 12px !important;
 `;
 
 const InputField = styled.div`
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   position: relative;
 `;
 
@@ -68,6 +74,10 @@ const Input = styled.input`
   }
 `;
 
+const StyledDialogContent = styled(DialogContent)`
+  padding: 0 24px 24px !important;
+`;
+
 const VisibilityToggle = styled(IconButton)`
   position: absolute !important;
   right: 8px;
@@ -76,9 +86,19 @@ const VisibilityToggle = styled(IconButton)`
   color: #666 !important;
 `;
 
+const Logo = styled.img`
+  width: min(150px, 40vw);
+  height: auto;
+`;
+
+const LogoContainer = styled.div`
+  text-align: center;
+  margin-bottom: 8px;
+`;
+
 const RegisterButton = styled.button<{ $loading?: boolean }>`
   width: 100%;
-  padding: 12px;
+  padding: 8px;
   background: #e31837;
   color: white;
   border: none;
@@ -101,32 +121,34 @@ const SocialSection = styled.div`
 const SocialText = styled.div`
   color: #666;
   font-size: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 `;
 
 const SocialButtons = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 15px;
   justify-content: center;
+  flex-wrap: wrap;
 `;
 
 const SocialButton = styled.button<{ $provider: 'facebook' | 'google' }>`
-  flex: 1;
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 12px;
+  padding: 8px 24px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background-color: ${props => props.$provider === 'facebook' ? '#1877F2' : '#DB4437'};
   color: white;
-  background: ${props => props.$provider === 'facebook' ? '#1877F2' : '#757575'};
+  width: min(180px, 45%);
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
-  &:hover {
-    background: ${props => props.$provider === 'facebook' ? '#1565C0' : '#616161'};
+  @media (max-width: 400px) {
+    width: 100%;
   }
 `;
 
@@ -271,12 +293,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ open, onClose }) => {
     <>
       <StyledDialog open={open} onClose={onClose}>
         <DialogHeader>
-          <Title>Đăng ký</Title>
           <CloseButton onClick={onClose}>
             <CloseIcon />
           </CloseButton>
         </DialogHeader>
-        <DialogContent>
+        <StyledDialogContent>
+          <LogoContainer>
+            <Logo
+              src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png"
+              alt="Bá Thành"
+              onClick={() => navigate('/')}
+              style={{ cursor: 'pointer' }}
+            />
+          </LogoContainer>
+          <Title>Đăng ký</Title>
           <form onSubmit={handleSubmit}>
             <InputField>
               <Input
@@ -366,7 +396,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ open, onClose }) => {
               </SocialButton>
             </SocialButtons>
           </SocialSection>
-        </DialogContent>
+        </StyledDialogContent>
       </StyledDialog>
 
       {showVerifyForm && (
