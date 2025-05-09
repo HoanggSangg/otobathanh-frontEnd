@@ -293,7 +293,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
         if (response.authResponse) {
           const accessToken = response.authResponse.accessToken;
 
-          fetch('http://localhost:3000/api/accounts/facebook-login', {
+          fetch('https://otobathanhh.onrender.com/api/accounts/facebook-login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ access_token: accessToken })
