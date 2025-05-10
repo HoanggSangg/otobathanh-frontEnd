@@ -639,30 +639,22 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            maxWidth: window.innerWidth <= 768 ? '95%' : '80%',
+            maxWidth: '90vw',
             maxHeight: '90vh',
             overflow: 'auto',
             bgcolor: 'white',
-            p: window.innerWidth <= 768 ? 2 : 3,
-            borderRadius: 2,
-            m: window.innerWidth <= 768 ? 2 : 'auto'
+            p: 3,
+            borderRadius: 2
           }}>
-            <Typography variant="h6" sx={{
-              color: '#333',
-              mb: 2,
-              fontSize: window.innerWidth <= 768 ? '18px' : '20px',
-              textAlign: window.innerWidth <= 768 ? 'center' : 'left'
-            }}>
+            <Typography variant="h6" sx={{ color: '#333', mb: 2 }}>
               Ảnh phụ của sản phẩm
             </Typography>
             <Box sx={{
-              display: 'grid',
-              gridTemplateColumns: window.innerWidth <= 768
-                ? 'repeat(auto-fill, minmax(140px, 1fr))'
-                : 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: window.innerWidth <= 768 ? 1 : 2,
-              justifyContent: 'center',
-              width: '100%'
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 2,
+              overflowX: 'auto',
+              pb: 2
             }}>
               {selectedSubImages.map((img, index) => (
                 <img
@@ -670,11 +662,12 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                   src={img}
                   alt={`Sub image ${index + 1}`}
                   style={{
-                    width: '100%',
-                    height: window.innerWidth <= 768 ? '140px' : '250px',
+                    width: '300px',
+                    height: '300px',
                     objectFit: 'cover',
                     borderRadius: '8px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    flexShrink: 0
                   }}
                   onClick={(e) => {
                     e.stopPropagation();

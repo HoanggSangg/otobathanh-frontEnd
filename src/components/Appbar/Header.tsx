@@ -105,16 +105,6 @@ const UserAvatar = styled.img`
   border: 2px solid #e31837;
 `;
 
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
 const UserInfoMobi = styled.div`
   display: flex;
   align-items: center;
@@ -181,8 +171,8 @@ const NavContainer = styled.div<{ $isOpen: boolean }>`
 const NavLinks = styled.nav<{ $isOpen: boolean }>`
   display: flex;
   align-items: center;
-  font-size: 20px;
-  gap: 30px;
+  font-size: 16px;
+  gap: 20px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -276,8 +266,8 @@ const UserName = styled.span`
 const DropdownContent = styled.div<{ $isOpen: boolean }>`
   display: none;
   position: absolute;
-  top: 100%;
-  right: 0;
+  top: 110%;
+  right: -15%;
   background-color: #1e2124;
   min-width: 200px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
@@ -300,6 +290,36 @@ const ManagerDropdown = styled.div`
 
   &:hover ${DropdownContent} {
     display: block;
+  }
+
+  ${DropdownContent}::before {
+    content: "";
+    position: absolute;
+    border-width: 20px 30px;
+    border-style: solid;
+    border-color: transparent transparent #1e2124 transparent;
+    right: 50px;
+    top: -28px;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const UserInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  ${DropdownContent}::before {
+    content: "";
+    position: absolute;
+    border-width: 20px 30px;
+    border-style: solid;
+    border-color: transparent transparent #1e2124 transparent;
+    right: 50px;
+    top: -30px;
   }
 
   @media (max-width: 768px) {
@@ -620,8 +640,9 @@ const Header = () => {
             </NavLink>
             {isManager && (
               <ManagerDropdown>
-                <NavLink to="/manager" onClick={closeMenu}>
+                <NavLink to="/manager" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   Quản lý
+                  <KeyboardArrowDownIcon style={{ color: '#fff' }} />
                 </NavLink>
                 <DropdownContent $isOpen={isDropdownOpen}>
                   {isMaster && (

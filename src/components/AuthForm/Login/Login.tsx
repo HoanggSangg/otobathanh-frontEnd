@@ -304,7 +304,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
                 saveUserToLocalStorage(data.token, data.user);
                 showToast(data.message || 'Đăng nhập thành công!', 'success');
                 onClose();
-                navigate('/');
+                window.location.reload();
               } else {
                 showToast(data.message || 'Lỗi đăng nhập Facebook', 'error');
               }

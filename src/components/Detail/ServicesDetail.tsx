@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const ServicesContainer = styled.div`
   max-width: 1400px;
   margin: 20px auto 0;
-  padding: clamp(20px, 3vw, 40px);
+  padding: 40px 20px;
 `;
 
 const ServiceHeader = styled.div`

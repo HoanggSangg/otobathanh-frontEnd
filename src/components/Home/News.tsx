@@ -5,7 +5,7 @@ import { SectionTitle } from '../Styles/StylesComponents';
 import { getAllNewsAPI } from '../API';
 
 const NewsSection = styled.section`
-  padding: 40px 0;
+  padding: 30px 0;
   background-color: #f8f9fa;
 `;
 

@@ -21,7 +21,7 @@ import { Pagination } from '@mui/material';
 const PageWrapper = styled.div`
     background-color: #fff;
     min-height: 100vh;
-    padding-top: 80px;
+    padding: 60px 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 `;
 
@@ -38,7 +38,7 @@ const MainContainer = styled.div`
   `;
 
 const ProductSection = styled.section`
-  padding: 40px 0;
+  padding: 0;
 `;
 
 const InfoCard = styled(Paper)`
@@ -162,7 +162,7 @@ const Sidebar = styled.div`
     border-radius: 8px;
     color: white;
     position: sticky;
-    top: 100px;
+    top: 120px;
     height: fit-content;
   
     @media (max-width: 900px) {

@@ -3,14 +3,14 @@ import styled from 'styled-components';
 
 const AboutContainer = styled.div`
   margin: 0 auto;
-  padding: clamp(20px, 4vw, 40px) clamp(10px, 3vw, 20px);
+  padding: 60px 80px;
 `;
 
 const AboutContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: clamp(30px, 5vw, 60px);
-  margin: clamp(20px, 5vw, 50px);
+  margin: clamp(0, 5vw, 50px);
   align-items: center;
 
   @media (max-width: 900px) {
