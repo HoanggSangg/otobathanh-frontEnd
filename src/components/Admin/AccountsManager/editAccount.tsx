@@ -17,6 +17,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import { removeRoleFromAccountAPI } from '../../API';
 import {
     IconButton,
     Table,
@@ -291,7 +293,9 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
     const [accountToToggle, setAccountToToggle] = useState<Account | null>(null);
     const [totalAccounts, setTotalAccounts] = useState<number | null>(null);
-    // 1. Định nghĩa fetchAccounts TRƯỚC useEffect
+    const [removeRolesConfirmOpen, setRemoveRolesConfirmOpen] = useState(false);
+    const [accountToRemoveRoles, setAccountToRemoveRoles] = useState<Account | null>(null);
+
     const fetchAccounts = async () => {
         try {
             const response = await getAllAccountsAPI();
@@ -305,7 +309,7 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             showToast('Không thể tải danh sách tài khoản!', 'error');
         }
     };
-    
+
     const fetchAccountCount = async () => {
         try {
             const response = await countAccountsAPI();
@@ -316,28 +320,65 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             console.error('Lỗi khi lấy số lượng tài khoản:', error);
         }
     };
-    
+
     useEffect(() => {
         fetchAccounts();
         fetchAccountCount();
-    
+
         const checkMasterRole = async () => {
             const isMasterUser = await checkIsMasterRole();
             setIsMaster(isMasterUser);
         };
         checkMasterRole();
-    
+
         const loadingTimer = setTimeout(() => {
             setIsLoading(false);
         }, 2000);
-    
+
         return () => clearTimeout(loadingTimer);
     }, []);
-    
 
+    const handleRemoveAllRoles = async (account: Account) => {
+        if (!isMaster) {
+            showToast('Chỉ Master mới có quyền xóa vai trò', 'error');
+            return;
+        }
 
+        if (account.roles.some(role => role.name.toLowerCase() === 'master')) {
+            showToast('Không thể xóa vai trò của tài khoản Master', 'error');
+            return;
+        }
 
+        setAccountToRemoveRoles(account);
+        setRemoveRolesConfirmOpen(true);
+    };
 
+    const confirmRemoveAllRoles = async () => {
+        if (accountToRemoveRoles) {
+            try {
+                const removePromises = accountToRemoveRoles.roles.map(role =>
+                    removeRoleFromAccountAPI(accountToRemoveRoles._id, role._id)
+                );
+
+                await Promise.all(removePromises);
+
+                showToast('Đã xóa tất cả vai trò thành công', 'success');
+
+                setAccounts(prev =>
+                    prev.map(a =>
+                        a._id === accountToRemoveRoles._id ? { ...a, roles: [] } : a
+                    )
+                );
+
+                await fetchAccounts();
+            } catch (error) {
+                console.error('Error removing all roles:', error);
+                showToast('Không thể xóa vai trò!', 'error');
+            }
+        }
+        setRemoveRolesConfirmOpen(false);
+        setAccountToRemoveRoles(null);
+    };
 
     const handleEdit = (account: Account) => {
         if (!isMaster && account.roles.some(role => role.name.toLowerCase() === 'master')) {
@@ -473,65 +514,64 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     return (
         <Container>
             <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
-    <Title style={{ marginRight: '16px' }}>Quản lý tài khoản</Title>
+                <Title style={{ marginRight: '16px' }}>Quản lý tài khoản</Title>
 
-    {totalAccounts !== null && (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: '#f5f5f5',
-            padding: '6px 12px',
-            borderRadius: '8px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-        }}>
-            <GroupIcon style={{ color: '#1976d2' }} />
-            <span style={{ fontWeight: 'bold', color: '#333', fontSize: '16px' }}>
-                {totalAccounts} người dùng
-            </span>
-        </div>
-    )}
+                {totalAccounts !== null && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        background: '#f5f5f5',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                    }}>
+                        <GroupIcon style={{ color: '#1976d2' }} />
+                        <span style={{ fontWeight: 'bold', color: '#333', fontSize: '16px' }}>
+                            {totalAccounts} người dùng
+                        </span>
+                    </div>
+                )}
 
-    <SearchControls style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <FilterSelect
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value)}
-        >
-            <option value="fullName">Tìm theo tên</option>
-            <option value="email">Tìm theo email</option>
-            <option value="role">Tìm theo vai trò</option>
-        </FilterSelect>
+                <SearchControls style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <FilterSelect
+                        value={searchType}
+                        onChange={(e) => setSearchType(e.target.value)}
+                    >
+                        <option value="fullName">Tìm theo tên</option>
+                        <option value="email">Tìm theo email</option>
+                        <option value="role">Tìm theo vai trò</option>
+                    </FilterSelect>
 
-        <SearchInput
-            type="text"
-            placeholder={`Tìm kiếm theo ${
-                searchType === 'fullName'
-                    ? 'tên'
-                    : searchType === 'email'
-                        ? 'email'
-                        : 'vai trò'
-            }...`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-        />
+                    <SearchInput
+                        type="text"
+                        placeholder={`Tìm kiếm theo ${searchType === 'fullName'
+                            ? 'tên'
+                            : searchType === 'email'
+                                ? 'email'
+                                : 'vai trò'
+                            }...`}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
 
-        <FilterSelect
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
-        >
-            <option value="date">Sắp xếp theo ngày</option>
-            <option value="name">Sắp xếp theo tên</option>
-        </FilterSelect>
+                    <FilterSelect
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
+                    >
+                        <option value="date">Sắp xếp theo ngày</option>
+                        <option value="name">Sắp xếp theo tên</option>
+                    </FilterSelect>
 
-        <FilterSelect
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-        >
-            <option value="desc">Giảm dần</option>
-            <option value="asc">Tăng dần</option>
-        </FilterSelect>
-    </SearchControls>
-</Header>
+                    <FilterSelect
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                    >
+                        <option value="desc">Giảm dần</option>
+                        <option value="asc">Tăng dần</option>
+                    </FilterSelect>
+                </SearchControls>
+            </Header>
 
 
 
@@ -600,6 +640,15 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                                             >
                                                 <DeleteIcon />
                                             </ActionButton>
+                                            <StyledButton
+                                                onClick={() => handleRemoveAllRoles(account)}
+                                                disabled={!isMaster || account.roles.length === 0}
+                                                variant="outlined"
+                                                size="small"
+                                                style={{ marginLeft: '8px' }}
+                                            >
+                                                Xóa vai trò
+                                            </StyledButton>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -652,8 +701,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 }}>
                     Xác nhận xóa tài khoản
                 </DialogTitle>
-                <DialogContent style={{ 
-                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+                <DialogContent style={{
+                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
                 }}>
                     <DialogContentText style={{
                         fontSize: window.innerWidth <= 768 ? '14px' : '16px',
@@ -704,7 +753,6 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 fullWidth
                 maxWidth="sm"
             >
-                {/* Apply the same responsive styles to the status confirmation dialog */}
                 <DialogTitle style={{
                     fontSize: window.innerWidth <= 768 ? '18px' : '20px',
                     fontWeight: '600',
@@ -713,8 +761,8 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 }}>
                     Xác nhận thay đổi trạng thái
                 </DialogTitle>
-                <DialogContent style={{ 
-                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+                <DialogContent style={{
+                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
                 }}>
                     <DialogContentText style={{
                         fontSize: window.innerWidth <= 768 ? '14px' : '16px',
@@ -742,6 +790,66 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         variant="contained"
                         color="error"
                         onClick={confirmToggleStatus}
+                        fullWidth={window.innerWidth <= 768}
+                    >
+                        Xác nhận
+                    </StyledButton>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog
+                open={removeRolesConfirmOpen}
+                onClose={() => setRemoveRolesConfirmOpen(false)}
+                PaperProps={{
+                    style: {
+                        backgroundColor: '#fff',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+                        minWidth: window.innerWidth <= 768 ? '90%' : '600px',
+                        margin: window.innerWidth <= 768 ? '16px' : 'auto'
+                    }
+                }}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle style={{
+                    fontSize: window.innerWidth <= 768 ? '18px' : '20px',
+                    fontWeight: '600',
+                    color: '#333',
+                    padding: window.innerWidth <= 768 ? '0 0 12px 0' : '0 0 16px 0'
+                }}>
+                    Xác nhận xóa tất cả vai trò
+                </DialogTitle>
+                <DialogContent style={{
+                    padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
+                }}>
+                    <DialogContentText style={{
+                        fontSize: window.innerWidth <= 768 ? '14px' : '16px',
+                        color: '#555',
+                        lineHeight: '1.5'
+                    }}>
+                        Bạn có chắc chắn muốn xóa tất cả vai trò của tài khoản này?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions style={{
+                    padding: '0',
+                    justifyContent: 'flex-end',
+                    gap: window.innerWidth <= 768 ? '8px' : '12px',
+                    flexDirection: window.innerWidth <= 768 ? 'column' : 'row',
+                    width: window.innerWidth <= 768 ? '100%' : 'auto'
+                }}>
+                    <StyledButton
+                        variant="outlined"
+                        onClick={() => setRemoveRolesConfirmOpen(false)}
+                        fullWidth={window.innerWidth <= 768}
+                    >
+                        Hủy
+                    </StyledButton>
+                    <StyledButton
+                        variant="contained"
+                        color="error"
+                        onClick={confirmRemoveAllRoles}
                         fullWidth={window.innerWidth <= 768}
                     >
                         Xác nhận

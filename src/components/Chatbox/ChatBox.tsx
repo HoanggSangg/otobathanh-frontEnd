@@ -12,15 +12,9 @@ const ChatContainer = styled.div`
 `;
 
 const ChatButton = styled(IconButton)`
-  background-color: #ff0000 !important;
   color: white !important;
-  width: 50px;
-  height: 50px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-  padding: 8px !important;
-  &:hover {
-    background-color: #0060d1 !important;
-  }
+  width: 75px;
+  height: 75px;
   img {
     width: 100%;
     height: 100%;

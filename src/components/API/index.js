@@ -547,13 +547,15 @@ export const assignRoleToAccountAPI = async (accountId, roleId) => {
 
 export const removeRoleFromAccountAPI = async (accountId, roleId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/roles/remove`, {
-      headers: getAuthHeaders(),
-      data: {
+    const response = await axios.post(`${API_URL}/api/roles/remove`,
+      {
         accountId,
         roleId
+      },
+      {
+        headers: getAuthHeaders()
       }
-    });
+    );
     return response.data;
   } catch (error) {
     console.error('Error removing role:', error);

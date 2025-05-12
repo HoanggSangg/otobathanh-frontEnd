@@ -8,8 +8,6 @@ import {
   FormControl,
   Select,
   MenuItem,
-  FormControlLabel,
-  Switch,
   SelectChangeEvent
 } from '@mui/material';
 import {
@@ -60,10 +58,9 @@ interface Account {
   status: boolean;
 }
 
-interface CreateFormData {
+interface EditFormData {
   fullName: string;
   email: string;
-  password: string;
   image: string;
   roles: Role[];
   status: boolean;
@@ -71,17 +68,16 @@ interface CreateFormData {
 
 interface Props {
   onSuccess: () => void;
-  editingAccount?: Account | null;
+  editingAccount: Account | null;
 }
 
 const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
-  const [formData, setFormData] = useState<CreateFormData>({
+  const [formData, setFormData] = useState<EditFormData>({
     fullName: editingAccount?.fullName || '',
     email: editingAccount?.email || '',
-    password: '',
     image: editingAccount?.image || '',
     roles: editingAccount?.roles || [],
-    status: editingAccount?.status ?? true
+    status: editingAccount?.status || false
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -162,23 +158,19 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
       setIsLoading(true);
 
       if (editingAccount) {
-        // Nếu chọn vai trò khác
         if (selectedRoleId && selectedRoleId !== formData.roles[0]?._id) {
-          // Gỡ hết vai trò cũ
           for (const role of formData.roles) {
             await removeRoleFromAccountAPI(editingAccount._id, role._id);
           }
-          // Thêm vai trò mới
           await assignRoleToAccountAPI(editingAccount._id, selectedRoleId);
         }
 
-        // Update các thông tin khác
         const accountData = {
           fullName: formData.fullName,
           email: formData.email,
           image: formData.image,
           status: formData.status,
-          roles: [] // roles cập nhật riêng ở API assign/remove, nên ở đây để trống
+          roles: []
         };
 
         const response = await updateAccountAPI(editingAccount._id, accountData);
@@ -200,7 +192,7 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
 
   return (
     <Container>
-      <Title>{editingAccount ? 'Chỉnh sửa tài khoản' : 'Tạo tài khoản'}</Title>
+      <Title>Chỉnh sửa tài khoản</Title>
       <StyledForm onSubmit={handleUpdate}>
         <TextField
           fullWidth
@@ -209,6 +201,10 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
           value={formData.fullName}
           onChange={handleFormChange}
           required
+          disabled={!!editingAccount}
+          InputProps={{
+            readOnly: !!editingAccount,
+          }}
         />
         <TextField
           fullWidth
@@ -218,6 +214,10 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
           value={formData.email}
           onChange={handleFormChange}
           required
+          disabled={!!editingAccount}
+          InputProps={{
+            readOnly: !!editingAccount,
+          }}
         />
 
         {(!formData.roles.length || formData.roles.every(role => !role._id)) ? (
@@ -245,22 +245,6 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
         )}
 
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-          <StyledButton
-            variant="outlined"
-            onClick={() => {
-              setFormData({
-                fullName: '',
-                email: '',
-                password: '',
-                image: '',
-                roles: [],
-                status: false
-              });
-              setSelectedRoleId('');
-            }}
-          >
-            Làm mới
-          </StyledButton>
           <StyledButton
             type="submit"
             variant="contained"
