@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAuthHeaders } from '../Utils/auth';
 
-const API_URL = 'https://otobathanhh.onrender.com';
+const API_URL = 'http://localhost:3000';
 
 // Account APIs
 export const loginAPI = async (email, password) => {

@@ -121,7 +121,7 @@ const MobileDropdownContent = styled.div<{ $isOpen: boolean }>`
 `;
 
 const Logo = styled.img`
-  height: 70px;
+  height: 50px;
   margin: 10px 0;
   object-fit: contain;
 `;

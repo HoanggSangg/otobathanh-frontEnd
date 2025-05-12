@@ -7,8 +7,8 @@ import { getAllBannersAPI } from '../API';
 
 const BannerContainer = styled(Box)`
   position: relative;
-  height: 700px;
-  margin-top: 100px;
+  height: 615px;
+  margin-top: 80px;
   overflow: hidden;
   width: 100%;
   max-width: 1920px;
@@ -18,19 +18,19 @@ const BannerContainer = styled(Box)`
   @media (max-width: 1024px) {
     height: 500px;
     margin-top: 80px;
-    padding: 0; 
+    padding: 0 15px;
   }
 
   @media (max-width: 768px) {
     height: 350px;
     margin-top: 100px;
-    padding: 0;
+    padding: 0 10px;
   }
 
   @media (max-width: 480px) {
     height: 200px;
     margin-top: 95px;
-    padding: 0;
+    padding: 0 5px;
   }
 `;
 

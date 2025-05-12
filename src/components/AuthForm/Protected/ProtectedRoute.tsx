@@ -15,6 +15,12 @@ interface User {
 }
 
 const MASTER_ONLY_ROUTES = ['/manager/accounts'];
+const ADMIN_ONLY_ROUTES = [
+  '/manager/products',
+  '/manager/news',
+  '/manager/banner',
+  '/manager/booking'
+];
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -42,18 +48,25 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         ) || [];
 
         const isMasterRoute = MASTER_ONLY_ROUTES.includes(location.pathname);
+        const isAdminRoute = ADMIN_ONLY_ROUTES.includes(location.pathname);
         const hasMasterRole = userRoles.includes('master');
+        const hasAdminRole = userRoles.includes('admin') || hasMasterRole;
 
         if (isMasterRoute) {
-          // Nếu là route chỉ dành cho master
           if (hasMasterRole) {
             setIsAuthorized(true);
           } else {
             showToast('Chỉ Master mới có quyền truy cập trang này', 'error');
             setIsAuthorized(false);
           }
+        } else if (isAdminRoute) {
+          if (hasAdminRole) {
+            setIsAuthorized(true);
+          } else {
+            showToast('Chỉ Admin mới có quyền truy cập trang này', 'error');
+            setIsAuthorized(false);
+          }
         } else {
-          // Các route bảo vệ khác (nếu có)
           setIsAuthorized(true);
         }
         
