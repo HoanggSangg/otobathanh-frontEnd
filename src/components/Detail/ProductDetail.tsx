@@ -444,19 +444,15 @@ const ProductPage = () => {
     setSelectedImage(imageUrl); // Cập nhật ảnh chính khi nhấp vào thumbnail
   };
 
-  if (!product && id) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <ProductContainer>
       {product ? (
         <>
           <ProductHeader>
             <ProductTitle>{product.name}</ProductTitle>
-            <ProductPrice>
+            {/* <ProductPrice>
               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
-            </ProductPrice>
+            </ProductPrice> */}
           </ProductHeader>
 
           <ProductContent>
@@ -537,7 +533,7 @@ const ProductPage = () => {
             </MainContent>
 
             <Sidebar>
-              <h3>Sản phẩm liên quan</h3>
+              <h3>dịch vụ liên quan</h3>
               <RelatedProductsList>
                 {relatedProducts.map(prod => (
                   <li key={prod._id} onClick={() => navigate(`/products/${prod._id}`)}>

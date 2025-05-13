@@ -4,25 +4,34 @@ import styled from 'styled-components';
 const AboutContainer = styled.div`
   margin: 0 auto;
   padding: 60px 80px;
+
+  @media (max-width: 900px) {
+    padding: 20px 0;
+  }
 `;
 
 const AboutContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: clamp(30px, 5vw, 60px);
+  gap: clamp(20px, 3vw, 20px);
   margin: clamp(0, 5vw, 50px);
-  align-items: center;
+  align-items: start;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
     margin: clamp(15px, 3vw, 30px);
   }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const AboutImage = styled.img`
   width: 100%;
-  height: auto;
-  padding: clamp(15px, 3vw, 30px);
+  height: 100%;
+  object-fit: cover;
+  padding: clamp(10px, 2vw, 10px);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
@@ -95,34 +104,44 @@ const AboutText = styled.div`
   }
 `;
 
+const ImageContainer = styled.div`
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  
+  @media (max-width: 900px) {
+    order: 2;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 const About = () => {
   return (
     <AboutContainer>
       <AboutContent>
-        <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Honda Ô tô Bá Thành Showroom" />
+        <ImageContainer>
+          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106483/bangcap3_ygcoer.jpg" alt="Honda Ô tô Bá Thành Showroom 1" />
+          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106485/Untitled_DANG_ISO_t73hk1.png" alt="Honda Ô tô Bá Thành Showroom 2" />
+          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106692/bangcap2_es8csu.jpg" alt="Honda Ô tô Bá Thành Showroom 2" />
+          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106698/iso_hfu6kz.jpg" alt="Honda Ô tô Bá Thành Showroom 2" />
+        </ImageContainer>
         <AboutText>
           <h2>Giới thiệu chung</h2>
           <p>
-            Honda Ô tô Bá Thành tự hào là đại lý ủy quyền chính thức của Honda Việt Nam,
-            với hơn 10 năm kinh nghiệm trong lĩnh vực phân phối xe và dịch vụ bảo dưỡng.
-            Chúng tôi cam kết mang đến những sản phẩm và dịch vụ chất lượng cao nhất theo
-            tiêu chuẩn Honda toàn cầu.
+            Trong nhu cầu thực tế hiện nay, việc chọn lựa dịch vụ và mua bán sao cho phù hợp là một việc làm mọi người rất đắn đo, đặc biệt là những dịch vụ thuộc lĩnh vực hot nhất hiện nay: dịch vụ mua bán, bảo trì và sửa chữa ô tô.
           </p>
           <h2>Tầm nhìn</h2>
           <p>
-            Với khát vọng trở thành đại lý Honda hàng đầu tại khu vực, chúng tôi không ngừng
-            đổi mới và nâng cao chất lượng dịch vụ, mang đến trải nghiệm tuyệt vời và sự
-            hài lòng tối đa cho khách hàng.
+            Bằng niềm tin vững chắc, cùng với lòng nhiệt huyết của ban giám đốc và đội ngũ nhân viên, kỹ thuật viên chuyên nghiệp,lành nghề và năng động, tận tâm với công việc. Garage ô tô Bá Thành đã có những bước đi vững chắc, đầy ấn tượng và đáng tự hào trên thị trường xe ô tô hiện nay.
           </p>
           <h2>Giá trị cốt lõi</h2>
           <ul>
-            <li>Chất lượng dịch vụ đạt chuẩn Honda toàn cầu</li>
-            <li>Đội ngũ kỹ thuật viên được đào tạo chuyên sâu</li>
-            <li>Trang thiết bị hiện đại, công nghệ tiên tiến</li>
-            <li>Không gian showroom rộng rãi, sang trọng</li>
-            <li>Dịch vụ chăm sóc khách hàng 24/7</li>
-            <li>Cam kết giá cả cạnh tranh nhất thị trường</li>
-            <li>Chính sách bảo hành, bảo dưỡng ưu đãi</li>
+            <li>Bằng niềm tin vững chắc, cùng với lòng nhiệt huyết của ban giám đốc và đội ngũ nhân viên, kỹ thuật viên chuyên nghiệp,lành nghề và năng động, tận tâm với công việc</li>
+            <li>Với sự chuyên nghiệp và sự tận tâm</li>
+            <li>Khẳng định chất lượng đảm bảo sẽ mang đến cho quý khách sự hài lòng</li>
           </ul>
         </AboutText>
       </AboutContent>

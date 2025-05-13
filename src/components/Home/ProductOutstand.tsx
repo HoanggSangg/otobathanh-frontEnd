@@ -366,7 +366,7 @@ const Products = () => {
   return (
    <ProductSection>
       <ProductContainer>
-        <SectionTitle>SẢN PHẨM NỔI BẬT</SectionTitle>
+        <SectionTitle>DỊCH VỤ</SectionTitle>
         <ProductGrid>
           {products.map((product, index) => (
             <InfoCard
@@ -390,12 +390,12 @@ const Products = () => {
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   {product.description.substring(0, 100)}...
                 </Typography>
-                <ProductPrice variant="h6">
+                {/* <ProductPrice variant="h6">
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
                 </ProductPrice>
                 <Typography variant="body2" color={product.quantity > 0 ? "success.main" : "error.main"}>
                   {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
-                </Typography>
+                </Typography> */}
                 <ButtonGroup>
                   <LikeButton
                     onClick={(e) => handleLike(e, product._id)}

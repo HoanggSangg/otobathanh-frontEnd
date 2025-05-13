@@ -187,7 +187,7 @@ const ServicesDetail = () => {
           <Link to="/services">DỊCH VỤ SỬA CHỮA</Link>
         </CategoryLinks>
         <ServiceTitle>
-          Dịch vụ bảo dưỡng xe Rolls-Royce tại Garage Ô Tô Vương Phát Đảm bảo sự hoàn hảo tới từng chi tiết nhỏ nhất
+          Dịch vụ bảo dưỡng xe Đảm bảo sự hoàn hảo tới từng chi tiết nhỏ nhất
         </ServiceTitle>
         <ServiceMeta>
           ĐĂNG VÀO <span>27/03/2025</span> BỞI <span>ADMIN</span>
@@ -198,7 +198,7 @@ const ServicesDetail = () => {
         <MainContent>
           <img src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Dịch vụ bảo dưỡng Rolls-Royce" />
           <p>
-            Dịch Vụ Bảo Dưỡng Xe Rolls-Royce tại Garage Ô Tô Vương Phát Đình Cao Chăm Sóc Xe Siêu Sang Giới Thiệu
+            Dịch Vụ Bảo Dưỡng Xe Đình Cao Chăm Sóc Xe Siêu Sang Giới Thiệu
             Rolls-Royce – Tuyệt Tác Nghệ Thuật Di Động. Rolls-Royce, biểu tượng của sự tinh hoa và đẳng cấp vượt thời
             gian, không chỉ là một phương tiện di chuyển, mà còn là một tuyệt tác nghệ thuật di động.
           </p>

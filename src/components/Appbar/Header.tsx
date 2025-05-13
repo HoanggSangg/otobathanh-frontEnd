@@ -610,7 +610,7 @@ const Header = () => {
                     Thay đổi mật khẩu
                   </DropdownItem>
                   <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
-                    Sản phẩm yêu thích
+                    Dịch vụ yêu thích
                   </DropdownItem>
                   <DropdownButton onClick={handleLogout}>
                     Đăng xuất
@@ -623,11 +623,11 @@ const Header = () => {
             <NavLink to="/" end onClick={closeMenu}>
               Trang chủ
             </NavLink>
-            <NavLink to="/services" onClick={closeMenu}>
+            {/* <NavLink to="/services" onClick={closeMenu}>
               Dịch vụ
-            </NavLink>
+            </NavLink> */}
             <NavLink to="/products" onClick={closeMenu}>
-              Sản phẩm
+              Dịch vụ
             </NavLink>
             <NavLink to="/news" onClick={closeMenu}>
               Tin Tức
@@ -651,7 +651,7 @@ const Header = () => {
                     </DropdownItem>
                   )}
                   <DropdownItem to="/manager/products" onClick={closeMenu}>
-                    Quản lý sản phẩm
+                    Quản lý dịch vụ
                   </DropdownItem>
                   <DropdownItem to="/manager/news" onClick={closeMenu}>
                     Quản lý tin tức
@@ -691,7 +691,7 @@ const Header = () => {
                       </DropdownItem>
                     )}
                     <DropdownItem to="/manager/products" onClick={closeMenu}>
-                      Quản lý sản phẩm
+                      Quản lý dịch vụ
                     </DropdownItem>
                     <DropdownItem to="/manager/news" onClick={closeMenu}>
                       Quản lý tin tức
@@ -741,7 +741,7 @@ const Header = () => {
                     Thay đổi mật khẩu
                   </DropdownItem>
                   <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
-                    Sản phẩm yêu thích
+                    Dịch vụ yêu thích
                   </DropdownItem>
                   <DropdownButton onClick={handleLogout}>
                     Đăng xuất

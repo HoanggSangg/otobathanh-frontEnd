@@ -79,7 +79,7 @@ const Breadcrumb = () => {
       case 'services':
         return 'Dịch vụ';
       case 'products':
-        return 'Sản phẩm';
+        return 'Dịch vụ';
       case 'accounts':
         return 'Tài khoản';
       case 'account':
@@ -89,7 +89,7 @@ const Breadcrumb = () => {
       case 'update':
         return 'Cập nhật thông tin';
       case 'likeProducts':
-        return 'Sản phẩm yêu thích';
+        return 'Dịch vụ yêu thích';
       case 'changePass':
         return 'Thay đổi mật khẩu';
       case 'booking':
@@ -125,13 +125,13 @@ const Breadcrumb = () => {
       items.push(<Separator key="sep-products" />);
       items.push(
         <BreadcrumbItem key="products" to="/products">
-          Sản phẩm
+          dịch vụ
         </BreadcrumbItem>
       );
       items.push(<Separator key="sep-detail" />);
       items.push(
         <CurrentPage key="detail">
-          CHI TIẾT SẢN PHẨM
+          CHI TIẾT dịch vụ
         </CurrentPage>
       );
       return items;

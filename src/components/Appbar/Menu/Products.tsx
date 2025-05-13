@@ -481,7 +481,7 @@ const Products = () => {
             ))}
           </List>
 
-          <Typography variant="h6" sx={{ color: '#ff0000', marginTop: 3, marginBottom: 2 }}>
+          {/* <Typography variant="h6" sx={{ color: '#ff0000', marginTop: 3, marginBottom: 2 }}>
             Bộ Lọc Tìm Kiếm
           </Typography>
           <Typography variant="subtitle1" sx={{ color: 'black', marginBottom: 1 }}>
@@ -508,7 +508,7 @@ const Products = () => {
                 />
               </ListItem>
             ))}
-          </List>
+          </List> */}
         </Sidebar>
 
         <ProductSection>
@@ -517,7 +517,7 @@ const Products = () => {
               color: '#ff0000',
               fontSize: { xs: '24px', md: '32px' }
             }}>
-              Danh sách sản phẩm
+              Danh sách dịch vụ
             </Typography>
             <FormControl sx={{ minWidth: { xs: 150, md: 200 } }}>
               <Select
@@ -532,8 +532,8 @@ const Products = () => {
                 }}
               >
                 <MenuItem value="default">Mặc định</MenuItem>
-                <MenuItem value="priceAsc">Giá thấp đến cao</MenuItem>
-                <MenuItem value="priceDesc">Giá cao đến thấp</MenuItem>
+                {/* <MenuItem value="priceAsc">Giá thấp đến cao</MenuItem>
+                <MenuItem value="priceDesc">Giá cao đến thấp</MenuItem> */}
                 <MenuItem value="newest">Xe mới nhất</MenuItem>
               </Select>
             </FormControl>
@@ -561,12 +561,12 @@ const Products = () => {
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     {product.description.substring(0, 100)}...
                   </Typography>
-                  <ProductPrice variant="h6">
+                  {/* <ProductPrice variant="h6">
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
                   </ProductPrice>
                   <Typography variant="body2" color={product.quantity > 0 ? "success.main" : "error.main"}>
                     {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
-                  </Typography>
+                  </Typography> */}
                   <ButtonGroup>
                     <LikeButton
                       onClick={(e) => handleLike(e, product._id)}

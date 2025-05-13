@@ -18,7 +18,7 @@ const StatsGrid = styled.div`
   }
   
   @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 40px;
   }
 `;
