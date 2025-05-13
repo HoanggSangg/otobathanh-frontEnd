@@ -12,8 +12,6 @@ const BannerContainer = styled(Box)`
   overflow: hidden;
   width: 100%;
   max-width: 1920px;
-  margin-left: auto;
-  margin-right: auto;
 
   @media (max-width: 1024px) {
     height: 500px;
@@ -29,8 +27,8 @@ const BannerContainer = styled(Box)`
 
   @media (max-width: 480px) {
     height: 200px;
-    margin-top: 95px;
-    padding: 0 5px;
+    margin-top: 80px;
+    padding: 0;
   }
 `;
 

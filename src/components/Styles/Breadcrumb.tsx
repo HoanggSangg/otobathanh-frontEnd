@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const BreadcrumbContainer = styled.div`
-  margin-top: 100px;
+  margin-top: 80px;
   padding: 20px 0;
   background-color: #f5f5f5;
   
   @media (max-width: 768px) {
-    margin-top: 100px;
+    margin-top: 85px;
     padding: 15px 0;
   }
 `;
