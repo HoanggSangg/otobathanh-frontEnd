@@ -163,7 +163,7 @@
   margin-bottom: 1rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .work-process-wrapper {
     height: auto;
     padding: 30px 15px;
@@ -186,7 +186,6 @@
   .step-box {
     position: relative;
     width: 90%;
-    max-width: 400px;
     margin: 0 auto 0;
     padding: 12px;
     display: flex;

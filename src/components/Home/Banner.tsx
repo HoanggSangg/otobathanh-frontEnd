@@ -14,19 +14,18 @@ const BannerContainer = styled(Box)`
   max-width: 1920px;
 
   @media (max-width: 1024px) {
-    height: 500px;
-    margin-top: 80px;
-    padding: 0 15px;
+    height: 450px;
+    padding: 0;
   }
 
   @media (max-width: 768px) {
     height: 350px;
     margin-top: 100px;
-    padding: 0 10px;
+    padding: 0;
   }
 
   @media (max-width: 480px) {
-    height: 200px;
+    height: 195px;
     margin-top: 80px;
     padding: 0;
   }
@@ -65,6 +64,18 @@ const BannerImage = styled.img`
   display: block;
   margin: 0;
   padding: 0;
+
+  @media (max-width: 1024px) {
+    height: 450px;
+  }
+
+  @media (max-width: 768px) {
+    height: auto;
+  }
+
+  @media (max-width: 480px) {
+    height: 185px;
+  }
 `;
 
 const NavigationButton = styled(IconButton)`
@@ -167,13 +178,13 @@ const Banner = () => {
   }, []);
 
   const nextSlide = () => {
-    setCurrentSlide(current => 
+    setCurrentSlide(current =>
       current === banners.length - 1 ? 0 : current + 1
     );
   };
 
   const prevSlide = () => {
-    setCurrentSlide(current => 
+    setCurrentSlide(current =>
       current === 0 ? banners.length - 1 : current - 1
     );
   };
@@ -208,7 +219,7 @@ const Banner = () => {
 
   return (
     <BannerContainer>
-      <SlideContainer 
+      <SlideContainer
         $translateX={-currentSlide * 100}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -228,8 +239,8 @@ const Banner = () => {
       </RightButton>
       <DotContainer>
         {banners.map((_, index) => (
-          <Dot 
-            key={index} 
+          <Dot
+            key={index}
             $active={currentSlide === index}
             onClick={() => setCurrentSlide(index)}
           />
