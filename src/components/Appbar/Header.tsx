@@ -623,13 +623,10 @@ const Header = () => {
             <NavLink to="/" end onClick={closeMenu}>
               Trang chủ
             </NavLink>
-            {/* <NavLink to="/services" onClick={closeMenu}>
-              Dịch vụ
-            </NavLink> */}
             <NavLink to="/products" onClick={closeMenu}>
               Dịch vụ
             </NavLink>
-            <NavLink to="/news" onClick={closeMenu}>
+            <NavLink to="/newslist" onClick={closeMenu}>
               Tin Tức
             </NavLink>
             <NavLink to="/about" onClick={closeMenu}>

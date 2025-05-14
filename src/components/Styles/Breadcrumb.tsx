@@ -102,6 +102,8 @@ const Breadcrumb = () => {
         return 'Liên hệ';
       case 'news':
         return 'Tin tức';
+      case 'newslist':
+        return 'Danh mục tin tức';
       case 'manager':
         return 'Quản lý';
       case 'banner':

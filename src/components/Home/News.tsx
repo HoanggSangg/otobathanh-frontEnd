@@ -32,24 +32,26 @@ const ScrollContainer = styled.div`
   position: relative;
   width: 100%;
   
-  &::before, &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 100px;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
+  @media (min-width: 768px) {
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 100px;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, #f8f9fa 0%, rgba(248, 249, 250, 0) 100%);
-  }
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+    }
 
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, #f8f9fa 0%, rgba(248, 249, 250, 0) 100%);
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+    }
   }
 `;
 
@@ -97,7 +99,7 @@ const CardWrapper = styled.div`
   }
 `;
 
-const CardImage = styled.div<{src: string}>`
+const CardImage = styled.div<{ src: string }>`
   width: 100%;
   height: 180px;
   background: url(${props => props.src}) center/cover no-repeat;
@@ -174,7 +176,7 @@ const News = () => {
     const container = e.currentTarget;
     const isAtStart = container.scrollLeft === 0;
     const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
-    
+
     setShowLeftButton(!isAtStart);
     setShowRightButton(!isAtEnd);
   };
@@ -185,8 +187,8 @@ const News = () => {
       <Container>
         <SectionTitle>TIN TỨC KHUYẾN MÃI</SectionTitle>
         <ScrollContainer>
-          <ScrollButton 
-            style={{ left: -22 }} 
+          <ScrollButton
+            style={{ left: -15 }}
             $show={showLeftButton}
             onClick={() => {
               const el = document.getElementById('horizontal-news-scroll');
@@ -195,8 +197,8 @@ const News = () => {
           >
             <FaChevronLeft />
           </ScrollButton>
-          <ScrollButton 
-            style={{ right: -22 }} 
+          <ScrollButton
+            style={{ right: -15 }}
             $show={showRightButton}
             onClick={() => {
               const el = document.getElementById('horizontal-news-scroll');
@@ -205,7 +207,7 @@ const News = () => {
           >
             <FaChevronRight />
           </ScrollButton>
-          <HorizontalScroll 
+          <HorizontalScroll
             id="horizontal-news-scroll"
             onScroll={handleScroll}
           >

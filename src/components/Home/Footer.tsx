@@ -4,7 +4,7 @@ import { Container, Typography, Link, IconButton } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
-import { SiTiktok } from 'react-icons/si';
+import { SiTiktok, SiYoutube } from 'react-icons/si';
 
 const FooterWrapper = styled.footer`
   background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
@@ -115,6 +115,9 @@ const Footer = () => {
               <SocialIcons>
                 <IconButton href="https://www.tiktok.com/@congtytnhhbathanh" target="_blank" aria-label="TikTok">
                   <SiTiktok />
+                </IconButton>
+                <IconButton href="https://www.youtube.com/@congtytnhhbathanhq12" target="_blank" aria-label="YouTube">
+                  <SiYoutube />
                 </IconButton>
               </SocialIcons>
             </SocialMediaSection>

@@ -39,6 +39,7 @@ import IndexOrder from './components/Admin/OrderManager/indexOrder';
 import ScrollToTop from './components/Styles/ScrollToTop';
 import Booking from './components/Appbar/Menu/Booking';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import NewsList from './components/Appbar/Menu/NewsList';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -123,6 +124,7 @@ const App = () => {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/news" element={<News />} />
+              <Route path="/newslist" element={<NewsList />} />
               <Route
                 path="/manager/products"
                 element={

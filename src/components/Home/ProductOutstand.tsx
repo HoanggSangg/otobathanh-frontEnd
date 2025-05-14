@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import styled, { keyframes } from 'styled-components';
 import { SectionTitle } from '../Styles/StylesComponents';
-import { getFeaturedProductsAPI} from '../API';
+import { getFeaturedProductsAPI } from '../API';
 import { useNavigate } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -33,24 +33,26 @@ const ScrollContainer = styled.div`
   position: relative;
   width: 100%;
   
-  &::before, &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 100px;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
+  @media (min-width: 768px) {
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 100px;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
-  }
+    &::before {
+      left: 0;
+      background: linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+    }
 
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+    &::after {
+      right: 0;
+      background: linear-gradient(to left, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
+    }
   }
 `;
 
@@ -154,7 +156,7 @@ const Products = () => {
     const container = e.currentTarget;
     const isAtStart = container.scrollLeft === 0;
     const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
-    
+
     setShowLeftButton(!isAtStart);
     setShowRightButton(!isAtEnd);
   };
@@ -164,8 +166,8 @@ const Products = () => {
       <ProductContainer>
         <SectionTitle>DỊCH VỤ</SectionTitle>
         <ScrollContainer>
-          <ScrollButton 
-            style={{ left: -22 }} 
+          <ScrollButton
+            style={{ left: -15 }}
             $show={showLeftButton}
             onClick={() => {
               const el = document.getElementById('horizontal-scroll');
@@ -174,8 +176,8 @@ const Products = () => {
           >
             <FaChevronLeft />
           </ScrollButton>
-          <ScrollButton 
-            style={{ right: -22 }} 
+          <ScrollButton
+            style={{ right: -15 }}
             $show={showRightButton}
             onClick={() => {
               const el = document.getElementById('horizontal-scroll');
@@ -184,7 +186,7 @@ const Products = () => {
           >
             <FaChevronRight />
           </ScrollButton>
-          <HorizontalScroll 
+          <HorizontalScroll
             id="horizontal-scroll"
             onScroll={handleScroll}
           >
