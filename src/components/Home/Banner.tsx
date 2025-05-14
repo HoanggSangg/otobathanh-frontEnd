@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Box, IconButton } from '@mui/material';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getAllBannersAPI } from '../API';
 
 const BannerContainer = styled(Box)`
@@ -11,6 +10,7 @@ const BannerContainer = styled(Box)`
   margin-top: 80px;
   overflow: hidden;
   width: 100%;
+  z-index: 1;
   max-width: 1920px;
 
   @media (max-width: 1024px) {
@@ -80,32 +80,63 @@ const BannerImage = styled.img`
 
 const NavigationButton = styled(IconButton)`
   position: absolute;
-  top: 50%;
+  top: -50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  z-index: 2;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  z-index: 999;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
+  svg {
+    font-size: 20px;
+    color: #333;
+  }
+
   &:hover {
     background-color: white !important;
+    svg {
+      color: #e31837;
+    }
   }
 
   @media (max-width: 768px) {
-    .MuiSvgIcon-root {
+    width: 40px;
+    height: 40px;
+    svg {
       font-size: 18px;
     }
-    padding: 6px !important;
   }
 
   @media (max-width: 480px) {
-    .MuiSvgIcon-root {
-      font-size: 14px;
+    width: 35px;
+    height: 35px;
+    svg {
+      font-size: 16px;
     }
-    padding: 4px !important;
+  }
+`;
+
+const RightButton = styled(NavigationButton)`
+  right: -91%;
+  opacity: 1;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    right: -87%;
+  }
+
+  @media (max-width: 480px) {
+    right: -80%;
   }
 `;
 
 const LeftButton = styled(NavigationButton)`
-  left: 20px;
+  left: 10px;
+  opacity: 1;
   
   @media (max-width: 768px) {
     left: 15px;
@@ -113,18 +144,6 @@ const LeftButton = styled(NavigationButton)`
 
   @media (max-width: 480px) {
     left: 8px;
-  }
-`;
-
-const RightButton = styled(NavigationButton)`
-  right: 20px;
-  
-  @media (max-width: 768px) {
-    right: 15px;
-  }
-
-  @media (max-width: 480px) {
-    right: 8px;
   }
 `;
 
@@ -232,10 +251,10 @@ const Banner = () => {
         ))}
       </SlideContainer>
       <LeftButton onClick={prevSlide}>
-        <ArrowBackIosNewIcon />
+        <FaChevronLeft />
       </LeftButton>
       <RightButton onClick={nextSlide}>
-        <ArrowForwardIosIcon />
+        <FaChevronRight />
       </RightButton>
       <DotContainer>
         {banners.map((_, index) => (

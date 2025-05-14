@@ -4,7 +4,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const PartnerSection = styled.section`
   background: #f8f9fa;
-  padding: 20px 0;
+  padding: 20px;
   text-align: center;
 `;
 

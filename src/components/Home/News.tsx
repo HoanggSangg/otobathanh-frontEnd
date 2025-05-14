@@ -11,7 +11,7 @@ const NewsSection = styled.section`
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
 `;
@@ -145,7 +145,7 @@ interface NewsItem {
   title: string;
   image: string;
   content: string;
-  date: string;
+  createdAt: string;
 }
 
 const News = () => {
@@ -217,7 +217,7 @@ const News = () => {
                 <CardInfo>
                   <NewsTitleStyled>{item.title}</NewsTitleStyled>
                   <NewsDesc>{item.content}</NewsDesc>
-                  <NewsDateStyled>{new Date(item.date).toLocaleDateString('vi-VN')}</NewsDateStyled>
+                  <NewsDateStyled>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</NewsDateStyled>
                 </CardInfo>
               </CardWrapper>
             ))}
