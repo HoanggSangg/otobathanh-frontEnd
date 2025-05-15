@@ -1,12 +1,7 @@
-.work-process-wrapper {
-  position: relative;
+.work-process-container {
   width: 100%;
-  max-width: 1300px;
-  height: auto;
-  margin: 0 auto;
-  padding: 30px 15px;
-  display: flex;
-  flex-direction: column;
+  padding: 40px 15px;
+  background-color: #f9f9f9;
 }
 
 .work-process-title {
@@ -18,25 +13,31 @@
   font-family: 'Roboto', sans-serif;
   position: relative;
   padding-bottom: 15px;
+}
 
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background-color: #e31837;
-  }
+.work-process-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background-color: #e31837;
 }
 
 .work-process-subtitle {
-  color: #4a5568;
-  max-width: 1300px;
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  color: #4a5568;
+  max-width: 800px;
+  margin: 10px auto 30px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.work-process-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
 .car-center {
@@ -71,7 +72,7 @@
   z-index: 2;
   background: white;
   border: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -99,8 +100,8 @@
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
-  gap: 24px;
-  padding: 20px 10px;
+  gap: 12px;
+  padding: 20px 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -110,18 +111,18 @@
 }
 
 .step-box {
-  min-width: 280px;
-  max-width: 280px;
-  flex: 0 0 280px;
+  min-width: 200px;
+  max-width: 200px;
+  flex: 0 0 200px;
   background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   transition: all 0.3s ease;
 }
 
 .step-box:hover {
-  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
   transform: translateY(-2px);
 }
 
@@ -136,7 +137,6 @@
   height: 50px;
   border-radius: 50%;
   margin-bottom: 15px;
-  padding: 0;
   object-fit: cover;
 }
 
@@ -161,7 +161,7 @@
     flex: 0 0 250px;
     padding: 15px;
   }
-  
+
   .scroll-button {
     width: 36px;
     height: 36px;

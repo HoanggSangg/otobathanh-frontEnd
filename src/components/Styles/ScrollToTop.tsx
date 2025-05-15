@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useLocation } from 'react-router-dom';
 
-// Tách isVisible ra khỏi props để không truyền vào DOM
 const ScrollButton = styled.div.attrs<{ $isVisible: boolean }>(({ $isVisible }) => ({
   style: {
     opacity: $isVisible ? '1' : '0',
@@ -37,6 +37,11 @@ const ScrollButton = styled.div.attrs<{ $isVisible: boolean }>(({ $isVisible }) 
 
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {

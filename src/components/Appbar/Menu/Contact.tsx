@@ -368,7 +368,7 @@ const Contact = () => {
               <LocationOnIcon />
               <div>
                 <h3>Địa chỉ</h3>
-                <p>462 Phan Văn Trị, Phường 7, Quận Gò Vấp, TP.HCM</p>
+                <p>15 TL08, Phường Thạnh Lộc, Quận 12, TP.HCM</p>
                 <p>​19 Phan Văn Trị, Phường 7, Quận Gò Vấp, TP.HCM</p>
               </div>
             </InfoItem>

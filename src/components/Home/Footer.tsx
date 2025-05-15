@@ -129,7 +129,8 @@ const Footer = () => {
               <LocationOnIcon />
               <Typography>
                 ĐỊA CHỈ<br />
-                19 Phan Văn Trị, Phường 07, Quận Gò Vấp,Tp HCM
+                19 Phan Văn Trị, Phường 07, Quận Gò Vấp,Tp HCM<br />
+                15 TL08, Phường Thạnh Lộc, Quận 12, TP.HCM
               </Typography>
             </ContactItem>
             <ContactItem>

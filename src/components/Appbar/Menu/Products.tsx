@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import {
   Typography, CardContent, CardMedia, Button, Paper, List, ListItem, ListItemText,
-  FormControl, Select, MenuItem,
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -14,28 +13,29 @@ import {
   searchProductsAPI
 } from '../../API';
 import { getCurrentUser } from '../../Utils/auth';
-import { SelectChangeEvent } from '@mui/material/Select';
 import { useSearchParams } from 'react-router-dom';
 import { Pagination } from '@mui/material';
 
 const PageWrapper = styled.div`
     background-color: #fff;
     min-height: 100vh;
-    padding: 60px 0;
+    padding: 30px 0;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 `;
 
 const MainContainer = styled.div`
-    max-width: 1400px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 20px;
     display: flex;
-    gap: 24px;
+    gap: 16px;
     
     @media (max-width: 900px) {
       flex-direction: column;
+      padding: 16px;
+      gap: 24px;
     }
-  `;
+`;
 
 const ProductSection = styled.section`
   padding: 0;
@@ -45,43 +45,100 @@ const InfoCard = styled(Paper)`
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
   
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const ProductGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  
-  @media (max-width: 1200px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
 `;
 
 const ProductImage = styled(CardMedia)`
   height: 200px;
-  transition: transform 0.3s ease;
-  background-size: contain !important;
+  transition: transform 0.4s ease;
+  background-size: cover !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
 
   ${InfoCard}:hover & {
-    transform: scale(1.04);
+    transform: scale(1.05);
+  }
+`;
+
+const SortButton = styled.button<{ $active?: boolean }>`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  background: ${props => props.$active ? '#e31837' : '#fff'};
+  color: ${props => props.$active ? '#fff' : '#333'};
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+`;
+
+const HeaderSection = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background-color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 12px;
+    border-radius: 12px;
+    
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+    }
+`;
+
+const Sidebar = styled.div`
+    flex: 0 0 300px;
+    background-color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    border-radius: 12px;
+    position: sticky;
+    top: 120px;
+    height: fit-content;
+  
+    @media (max-width: 900px) {
+      flex: none;
+      position: static;
+      padding: 16px;
+    }
+`;
+
+const ProductGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 16px;
+  
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    padding: 8px;
   }
 `;
 
@@ -134,34 +191,6 @@ const LikeButton = styled(Button)`
   }
 `;
 
-const Sidebar = styled.div`
-    flex: 0 0 280px;
-    background-color: #fff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    border-radius: 8px;
-    color: white;
-    position: sticky;
-    top: 120px;
-    height: fit-content;
-  
-    @media (max-width: 900px) {
-      flex: none;
-      position: static;
-    }
-  `;
-
-const HeaderSection = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    background-color: #fff;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    border-radius: 8px;
-  `;
-
 interface Product {
   _id: string;
   name: string;
@@ -196,10 +225,6 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   const [hasLoadedLikes, setHasLoadedLikes] = useState(false);
 
-  const handleSortChange = (event: SelectChangeEvent<string>) => {
-    setSortOption(event.target.value);
-  };
-
   const fetchProducts = async () => {
     try {
       const searchTerm = searchParams.get('search');
@@ -208,7 +233,7 @@ const Products = () => {
         data = await searchProductsAPI(searchTerm);
         console.log(data);
         if (data.length === 0) {
-          showToast('Không tìm thấy sản phẩm phù hợp', 'info');
+          showToast('Không tìm thấy dịch vụ phù hợp', 'info');
         }
       } else {
         data = await getAllProductsAPI();
@@ -217,7 +242,7 @@ const Products = () => {
       setProducts(data);
     } catch (error) {
       console.error('Failed to fetch products:', error);
-      showToast('Không thể tải danh sách sản phẩm', 'error');
+      showToast('Không thể tải danh sách dịch vụ', 'error');
     }
   };
 
@@ -227,7 +252,7 @@ const Products = () => {
       setCategories(data);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
-      showToast('Không thể tải danh mục sản phẩm', 'error');
+      showToast('Không thể tải danh mục dịch vụ', 'error');
     }
   };
 
@@ -295,7 +320,7 @@ const Products = () => {
     e.stopPropagation();
 
     if (!user) {
-      showToast('Đăng nhập để thích sản phẩm', 'warning');
+      showToast('Đăng nhập để thích dịch vụ', 'warning');
       return;
     }
 
@@ -319,7 +344,7 @@ const Products = () => {
           ...prev,
           [productId]: Math.max((prev[productId] || 1) - 1, 0)
         }));
-        showToast('Bạn đã xóa thích sản phẩm', 'success');
+        showToast('Bạn đã xóa thích dịch vụ', 'success');
       } else {
         // Like
         await likeProductAPI({
@@ -337,11 +362,11 @@ const Products = () => {
           ...prev,
           [productId]: (prev[productId] || 0) + 1
         }));
-        showToast('Bạn đã thích sản phẩm', 'success');
+        showToast('Bạn đã thích dịch vụ', 'success');
       }
     } catch (error) {
       console.error('Failed to update like:', error);
-      showToast('Lỗi khi thích sản phẩm', 'error');
+      showToast('Lỗi khi thích dịch vụ', 'error');
     }
   };
 
@@ -420,22 +445,14 @@ const Products = () => {
             }}>
               Danh sách dịch vụ
             </Typography>
-            <FormControl sx={{ minWidth: { xs: 150, md: 200 } }}>
-              <Select
-                value={sortOption}
-                onChange={handleSortChange}
-                sx={{
-                  backgroundColor: '#fff',
-                  color: 'black',
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#333'
-                  }
-                }}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <SortButton
+                $active={sortOption === 'newest'}
+                onClick={() => setSortOption(sortOption === 'newest' ? 'default' : 'newest')}
               >
-                <MenuItem value="default">Mặc định</MenuItem>
-                <MenuItem value="newest">Xe mới nhất</MenuItem>
-              </Select>
-            </FormControl>
+                {sortOption === 'newest' ? 'Mới nhất' : 'Mặc định'}
+              </SortButton>
+            </div>
           </HeaderSection>
 
           <ProductGrid>
@@ -485,7 +502,7 @@ const Products = () => {
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            marginTop: '40px',
+            marginTop: '20px',
             marginBottom: '20px'
           }}>
             <Pagination

@@ -205,7 +205,6 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
       setIsLoading(false);
     }, 2000);
 
-    // Cleanup timer
     return () => clearTimeout(loadingTimer);
   }, []);
 
@@ -259,16 +258,13 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
     setSelectedImageUrl(null);
   };
 
-  // Add new state for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Add pagination handler
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
 
-  // Add function to get current page items
   const getCurrentPageItems = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -281,7 +277,22 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
         <StyledPaper>
           <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{
+                '& .MuiTableCell-head': {
+                  backgroundColor: '#f8f9fa',
+                  color: '#495057',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  padding: '16px',
+                  borderBottom: '2px solid #dee2e6',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  whiteSpace: 'nowrap',
+                  '@media (max-width: 768px)': {
+                    display: 'none'
+                  }
+                }
+              }}>
                 <TableCell>Hình ảnh</TableCell>
                 <TableCell>Ngày tạo</TableCell>
                 <TableCell align="right">Thao tác</TableCell>
@@ -333,7 +344,6 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
         </ImageModal>
       )}
 
-      {/* Add pagination controls */}
       {!isLoading && banners.length > 0 && (
         <PaginationWrapper>
           <Pagination
@@ -379,8 +389,8 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
         }}>
           Xác nhận xóa banner
         </DialogTitle>
-        <DialogContent style={{ 
-          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+        <DialogContent style={{
+          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
         }}>
           <DialogContentText style={{
             fontSize: window.innerWidth <= 768 ? '14px' : '16px',

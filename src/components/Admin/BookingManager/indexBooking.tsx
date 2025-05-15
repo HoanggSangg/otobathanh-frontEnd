@@ -211,7 +211,7 @@ const IndexBooking = () => {
             const contactDetails = await getContactByIdAPI(contact._id);
             setSelectedContact(contactDetails);
             setEditedContact(contactDetails);
-            setUpdateReason(''); // Reset lý do mỗi lần mở
+            setUpdateReason('');
             setIsDetailDialogOpen(true);
         } catch (error) {
             showToast('Không thể tải chi tiết lịch hẹn', 'error');
@@ -331,14 +331,21 @@ const IndexBooking = () => {
         <PageContainer maxWidth="lg">
             <Title>Quản lý Lịch Hẹn</Title>
             <Paper sx={{
-                p: 2,
-                mb: 2,
+                p: { xs: 2, sm: 3 },
+                mb: 3,
                 display: 'flex',
-                gap: 2,
-                alignItems: 'flex-start',
+                gap: { xs: 2, sm: 3 },
+                alignItems: 'center',
                 flexDirection: { xs: 'column', sm: 'row' },
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                backgroundColor: '#fff',
                 '& .MuiFormControl-root': {
-                    minWidth: { xs: '100%', sm: 200 }
+                    minWidth: { xs: '100%', sm: 220 },
+                    flex: 1
+                },
+                '& .MuiButton-root': {
+                    minWidth: { xs: '100%', sm: 'auto' }
                 }
             }}>
                 <FormControl sx={{
@@ -461,7 +468,22 @@ const IndexBooking = () => {
             <StyledTableContainer component={Paper}>
                 <Table>
                     <TableHead>
-                        <TableRow>
+                        <TableRow sx={{
+                            '& .MuiTableCell-head': {
+                                backgroundColor: '#f8f9fa',
+                                color: '#495057',
+                                fontWeight: 600,
+                                fontSize: '0.95rem',
+                                padding: '16px',
+                                borderBottom: '2px solid #dee2e6',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                whiteSpace: 'nowrap',
+                                '@media (max-width: 768px)': {
+                                    display: 'none'
+                                }
+                            }
+                        }}>
                             <TableCell>Họ và tên</TableCell>
                             <TableCell>Số điện thoại</TableCell>
                             <TableCell>Ngày hẹn</TableCell>
@@ -661,7 +683,6 @@ const IndexBooking = () => {
                                 ) : selectedContact.description}
                             </Typography>
 
-                            {/* Lý do cập nhật */}
                             {isEditing && (
                                 <Typography variant="subtitle1" gutterBottom>
                                     <strong>Lý do cập nhật:</strong>

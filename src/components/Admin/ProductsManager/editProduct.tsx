@@ -36,18 +36,6 @@ const Container = styled.div`
   }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    gap: 15px;
-  }
-`;
-
 const Title = styled.h1`
   color: #333;
   font-size: 24px;
@@ -56,23 +44,6 @@ const Title = styled.h1`
   @media (max-width: 768px) {
     font-size: 20px;
     text-align: center;
-  }
-`;
-
-const SearchInput = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 300px;
-  font-size: 14px;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: #0066cc;
   }
 `;
 
@@ -114,18 +85,41 @@ const StyledButton = styled(Button)`
 
 const SearchContainer = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 16px;
   align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 800px;
 
   @media (max-width: 768px) {
     flex-direction: column;
+    gap: 12px;
+  }
+`;
+
+const SearchInput = styled.input`
+  padding: 12px 24px;
+  border: 2px solid #eee;
+  border-radius: 30px;
+  width: 300px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  &:focus {
+    outline: none;
+    border-color: #e31837;
+    box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
+  }
+
+  @media (max-width: 768px) {
     width: 100%;
   }
 `;
 
 const PriceRangeContainer = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 
   @media (max-width: 768px) {
@@ -134,9 +128,42 @@ const PriceRangeContainer = styled.div`
   }
 
   input {
-    @media (max-width: 768px) {
-      width: calc(50% - 15px) !important;
+    padding: 12px;
+    border: 2px solid #eee;
+    border-radius: 30px;
+    font-size: 1rem;
+    width: 150px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+    &:focus {
+      outline: none;
+      border-color: #e31837;
+      box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
     }
+
+    @media (max-width: 768px) {
+      width: calc(50% - 15px);
+    }
+  }
+
+  span {
+    color: #666;
+    font-weight: 500;
+  }
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 24px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
   }
 `;
 
@@ -489,11 +516,24 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
         <StyledPaper>
           <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{
+                '& .MuiTableCell-head': {
+                  backgroundColor: '#f8f9fa',
+                  color: '#495057',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  padding: '16px',
+                  borderBottom: '2px solid #dee2e6',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  whiteSpace: 'nowrap',
+                  '@media (max-width: 768px)': {
+                    display: 'none'
+                  }
+                }
+              }}>
                 <TableCell>Hình ảnh</TableCell>
                 <TableCell>Tên sản phẩm</TableCell>
-                <TableCell>Giá</TableCell>
-                <TableCell>Số lượng</TableCell>
                 <TableCell>Danh mục</TableCell>
                 <TableCell>Mô tả</TableCell>
                 <TableCell>Ảnh phụ</TableCell>
@@ -535,8 +575,6 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                         <span style={{ color: '#999' }}>Không có mô tả</span>
                       )}
                     </TableCell>
-                    <TableCell>{formatPrice(product.price)}</TableCell>
-                    <TableCell>{product.quantity}</TableCell>
                     <TableCell>{product.category_id.name}</TableCell>
                     <TableCell>
                       {product.description ? (

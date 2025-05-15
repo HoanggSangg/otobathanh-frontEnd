@@ -323,9 +323,10 @@ export const getCommentsByProductIdAPI = async (productId) => {
   }
 };
 
-export const deleteCommentAPI = async (commentId) => {
+export const deleteCommentAPI = async (commentId, accountId) => {
   try {
     const response = await axios.delete(`${API_URL}/api/comments/${commentId}`, {
+      data: { accountId },
       headers: {
         'Content-Type': 'application/json'
       }

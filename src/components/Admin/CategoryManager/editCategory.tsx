@@ -227,7 +227,22 @@ const EditCategory: React.FC<Props> = ({ onEdit }) => {
         <StyledPaper>
           <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{
+                '& .MuiTableCell-head': {
+                  backgroundColor: '#f8f9fa',
+                  color: '#495057',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  padding: '16px',
+                  borderBottom: '2px solid #dee2e6',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  whiteSpace: 'nowrap',
+                  '@media (max-width: 768px)': {
+                    display: 'none'
+                  }
+                }
+              }}>
                 <TableCell>Tên danh mục</TableCell>
                 <TableCell align="right">Thao tác</TableCell>
               </TableRow>
@@ -308,8 +323,8 @@ const EditCategory: React.FC<Props> = ({ onEdit }) => {
         }}>
           Xác nhận xóa danh mục
         </DialogTitle>
-        <DialogContent style={{ 
-          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+        <DialogContent style={{
+          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
         }}>
           <DialogContentText style={{
             fontSize: window.innerWidth <= 768 ? '14px' : '16px',

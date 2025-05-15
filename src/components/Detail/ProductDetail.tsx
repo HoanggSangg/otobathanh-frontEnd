@@ -36,7 +36,6 @@ const StyledThumbnailWrapper = styled.div`
   }
 `;
 
-// Replace ThumbnailWrapper usage with:
 const ThumbnailWrapper: React.FC<{ isSelected: boolean; onClick: () => void; children: React.ReactNode }> = ({
   isSelected,
   onClick,
@@ -46,6 +45,7 @@ const ThumbnailWrapper: React.FC<{ isSelected: boolean; onClick: () => void; chi
     {children}
   </StyledThumbnailWrapper>
 );
+
 const ThumbnailImage = styled.img`
   width: 100%;
   height: 100%;
@@ -79,7 +79,6 @@ const CommentHeader = styled.div`
   }
 `;
 
-// Update ProductContainer styles
 const ProductContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -129,13 +128,6 @@ const MainContent = styled.div`
     border-radius: 8px;
     margin-bottom: 20px;
   }
-`;
-
-const ProductPrice = styled.div`
-  color: #e31837;
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 20px;
 `;
 
 const ProductDescription = styled.p`
@@ -378,22 +370,25 @@ const ProductPage = () => {
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await deleteCommentAPI(commentId);
+      if (!user?.id) {
+        showToast('Vui lòng đăng nhập để xóa bình luận!', 'error');
+        return;
+      }
+
+      const response = await deleteCommentAPI(commentId, user.id);
       if (response.message) {
         setComments(comments.filter(comment => comment._id !== commentId));
         showToast(response.message, 'success');
       }
     } catch (err: any) {
       if (err.response?.status === 404) {
-        showToast(err.response.data.message, 'error');
+        showToast('Bình luận không tồn tại.', 'error');
       } else if (err.response?.status === 403) {
-        showToast(err.response.data.message, 'error');
-      } else if (err.response?.status === 500) {
-        showToast(err.response.data.message, 'error');
+        showToast('Bạn không có quyền xóa bình luận này.', 'error');
       } else {
-        showToast('Có lỗi khi xóa bình luận!', 'error');
+        showToast('Lỗi khi xóa bình luận.', 'error');
+        console.error('Error deleting comment:', err);
       }
-      console.error('Error deleting comment:', err);
     }
   };
 
@@ -441,7 +436,7 @@ const ProductPage = () => {
   }, [id, navigate]);
 
   const handleThumbnailClick = (imageUrl: string) => {
-    setSelectedImage(imageUrl); // Cập nhật ảnh chính khi nhấp vào thumbnail
+    setSelectedImage(imageUrl);
   };
 
   return (
@@ -450,9 +445,6 @@ const ProductPage = () => {
         <>
           <ProductHeader>
             <ProductTitle>{product.name}</ProductTitle>
-            {/* <ProductPrice>
-              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
-            </ProductPrice> */}
           </ProductHeader>
 
           <ProductContent>

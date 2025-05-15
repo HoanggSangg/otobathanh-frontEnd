@@ -17,7 +17,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import { removeRoleFromAccountAPI } from '../../API';
 import {
     IconButton,
@@ -53,27 +52,6 @@ const Header = styled.div`
   @media (max-width: 1024px) {
     flex-direction: column;
     gap: 15px;
-  }
-`;
-
-const SearchControls = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  
-  @media (max-width: 768px) {
-    flex-direction: column;
-    width: 100%;
-
-    .sort-controls {
-      display: flex;
-      gap: 12px;
-      width: 100%;
-
-      select {
-        flex: 1;
-      }
-    }
   }
 `;
 
@@ -142,32 +120,67 @@ const AvatarContainer = styled.div`
 `;
 
 const SearchInput = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px 24px;
+  border: 2px solid #eee;
+  border-radius: 30px;
   width: 300px;
-  font-size: 14px;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-  
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
   &:focus {
     outline: none;
-    border-color: #0066cc;
+    border-color: #e31837;
+    box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 
 const FilterSelect = styled.select`
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  margin-left: 12px;
+  padding: 12px;
+  border: 2px solid #eee;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background-color: white;
+  min-width: 190px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+
+  &:focus {
+    outline: none;
+    border-color: #e31837;
+    box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
 
   @media (max-width: 768px) {
     width: 100%;
-    margin-left: 0;
+  }
+`;
+
+// Update the SearchControls container
+const SearchControls = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    width: 100%;
   }
 `;
 
@@ -579,7 +592,29 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                 <StyledPaper>
                     <Table>
                         <TableHead>
-                            <TableRow>
+                            <TableRow
+                                sx={{
+                                    '& .MuiTableCell-head': {
+                                        backgroundColor: '#f1f3f5',
+                                        color: '#212529',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem',
+                                        padding: '14px 18px',
+                                        borderBottom: '2px solid #ced4da',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.4px',
+                                        fontFamily: `'Roboto', 'Helvetica', 'Arial', sans-serif`,
+                                        whiteSpace: 'nowrap',
+                                        transition: 'background-color 0.3s ease',
+                                        '&:hover': {
+                                            backgroundColor: '#e9ecef'
+                                        },
+                                        '@media (max-width: 768px)': {
+                                            display: 'none'
+                                        }
+                                    }
+                                }}
+                            >
                                 <TableCell>Hình ảnh</TableCell>
                                 <TableCell>Họ và tên</TableCell>
                                 <TableCell>Email</TableCell>

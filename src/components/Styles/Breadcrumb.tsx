@@ -5,12 +5,14 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const BreadcrumbContainer = styled.div`
   margin-top: 80px;
-  padding: 20px 0;
-  background-color: #f5f5f5;
+  padding: 15px 0;
+  background: linear-gradient(to right, #f8f9fa, #ffffff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
   
   @media (max-width: 768px) {
     margin-top: 85px;
-    padding: 15px 0;
+    padding: 10px 0;
   }
 `;
 
@@ -19,50 +21,55 @@ const BreadcrumbList = styled.div`
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  font-size: 14px;
-  color: #666;
+  font-size: 15px;
+  color: #555;
   padding: 0 20px;
   
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: 13px;
     flex-wrap: wrap;
   }
 `;
 
 const BreadcrumbItem = styled(Link)`
-  color: #666;
+  color: #555;
   text-decoration: none;
   display: flex;
   align-items: center;
   white-space: nowrap;
+  transition: all 0.3s ease;
+  font-weight: 500;
   
   &:hover {
     color: #e31837;
+    transform: translateX(2px);
   }
   
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: 13px;
   }
 `;
 
 const Separator = styled(NavigateNextIcon)`
-  margin: 0 8px;
-  color: #666;
-  font-size: 16px;
+  margin: 0 10px;
+  color: #999;
+  font-size: 18px;
+  opacity: 0.7;
   
   @media (max-width: 768px) {
-    font-size: 14px;
-    margin: 0 5px;
+    font-size: 16px;
+    margin: 0 6px;
   }
 `;
 
 const CurrentPage = styled.span`
   color: #e31837;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   
   @media (max-width: 768px) {
-    font-size: 12px;
+    font-size: 13px;
   }
 `;
 

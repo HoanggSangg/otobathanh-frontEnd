@@ -32,19 +32,6 @@ const Container = styled.div`
   }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-  }
-`;
-
 const StyledButton = styled(Button)`
   &.MuiButton-root {
     padding: 8px 20px;
@@ -94,12 +81,79 @@ const Title = styled.h1`
 
 const SearchControls = styled.div`
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-
+  flex-wrap: wrap;
+  
   @media (max-width: 768px) {
     flex-direction: column;
     width: 100%;
+  }
+`;
+
+const SearchInput = styled.input`
+  padding: 12px 24px;
+  border: 2px solid #eee;
+  border-radius: 30px;
+  width: 300px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+  &:focus {
+    outline: none;
+    border-color: #e31837;
+    box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const SearchSelect = styled.select`
+  padding: 12px 24px;
+  border: 2px solid #eee;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background-color: white;
+  min-width: 200px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+
+  &:focus {
+    outline: none;
+    border-color: #e31837;
+    box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 24px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
   }
 `;
 
@@ -123,34 +177,6 @@ const ModalImage = styled.img`
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-`;
-
-const SearchInput = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 300px;
-  font-size: 14px;
-  
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: #0066cc;
-  }
-`;
-
-const SearchSelect = styled.select`
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
 `;
 
 const StyledTableContainer = styled(TableContainer)`
@@ -192,6 +218,7 @@ const StyledTableContainer = styled(TableContainer)`
     }
   }
 `;
+
 const PaginationWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -225,6 +252,7 @@ const LoadingSpinner = styled.div`
     100% { transform: rotate(360deg); }
   }
 `;
+
 const StyledPaper = styled(Paper)`
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 `;
@@ -269,7 +297,6 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
       setIsLoading(false);
     }, 2000);
 
-    // Cleanup timer
     return () => clearTimeout(loadingTimer);
   }, []);
 
@@ -291,7 +318,6 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
     setSelectedImageUrl(imageUrl);
   };
 
-  // Add this handler to close the modal
   const handleCloseModal = () => {
     setSelectedImageUrl(null);
   };
@@ -317,9 +343,9 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
         }
       } catch (err: any) {
         if (err.response?.status === 404) {
-          showToast(err.response.data.message, 'error'); // News not found
+          showToast(err.response.data.message, 'error');
         } else if (err.response?.status === 500) {
-          showToast(err.response.data.message, 'error'); // Server error
+          showToast(err.response.data.message, 'error');
         } else {
           showToast('Không thể xóa tin tức!', 'error');
         }
@@ -330,24 +356,20 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
     setNewsToDelete(null);
   };
 
-  // Add these new states after existing useState declarations
   const [searchType, setSearchType] = useState('title'); // 'title' or 'content'
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Add pagination handler
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
 
-  // Modify the filtered news logic to include pagination
   const getPaginatedNews = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredAndSortedNews.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  // Update the filteredNews logic
   const filteredAndSortedNews = news
     .filter(item => {
       const searchValue = searchTerm.toLowerCase();
@@ -366,7 +388,6 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
       return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
     });
 
-  // Update the Header section in the return statement
   return (
     <Container>
       <Header>
@@ -399,7 +420,22 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
         <StyledPaper>
           <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{
+                '& .MuiTableCell-head': {
+                  backgroundColor: '#f8f9fa',
+                  color: '#495057',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  padding: '16px',
+                  borderBottom: '2px solid #dee2e6',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  whiteSpace: 'nowrap',
+                  '@media (max-width: 768px)': {
+                    display: 'none'
+                  }
+                }
+              }}>
                 <TableCell>Tiêu đề</TableCell>
                 <TableCell>Hình ảnh</TableCell>
                 <TableCell>Nội dung</TableCell>
@@ -498,8 +534,8 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
         }}>
           Xác nhận xóa tin tức
         </DialogTitle>
-        <DialogContent style={{ 
-          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0' 
+        <DialogContent style={{
+          padding: window.innerWidth <= 768 ? '8px 0 16px 0' : '8px 0 24px 0'
         }}>
           <DialogContentText style={{
             fontSize: window.innerWidth <= 768 ? '14px' : '16px',
