@@ -146,8 +146,6 @@ const Footer = () => {
                 <Typography>EMAIL</Typography>
                 <Link href="mailto:otobathanh@gmail.com" color="inherit">otobathanh@gmail.com</Link><br />
                 <Link href="mailto:nhan.duong@otobathanh.com" color="inherit">nhan.duong@otobathanh.com</Link><br />
-                <Link href="mailto:nhantoyota@yahoo.com" color="inherit">nhantoyota@yahoo.com</Link><br />
-                <Link href="mailto:nhanserver@yahoo.com" color="inherit">nhanserver@yahoo.com</Link>
               </div>
             </ContactItem>
           </div>
