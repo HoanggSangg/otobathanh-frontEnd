@@ -328,14 +328,11 @@ const Products = () => {
       const isCurrentlyLiked = likedStatus[productId];
 
       if (isCurrentlyLiked) {
-        // Unlike
         await unlikeProductAPI({
           accountId: user.id,
           productId: productId
         });
-
         fetchLikeData();
-
         setLikedStatus(prev => ({
           ...prev,
           [productId]: false
@@ -346,14 +343,11 @@ const Products = () => {
         }));
         showToast('Bạn đã xóa thích dịch vụ', 'success');
       } else {
-        // Like
         await likeProductAPI({
           accountId: user.id,
           productId: productId
         });
-
         fetchLikeData();
-
         setLikedStatus(prev => ({
           ...prev,
           [productId]: true

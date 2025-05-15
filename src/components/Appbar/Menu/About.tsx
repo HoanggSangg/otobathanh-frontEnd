@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Modal, Box } from '@mui/material';
 
 const AboutContainer = styled.div`
   margin: 0 auto;
@@ -38,6 +39,7 @@ const AboutImage = styled.img`
 
   &:hover {
     transform: scale(1.02);
+    cursor: pointer;
   }
 `;
 
@@ -118,16 +120,56 @@ const ImageContainer = styled.div`
   }
 `;
 
+const ModalImage = styled.img`
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+`;
+
+const ModalStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  bgcolor: 'rgba(0, 0, 0, 0.5)',
+};
+
 const About = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const handleImageClick = (imageSrc: string) => {
+    setSelectedImage(imageSrc);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedImage(null);
+  };
+
   return (
     <AboutContainer>
       <AboutContent>
         <ImageContainer>
-          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106483/bangcap3_ygcoer.jpg" alt="Honda Ô tô Bá Thành Showroom 1" />
-          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106485/Untitled_DANG_ISO_t73hk1.png" alt="Honda Ô tô Bá Thành Showroom 2" />
-          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106692/bangcap2_es8csu.jpg" alt="Honda Ô tô Bá Thành Showroom 2" />
-          <AboutImage src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106698/iso_hfu6kz.jpg" alt="Honda Ô tô Bá Thành Showroom 2" />
+          <AboutImage 
+            src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106483/bangcap3_ygcoer.jpg" 
+            alt="Honda Ô tô Bá Thành Showroom 1" 
+            onClick={() => handleImageClick("https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106483/bangcap3_ygcoer.jpg")}
+          />
+          <AboutImage 
+            src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106485/Untitled_DANG_ISO_t73hk1.png" 
+            alt="Honda Ô tô Bá Thành Showroom 2" 
+            onClick={() => handleImageClick("https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106485/Untitled_DANG_ISO_t73hk1.png")}
+          />
+          <AboutImage 
+            src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106692/bangcap2_es8csu.jpg" 
+            alt="Honda Ô tô Bá Thành Showroom 2" 
+            onClick={() => handleImageClick("https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106692/bangcap2_es8csu.jpg")}
+          />
+          <AboutImage 
+            src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106698/iso_hfu6kz.jpg" 
+            alt="Honda Ô tô Bá Thành Showroom 2" 
+            onClick={() => handleImageClick("https://res.cloudinary.com/drbjrsm0s/image/upload/v1747106698/iso_hfu6kz.jpg")}
+          />
         </ImageContainer>
+        
         <AboutText>
           <h2>Giới thiệu chung</h2>
           <p>
@@ -145,6 +187,17 @@ const About = () => {
           </ul>
         </AboutText>
       </AboutContent>
+
+      <Modal
+        open={!!selectedImage}
+        onClose={handleCloseModal}
+        sx={ModalStyle}
+        onClick={handleCloseModal}
+      >
+        <Box onClick={(e) => e.stopPropagation()}>
+          {selectedImage && <ModalImage src={selectedImage} alt="Enlarged view" />}
+        </Box>
+      </Modal>
     </AboutContainer>
   );
 };
