@@ -98,28 +98,93 @@ interface VerifyAccountFormProps {
   email: string;
 }
 
+const VerificationInputContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
+`;
+
+const DigitInput = styled.input`
+  width: 45px;
+  height: 45px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  outline: none;
+  
+  &:focus {
+    border-color: #e31837;
+  }
+
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+  }
+`;
+
 const VerifyAccountForm: React.FC<VerifyAccountFormProps> = ({ open, onClose, email }) => {
   const navigate = useNavigate();
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationDigits, setVerificationDigits] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const showToast = useToast();
+  const inputRefs = Array(6).fill(0).map(() => React.createRef<HTMLInputElement>());
+
+  const handleDigitChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return; // Only allow digits
+
+    const newDigits = [...verificationDigits];
+    newDigits[index] = value;
+    setVerificationDigits(newDigits);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      inputRefs[index + 1].current?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !verificationDigits[index] && index > 0) {
+      inputRefs[index - 1].current?.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
+    const digits = pastedData.split('').filter(char => /^\d$/.test(char));
+    
+    const newDigits = [...verificationDigits];
+    digits.forEach((digit, index) => {
+      if (index < 6) newDigits[index] = digit;
+    });
+    setVerificationDigits(newDigits);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const verificationCode = verificationDigits.join('');
+    
+    if (verificationCode.length !== 6) {
+      showToast('Vui lòng nhập đủ 6 số!', 'error');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await verifyAccountAPI(email, verificationCode);
 
       if (response.status === "thành công") {
-        alert(response.message);
+        showToast(response.message, 'success');
         onClose();
         navigate('/');
       }
     } catch (error: any) {
-      console.error('Verification error:', error);
       if (error.response?.data?.message) {
-        console.error('Verification error:', error.response.data.message);
+        showToast(error.response.data.message, 'error');
       } else {
         showToast('Có lỗi xảy ra khi xác thực tài khoản!', 'error');
       }
@@ -143,17 +208,21 @@ const VerifyAccountForm: React.FC<VerifyAccountFormProps> = ({ open, onClose, em
         </Message>
 
         <form onSubmit={handleSubmit}>
-          <InputField>
-            <Input
-              type="text"
-              placeholder="Nhập mã xác thực"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              maxLength={6}
-              pattern="[0-9]{6}"
-              required
-            />
-          </InputField>
+          <VerificationInputContainer>
+            {verificationDigits.map((digit, index) => (
+              <DigitInput
+                key={index}
+                ref={inputRefs[index]}
+                type="text"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleDigitChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                autoFocus={index === 0}
+              />
+            ))}
+          </VerificationInputContainer>
 
           <VerifyButton type="submit" $loading={loading}>
             {loading ? 'ĐANG XỬ LÝ...' : 'XÁC THỰC'}
@@ -164,4 +233,4 @@ const VerifyAccountForm: React.FC<VerifyAccountFormProps> = ({ open, onClose, em
   );
 };
 
-export default VerifyAccountForm; 
+export default VerifyAccountForm;

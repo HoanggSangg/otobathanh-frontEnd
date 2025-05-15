@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../css/Procedure.css';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Step {
   title: string;
@@ -32,7 +33,8 @@ const images = [
 
 const WorkProcess: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isStepsExpanded, setIsStepsExpanded] = useState(false);
+  const [showLeftButton, setShowLeftButton] = useState(false);
+  const [showRightButton, setShowRightButton] = useState(true);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,6 +43,15 @@ const WorkProcess: React.FC = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const isAtStart = container.scrollLeft === 0;
+    const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+
+    setShowLeftButton(!isAtStart);
+    setShowRightButton(!isAtEnd);
+  };
 
   return (
     <div className="work-process-container">
@@ -54,15 +65,30 @@ const WorkProcess: React.FC = () => {
           <img src={images[currentImageIndex]} alt="Car rotating" />
         </div>
 
-        <div className="steps-container">
-          <div className="steps-header" onClick={() => setIsStepsExpanded(!isStepsExpanded)}>
-            <h3>Quy trình làm việc</h3>
-            <span>{isStepsExpanded ? '▼' : '▲'}</span>
-          </div>
-
-          <div className={`steps-content ${isStepsExpanded ? 'expanded' : ''}`}>
+        <div className="scroll-container">
+          <button 
+            className="scroll-button left"
+            style={{ display: showLeftButton ? 'flex' : 'none' }}
+            onClick={() => {
+              const el = document.getElementById('steps-scroll');
+              if (el) el.scrollBy({ left: -600, behavior: 'smooth' });
+            }}
+          >
+            <FaChevronLeft />
+          </button>
+          <button 
+            className="scroll-button right"
+            style={{ display: showRightButton ? 'flex' : 'none' }}
+            onClick={() => {
+              const el = document.getElementById('steps-scroll');
+              if (el) el.scrollBy({ left: 600, behavior: 'smooth' });
+            }}
+          >
+            <FaChevronRight />
+          </button>
+          <div className="steps-container" id="steps-scroll" onScroll={handleScroll}>
             {steps.map((step, index) => (
-              <div key={index} className={`step-box ${step.position}`}>
+              <div key={index} className="step-box">
                 <img src={step.icon} alt={step.title} className="step-icon" />
                 <div className="step-content">
                   <h3 className="step-title">{step.title}</h3>

@@ -46,10 +46,13 @@ const CardImage = styled.div<{ src: string }>`
   width: 250px;
   height: 140px;
   background: url(${props => props.src}) center/cover no-repeat;
+  border-right: 1px solid red;
 
   @media (max-width: 768px) {
     width: 100%;
     height: 180px;
+    border-right: none;
+    border-bottom: 1px solid red;
   }
 `;
 
@@ -92,7 +95,7 @@ interface NewsItem {
   title: string;
   image: string;
   content: string;
-  date: string;
+  createdAt: string;
 }
 
 const NewsList = () => {
@@ -127,7 +130,7 @@ const NewsList = () => {
               <CardInfo>
                 <NewsTitleStyled>{item.title}</NewsTitleStyled>
                 <NewsDesc>{item.content}</NewsDesc>
-                <NewsDateStyled>{new Date(item.date).toLocaleDateString('vi-VN')}</NewsDateStyled>
+                <NewsDateStyled>{new Date(item.createdAt).toLocaleDateString('vi-VN')}</NewsDateStyled>
               </CardInfo>
             </CardWrapper>
           ))}

@@ -11,7 +11,7 @@ const NewsSection = styled.section`
 `;
 
 const Container = styled.div`
-  max-width: 1400px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 20px;
 `;
@@ -103,6 +103,7 @@ const CardImage = styled.div<{ src: string }>`
   width: 100%;
   height: 180px;
   background: url(${props => props.src}) center/cover no-repeat;
+  border-bottom: 1px solid red;
 `;
 
 const CardInfo = styled.div`

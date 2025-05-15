@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import { forgotPasswordAPI, resetPasswordAPI } from '../../API';
 import { DialogContent, IconButton, DialogTitle } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -97,18 +96,78 @@ interface ForgotPasswordFormProps {
     onClose?: () => void;
 }
 
+const VerificationInputContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
+`;
+
+const DigitInput = styled.input`
+  width: 45px;
+  height: 45px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: #e31837;
+    box-shadow: 0 0 4px rgba(227, 24, 55, 0.5);
+  }
+
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+  }
+`;
+
 const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
     const [email, setEmail] = useState('');
-    const [verificationCode, setVerificationCode] = useState('');
+    const [verificationDigits, setVerificationDigits] = useState(['', '', '', '', '', '']);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const showToast = useToast();
     const [step, setStep] = useState<'email' | 'reset'>('email');
-    const [verificationCodeError, setVerificationCodeError] = useState('');
     const [newPasswordError, setNewPasswordError] = useState('');
     const [confirmPasswordError, setConfirmPasswordError] = useState('');
+    
+    const inputRefs = Array(6).fill(0).map(() => React.createRef<HTMLInputElement>());
+
+    const handleDigitChange = (index: number, value: string) => {
+        if (!/^\d*$/.test(value)) return;
+
+        const newDigits = [...verificationDigits];
+        newDigits[index] = value;
+        setVerificationDigits(newDigits);
+
+        if (value && index < 5) {
+            inputRefs[index + 1].current?.focus();
+        }
+    };
+
+    const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && !verificationDigits[index] && index > 0) {
+            inputRefs[index - 1].current?.focus();
+        }
+    };
+
+    const handlePaste = (e: React.ClipboardEvent) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').slice(0, 6);
+        const digits = pastedData.split('').filter(char => /^\d$/.test(char));
+        
+        const newDigits = [...verificationDigits];
+        digits.forEach((digit, index) => {
+            if (index < 6) newDigits[index] = digit;
+        });
+        setVerificationDigits(newDigits);
+    };
 
     const handleRequestCode = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -138,12 +197,11 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
     const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
         let hasError = false;
+        const verificationCode = verificationDigits.join('');
 
-        if (!verificationCode) {
-            setVerificationCodeError('Mã xác nhận là bắt buộc!');
+        if (verificationCode.length !== 6) {
+            showToast('Vui lòng nhập đủ 6 số!', 'error');
             hasError = true;
-        } else {
-            setVerificationCodeError('');
         }
 
         if (!newPassword) {
@@ -168,19 +226,14 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
             
             if (response.status === "thành công") {
                 showToast(response.message, 'success');
-                onClose && onClose(); // Close the dialog after successful password reset
-            } else {
-                showToast(response.message, 'error');
+                onClose && onClose();
             }
         } catch (err: any) {
-            if (err.response?.status === 404) {
-                showToast(err.response.data.message, 'error'); // Account not found
-            } else if (err.response?.status === 400) {
-                showToast(err.response.data.message, 'error'); // Invalid verification code
+            if (err.response?.data?.message) {
+                showToast(err.response.data.message, 'error');
             } else {
-                showToast(err.response.data.message, 'error'); // Server error
+                showToast('Có lỗi xảy ra khi đặt lại mật khẩu!', 'error');
             }
-            console.error(err);
         } finally {
             setIsLoading(false);
         }
@@ -215,16 +268,21 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onClose }) => {
                     </Form>
                 ) : (
                     <Form onSubmit={handleResetPassword}>
-                        <InputField>
-                            <Input
-                                type="text"
-                                placeholder="Nhập mã xác nhận *"
-                                value={verificationCode}
-                                onChange={(e) => setVerificationCode(e.target.value)}
-                                required
-                            />
-                            {verificationCodeError && <ErrorMessage>{verificationCodeError}</ErrorMessage>}
-                        </InputField>
+                        <VerificationInputContainer>
+                            {verificationDigits.map((digit, index) => (
+                                <DigitInput
+                                    key={index}
+                                    ref={inputRefs[index]}
+                                    type="text"
+                                    maxLength={1}
+                                    value={digit}
+                                    onChange={(e) => handleDigitChange(index, e.target.value)}
+                                    onKeyDown={(e) => handleKeyDown(index, e)}
+                                    onPaste={handlePaste}
+                                    autoFocus={index === 0}
+                                />
+                            ))}
+                        </VerificationInputContainer>
 
                         <InputField>
                             <Input

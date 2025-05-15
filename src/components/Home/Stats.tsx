@@ -4,7 +4,7 @@ import { SectionTitle } from '../Styles/StylesComponents';
 
 const Container = styled.div`
   background-color: #f8f9fa;
-  padding: 60px 0;
+  padding: 20px 0;
 `;
 
 const StatsGrid = styled.div`

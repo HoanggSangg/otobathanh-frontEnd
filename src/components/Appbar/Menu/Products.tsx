@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import {
   Typography, CardContent, CardMedia, Button, Paper, List, ListItem, ListItemText,
-  FormControl, FormControlLabel, Checkbox, Select, MenuItem,
+  FormControl, Select, MenuItem,
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -55,34 +55,10 @@ const InfoCard = styled(Paper)`
   }
 `;
 
-const AddToCartButton = styled(Button)`
-  background-color: #e31837 !important;
-  color: white !important;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-  
-  &:hover {
-    background-color: #cc1630 !important;
-  }
-
-  &:active::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-  }
-`;
-
 const ProductGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 10px;
   
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
@@ -118,12 +94,17 @@ const ProductContent = styled(CardContent)`
 const ProductTitle = styled(Typography)`
   font-weight: bold !important;
   margin-bottom: 8px !important;
+  font-size: 1rem !important;
+  text-transform: lowercase;
+  &::first-letter {
+    text-transform: uppercase;
+  }
 `;
 
-const ProductPrice = styled(Typography)`
-  color: #e31837;
-  font-weight: bold !important;
-  margin-bottom: 16px !important;
+const ProductDescription = styled(Typography)`
+  font-size: 0.6rem !important;
+  color: #666 !important;
+  margin-top: 4px !important;
 `;
 
 const ButtonGroup = styled.div`
@@ -132,7 +113,6 @@ const ButtonGroup = styled.div`
   margin-top: auto;
 `;
 
-// Update LikeButton styling
 const LikeButton = styled(Button)`
   position: absolute !important;
   top: 5px;
@@ -207,12 +187,6 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [productLikes, setProductLikes] = useState<Record<string, number>>({});
   const [sortOption, setSortOption] = useState('default');
-  const [priceFilters, setPriceFilters] = useState({
-    under500: false,
-    '500to1000': false,
-    '1000to2000': false,
-    above2000: false,
-  });
   const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
 
   const navigate = useNavigate();
@@ -226,7 +200,6 @@ const Products = () => {
     setSortOption(event.target.value);
   };
 
-  // Add missing fetchProducts function
   const fetchProducts = async () => {
     try {
       const searchTerm = searchParams.get('search');
@@ -248,7 +221,6 @@ const Products = () => {
     }
   };
 
-  // Add this new function to fetch categories
   const fetchCategories = async () => {
     try {
       const data = await getAllCategoriesAPI();
@@ -264,7 +236,6 @@ const Products = () => {
     setPage(1);
   };
 
-  // Separate useEffect for initial data loading
   useEffect(() => {
     fetchProducts();
     fetchCategories();
@@ -316,7 +287,6 @@ const Products = () => {
     }
   };
 
-  // Add missing handleViewDetail function
   const handleViewDetail = (productId: string) => {
     navigate(`/products/${productId}`);
   };
@@ -375,34 +345,9 @@ const Products = () => {
     }
   };
 
-  // Helper function for price filter labels
-  const getPriceFilterLabel = (key: string) => {
-    switch (key) {
-      case 'under500':
-        return 'Dưới 500 triệu';
-      case '500to1000':
-        return '500 triệu - 1 tỷ';
-      case '1000to2000':
-        return '1 tỷ - 2 tỷ';
-      case 'above2000':
-        return 'Trên 2 tỷ';
-      default:
-        return '';
-    }
-  };
-
-  // Add this with other functions
-  const handlePriceFilterChange = (filterKey: string) => {
-    setPriceFilters(prev => ({
-      ...prev,
-      [filterKey]: !prev[filterKey as keyof typeof priceFilters]
-    }));
-  };
-
   const [page, setPage] = useState(1);
   const productsPerPage = 8;
 
-  // Add pagination handler
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -414,21 +359,7 @@ const Products = () => {
     if (selectedCategory) {
       filtered = filtered.filter(product => product.category_id._id === selectedCategory);
     }
-    // Apply price filters
-    const activePriceFilters = Object.entries(priceFilters).filter(([_, isActive]) => isActive);
 
-    if (activePriceFilters.length > 0) {
-      filtered = filtered.filter(product => {
-        return (
-          (priceFilters.under500 && product.price < 500000000) ||
-          (priceFilters['500to1000'] && product.price >= 500000000 && product.price < 1000000000) ||
-          (priceFilters['1000to2000'] && product.price >= 1000000000 && product.price < 2000000000) ||
-          (priceFilters.above2000 && product.price >= 2000000000)
-        );
-      });
-    }
-
-    // Apply sorting
     switch (sortOption) {
       case 'priceAsc':
         filtered.sort((a, b) => a.price - b.price);
@@ -443,7 +374,6 @@ const Products = () => {
         break;
     }
 
-    // Apply pagination
     const startIndex = (page - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;
     return filtered.slice(startIndex, endIndex);
@@ -480,35 +410,6 @@ const Products = () => {
               </ListItem>
             ))}
           </List>
-
-          {/* <Typography variant="h6" sx={{ color: '#ff0000', marginTop: 3, marginBottom: 2 }}>
-            Bộ Lọc Tìm Kiếm
-          </Typography>
-          <Typography variant="subtitle1" sx={{ color: 'black', marginBottom: 1 }}>
-            Mức Giá
-          </Typography>
-          <List>
-            {Object.keys(priceFilters).map((key) => (
-              <ListItem key={key} sx={{ padding: '4px 0' }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={priceFilters[key as keyof typeof priceFilters]}
-                      onChange={() => handlePriceFilterChange(key)}
-                      sx={{
-                        color: '#000',
-                        '&.Mui-checked': {
-                          color: '#ff0000'
-                        }
-                      }}
-                    />
-                  }
-                  label={getPriceFilterLabel(key)}
-                  sx={{ color: 'black' }}
-                />
-              </ListItem>
-            ))}
-          </List> */}
         </Sidebar>
 
         <ProductSection>
@@ -532,8 +433,6 @@ const Products = () => {
                 }}
               >
                 <MenuItem value="default">Mặc định</MenuItem>
-                {/* <MenuItem value="priceAsc">Giá thấp đến cao</MenuItem>
-                <MenuItem value="priceDesc">Giá cao đến thấp</MenuItem> */}
                 <MenuItem value="newest">Xe mới nhất</MenuItem>
               </Select>
             </FormControl>
@@ -558,15 +457,9 @@ const Products = () => {
                   <ProductTitle variant="h6">
                     {product.name.substring(0, 50)}...
                   </ProductTitle>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <ProductDescription variant="body2" gutterBottom>
                     {product.description.substring(0, 100)}...
-                  </Typography>
-                  {/* <ProductPrice variant="h6">
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
-                  </ProductPrice>
-                  <Typography variant="body2" color={product.quantity > 0 ? "success.main" : "error.main"}>
-                    {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
-                  </Typography> */}
+                  </ProductDescription>
                   <ButtonGroup>
                     <LikeButton
                       onClick={(e) => handleLike(e, product._id)}
@@ -589,7 +482,6 @@ const Products = () => {
             ))}
           </ProductGrid>
 
-          {/* Add pagination */}
           <div style={{
             display: 'flex',
             justifyContent: 'center',

@@ -25,7 +25,7 @@ const ServicesSection = styled.section`
 `;
 
 const Container = styled.div`
-  max-width: 1400px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 clamp(15px, 3vw, 30px);
 `;

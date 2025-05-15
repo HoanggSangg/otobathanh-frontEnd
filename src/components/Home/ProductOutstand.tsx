@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { SectionTitle } from '../Styles/StylesComponents';
 import { getFeaturedProductsAPI } from '../API';
@@ -11,12 +11,11 @@ const ProductSection = styled.section`
 `;
 
 const ProductContainer = styled.div`
-  max-width: 1400px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 20px;
 `;
 
-// Thêm styled-components cho scroll ngang và nút điều hướng
 const HorizontalScroll = styled.div`
   display: flex;
   overflow-x: auto;
@@ -28,7 +27,6 @@ const HorizontalScroll = styled.div`
   }
 `;
 
-// Add these styled components after other styled components
 const ScrollContainer = styled.div`
   position: relative;
   width: 100%;
@@ -54,6 +52,35 @@ const ScrollContainer = styled.div`
       background: linear-gradient(to left, #ffffff 0%, rgba(255, 255, 255, 0) 100%);
     }
   }
+`;
+
+const ContactButton = styled.button`
+  background: #e31837;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: absolute;
+  bottom: 10px;
+  left: 16px;
+  right: 16px;
+
+  &:hover {
+    background: #c41730;
+  }
+`;
+
+const CardInfo = styled.div`
+  padding: 18px 16px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  padding-bottom: 60px;
 `;
 
 const ScrollButton = styled.button<{ $show: boolean }>`
@@ -103,20 +130,18 @@ const CardImage = styled.div<{ src: string }>`
   width: 100%;
   height: 180px;
   background: url(${props => props.src}) center/cover no-repeat;
-`;
-
-const CardInfo = styled.div`
-  padding: 18px 16px 14px 16px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  border-bottom: 1px solid red;
 `;
 
 const PlaceName = styled.div`
-  font-size: 1.18rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-bottom: 8px;
   color: #222;
+  text-transform: lowercase;
+  &::first-letter {
+    text-transform: uppercase;
+  }
 `;
 
 interface Product {
@@ -129,7 +154,6 @@ interface Product {
 }
 
 const Products = () => {
-  // Update useState type
   const [products, setProducts] = useState<Product[]>([]);
   const navigate = useNavigate();
   const [showLeftButton, setShowLeftButton] = useState(false);
@@ -191,10 +215,16 @@ const Products = () => {
             onScroll={handleScroll}
           >
             {products.map((product) => (
-              <CardWrapper key={product._id} onClick={() => handleViewDetail(product._id)}>
-                <CardImage src={product.image} />
+              <CardWrapper key={product._id}>
+                <CardImage src={product.image} onClick={() => handleViewDetail(product._id)} />
                 <CardInfo>
                   <PlaceName>{product.name}</PlaceName>
+                  <ContactButton onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/contact');
+                  }}>
+                    Liên hệ tư vấn
+                  </ContactButton>
                 </CardInfo>
               </CardWrapper>
             ))}
