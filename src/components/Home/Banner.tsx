@@ -58,7 +58,7 @@ const Slide = styled.div`
 
 const BannerImage = styled.img`
   width: 100%;
-  height: 100%;
+  height: 615px;
   object-fit: cover;
   object-position: center;
   display: block;
