@@ -71,7 +71,7 @@ const HorizontalScroll = styled.div`
 
 const LogoBox = styled.div`
   min-width: 180px;
-  flex: 0 0 calc(16.666% - 20px); // Show 6 items
+  flex: 0 0 calc(16.666% - 20px);
   background: white;
   border-radius: 15px;
   padding: 25px;

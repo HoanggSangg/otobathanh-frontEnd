@@ -27,7 +27,6 @@ const HorizontalScroll = styled.div`
   }
 `;
 
-// Update ScrollContainer styling
 const ScrollContainer = styled.div`
   position: relative;
   width: 100%;
@@ -55,7 +54,6 @@ const ScrollContainer = styled.div`
   }
 `;
 
-// Update ScrollButton to handle visibility
 const ScrollButton = styled.button<{ $show: boolean }>`
   position: absolute;
   top: 50%;
@@ -71,7 +69,6 @@ const ScrollButton = styled.button<{ $show: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 24px;
   transition: all 0.2s;
   opacity: ${props => props.$show ? 1 : 0};
   visibility: ${props => props.$show ? 'visible' : 'hidden'};

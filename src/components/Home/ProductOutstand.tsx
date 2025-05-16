@@ -98,7 +98,6 @@ const ScrollButton = styled.button<{ $show: boolean }>`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 24px;
   transition: all 0.2s;
   opacity: ${props => props.$show ? 1 : 0};
   visibility: ${props => props.$show ? 'visible' : 'hidden'};

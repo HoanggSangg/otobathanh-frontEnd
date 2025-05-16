@@ -80,7 +80,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 24px;
   transition: all 0.2s;
 }
 
@@ -165,6 +164,5 @@
   .scroll-button {
     width: 36px;
     height: 36px;
-    font-size: 20px;
   }
 }
