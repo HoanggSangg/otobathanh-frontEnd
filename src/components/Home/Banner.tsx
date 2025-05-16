@@ -14,19 +14,19 @@ const BannerContainer = styled(Box)`
   max-width: 1920px;
 
   @media (max-width: 1024px) {
-    height: 450px;
+    height: auto;
     padding: 0;
   }
 
   @media (max-width: 768px) {
-    height: 350px;
-    margin-top: 100px;
+    height: auto;
+    margin-top: -10px;
     padding: 0;
   }
 
   @media (max-width: 480px) {
-    height: 195px;
-    margin-top: 80px;
+    height: auto;
+    margin-top: -10px;
     padding: 0;
   }
 `;
@@ -58,24 +58,12 @@ const Slide = styled.div`
 
 const BannerImage = styled.img`
   width: 100%;
-  height: 615px;
+  height: auto;
   object-fit: cover;
   object-position: center;
   display: block;
   margin: 0;
   padding: 0;
-
-  @media (max-width: 1024px) {
-    height: 450px;
-  }
-
-  @media (max-width: 768px) {
-    height: auto;
-  }
-
-  @media (max-width: 480px) {
-    height: 185px;
-  }
 `;
 
 const NavigationButton = styled(IconButton)`
@@ -102,22 +90,6 @@ const NavigationButton = styled(IconButton)`
       color: #e31837;
     }
   }
-
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-    svg {
-      font-size: 18px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    width: 35px;
-    height: 35px;
-    svg {
-      font-size: 16px;
-    }
-  }
 `;
 
 const RightButton = styled(NavigationButton)`
@@ -126,24 +98,16 @@ const RightButton = styled(NavigationButton)`
   transition: all 0.3s ease;
 
   @media (max-width: 1024px) {
-    right: -87%;
-  }
-
-  @media (max-width: 480px) {
-    right: -80%;
+    display: none !important;
   }
 `;
 
 const LeftButton = styled(NavigationButton)`
   left: 10px;
   opacity: 1;
-  
-  @media (max-width: 768px) {
-    left: 15px;
-  }
 
-  @media (max-width: 480px) {
-    left: 8px;
+  @media (max-width: 1024px) {
+    display: none !important;
   }
 `;
 
