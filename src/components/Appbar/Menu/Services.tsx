@@ -2,9 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { SectionTitle } from '../../Styles/StylesComponents';
-import BuildIcon from '@mui/icons-material/Build';
-import HandymanIcon from '@mui/icons-material/Handyman';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import { Build, Engineering, Handyman, LocalShipping } from '@mui/icons-material';
 
 // Add interface for type safety
 interface SubService {
@@ -170,9 +168,9 @@ const SubServiceItem = styled.li`
 
 const services: Service[] = [
   {
-    icon: <BuildIcon />,
+    icon: <Build />,
     title: 'Sửa Chữa Tổng Quát',
-    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    description: 'Dịch vụ sửa chữa chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm, trang thiết bị hiện đại.',
     subServices: [
       { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
       { name: 'Sửa chữa hộp số', path: '/services/transmission' },
@@ -181,36 +179,36 @@ const services: Service[] = [
     ]
   },
   {
-    icon: <HandymanIcon />,
-    title: 'Sửa Chữa Tổng Quát',
-    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    icon: <Engineering />,
+    title: 'Bảo Trì',
+    description: 'Dịch vụ bảo trì định kỳ giúp xe hoạt động ổn định, kéo dài tuổi thọ và phát hiện sớm các vấn đề tiềm ẩn.',
     subServices: [
-      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
-      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
-      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
-      { name: 'Sửa chữa điện', path: '/services/electrical' }
+      { name: 'Kiểm tra định kỳ', path: '/services/periodic-check' },
+      { name: 'Bảo trì động cơ', path: '/services/engine-maintenance' },
+      { name: 'Bảo trì hệ thống', path: '/services/system-maintenance' },
+      { name: 'Vệ sinh kỹ thuật', path: '/services/technical-cleaning' }
     ]
   },
   {
-    icon: <LocalShippingIcon />,
-    title: 'Sửa Chữa Tổng Quát',
-    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    icon: <Handyman />,
+    title: 'Bảo Dưỡng',
+    description: 'Dịch vụ bảo dưỡng chuyên nghiệp, đảm bảo xe luôn trong tình trạng hoạt động tốt nhất.',
     subServices: [
-      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
-      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
-      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
-      { name: 'Sửa chữa điện', path: '/services/electrical' }
+      { name: 'Thay dầu động cơ', path: '/services/oil-change' },
+      { name: 'Bảo dưỡng phanh', path: '/services/brake-maintenance' },
+      { name: 'Bảo dưỡng điều hòa', path: '/services/ac-service' },
+      { name: 'Kiểm tra tổng quát', path: '/services/general-inspection' }
     ]
   },
   {
-    icon: <LocalShippingIcon />,
-    title: 'Sửa Chữa Tổng Quát',
-    description: 'Dịch vụ sửa chữa, bảo dưỡng xe chuyên nghiệp với đội ngũ kỹ thuật viên giàu kinh nghiệm.',
+    icon: <LocalShipping />,
+    title: 'Cứu Hộ 24/7',
+    description: 'Dịch vụ cứu hộ xe chuyên nghiệp, hỗ trợ 24/7 với đội ngũ nhân viên nhiều kinh nghiệm.',
     subServices: [
-      { name: 'Sửa chữa động cơ', path: '/services/engine-repair' },
-      { name: 'Sửa chữa hộp số', path: '/services/transmission' },
-      { name: 'Sửa chữa hệ thống phanh', path: '/services/brake-system' },
-      { name: 'Sửa chữa điện', path: '/services/electrical' }
+      { name: 'Cứu hộ khẩn cấp', path: '/services/emergency-rescue' },
+      { name: 'Kéo xe', path: '/services/towing' },
+      { name: 'Hỗ trợ tại chỗ', path: '/services/onsite-support' },
+      { name: 'Sửa chữa lưu động', path: '/services/mobile-repair' }
     ]
   }
 ];

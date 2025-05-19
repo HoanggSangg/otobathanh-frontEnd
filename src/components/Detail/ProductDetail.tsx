@@ -525,7 +525,7 @@ const ProductPage = () => {
             </MainContent>
 
             <Sidebar>
-              <h3>dịch vụ liên quan</h3>
+              <h3>Dịch vụ liên quan</h3>
               <RelatedProductsList>
                 {relatedProducts.map(prod => (
                   <li key={prod._id} onClick={() => navigate(`/products/${prod._id}`)}>
