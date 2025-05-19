@@ -12,7 +12,7 @@ const steps: Step[] = [
   { title: '1. TIẾP NHẬN', description: 'Tiếp nhận thông tin và yêu cầu từ khách hàng', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure4_iwxdd1.jpg' },
   { title: '2. KIỂM TRA', description: 'Kiểm tra tổng thể tình trạng xe', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure3_volt4l.jpg' },
   { title: '3. CHẨN ĐOÁN', description: 'Chẩn đoán chính xác các vấn đề của xe', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure1_m6oigh.jpg' },
-  { title: '4. BÁO GIÁ', description: 'Báo giá chi tiết và minh bạch', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure2_sqbwvm.jpg' },
+  { title: '4. BÁO GIÁ CHI TIẾT', description: 'Báo giá chi tiết và minh bạch', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure2_sqbwvm.jpg' },
   { title: '5. XÁC NHẬN', description: 'Xác nhận đồng ý từ khách hàng', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure4_iwxdd1.jpg' },
   { title: '6. CHUẨN BỊ', description: 'Chuẩn bị phụ tùng và thiết bị cần thiết', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure3_volt4l.jpg' },
   { title: '7. SỬA CHỮA', description: 'Tiến hành sửa chữa theo quy trình', icon: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463451/procedure1_m6oigh.jpg' },

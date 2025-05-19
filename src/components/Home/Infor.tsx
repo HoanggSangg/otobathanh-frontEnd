@@ -132,15 +132,15 @@ const Information = () => {
           <IconWrapper $iconType="build">
             <BuildIcon />
           </IconWrapper>
-          <InfoTitle variant="h6">HIỆN SỬA CHỮA</InfoTitle>
+          <InfoTitle variant="h6">HẸN SỬA CHỮA</InfoTitle>
           <Typography variant="body2">
             1. Liên hệ số điện thoại 1900.866.876 & 0908.751.765 & 0913.169.066 (Mr Nhân)
             <br />
-            2. Truy cập website: otobathanh.com
+            2. Truy cập website: www.otobathanh.com
             <br />
-            3. Gọi trọng tài miễn trung gian
+            3. Liên hệ số 0913.169.066 miễn trung gian
             <br />
-            4. Chăm sóc khách hàng or có vấn Dịch vụ Bá Thành sẽ gọi lại ngay
+            4. Liên hệ chăm sóc khách hàng 0902.957.977 hoặc CVDV Bá Thành sẽ gọi lại ngay
           </Typography>
         </InfoCard>
 
