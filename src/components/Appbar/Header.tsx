@@ -516,7 +516,6 @@ const Header = () => {
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  // Update the handleLogout function
   const handleLogout = () => {
     setIsLogoutModalOpen(true);
   };
@@ -643,9 +642,14 @@ const Header = () => {
                 </NavLink>
                 <DropdownContent $isOpen={isDropdownOpen}>
                   {isMaster && (
-                    <DropdownItem to="/manager/accounts" onClick={closeMenu}>
-                      Quản lý tài khoản
-                    </DropdownItem>
+                    <>
+                      <DropdownItem to="/manager/accounts" onClick={closeMenu}>
+                        Quản lý tài khoản
+                      </DropdownItem>
+                      <DropdownItem to="/manager/staff" onClick={closeMenu}>
+                        Quản lý nhân viên
+                      </DropdownItem>
+                    </>
                   )}
                   <DropdownItem to="/manager/products" onClick={closeMenu}>
                     Quản lý dịch vụ
@@ -658,6 +662,9 @@ const Header = () => {
                   </DropdownItem>
                   <DropdownItem to="/manager/category" onClick={closeMenu}>
                     Quản lý danh mục
+                  </DropdownItem>
+                  <DropdownItem to="/manager/category-staff" onClick={closeMenu}>
+                    Quản lý chức vụ
                   </DropdownItem>
                   <DropdownItem to="/manager/booking" onClick={closeMenu}>
                     Quản lý lịch hẹn

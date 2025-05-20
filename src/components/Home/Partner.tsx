@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const PartnerSection = styled.section`
   background: #f8f9fa;
@@ -118,33 +117,23 @@ const LogoBox = styled.div`
   }
 `;
 
-const ScrollButton = styled.button<{ $show: boolean }>`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  background: white;
-  border: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  opacity: ${props => props.$show ? 1 : 0};
-  visibility: ${props => props.$show ? 'visible' : 'hidden'};
-  
-  &:hover {
-    background: #f5f5f5;
-  }
-`;
+const partners = [
+  { name: 'ziegler', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644343/ziegler_jromum.gif' },
+  { name: 'gimaex', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644343/gimaex_mjiexx.png' },
+  { name: 'klaas', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644343/klaas_bolelq.png' },
+  { name: 'parsch', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644343/parsch_nlvcit.png' },
+  { name: 'sany', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644343/sany_y0page.png' },
+  { name: 'vema', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644343/vema_cnqcv4.png' },
+  { name: 'magirus', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644342/magirus_tliwq4.png' },
+  { name: 'rosenbauer', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644342/rosenbauer_pvoilz.png' },
+  { name: 'morita', logo: 'https://res.cloudinary.com/drbjrsm0s/image/upload/v1747644342/morita_xnfiep.png' }
+];
 
 const Partner = () => {
   const [showLeftButton, setShowLeftButton] = useState(false);
   const [showRightButton, setShowRightButton] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
@@ -155,52 +144,37 @@ const Partner = () => {
     setShowRightButton(!isAtEnd);
   };
 
-  const partners = [
-    { name: 'Mercedes-Benz', logo: 'https://www.carlogos.org/car-logos/mercedes-benz-logo.png' },
-    { name: 'BMW', logo: 'https://www.carlogos.org/car-logos/bmw-logo.png' },
-    { name: 'Audi', logo: 'https://www.carlogos.org/car-logos/audi-logo.png' },
-    { name: 'Lexus', logo: 'https://www.carlogos.org/car-logos/lexus-logo.png' },
-    { name: 'Porsche', logo: 'https://www.carlogos.org/car-logos/porsche-logo.png' },
-    { name: 'Rolls-Royce', logo: 'https://www.carlogos.org/car-logos/ferrari-logo.png' },
-    { name: 'Toyota', logo: 'https://www.carlogos.org/car-logos/toyota-logo.png' },
-    { name: 'Honda', logo: 'https://www.carlogos.org/car-logos/honda-logo.png' },
-    { name: 'Mazda', logo: 'https://www.carlogos.org/car-logos/mazda-logo.png' },
-    { name: 'Volkswagen', logo: 'https://www.carlogos.org/car-logos/volkswagen-logo.png' },
-    { name: 'Hyundai', logo: 'https://www.carlogos.org/car-logos/hyundai-logo.png' },
-    { name: 'Kia', logo: 'https://www.carlogos.org/car-logos/kia-logo.png' },
-    { name: 'Subaru', logo: 'https://www.carlogos.org/car-logos/subaru-logo.png' },
-    { name: 'Land Rover', logo: 'https://www.carlogos.org/car-logos/land-rover-logo.png' }
-  ];
+  const duplicatedPartners = [...partners, ...partners];
+
+  useEffect(() => {
+    const scrollInterval = setInterval(() => {
+      if (scrollRef.current && !isPaused) {
+        const container = scrollRef.current;
+        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth / 2;
+        
+        if (isAtEnd) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: 1, behavior: 'auto' });
+        }
+      }
+    }, 30);
+
+    return () => clearInterval(scrollInterval);
+  }, [isPaused]);
 
   return (
     <PartnerSection>
       <Title>THƯƠNG HIỆU ĐỐI TÁC</Title>
       <ScrollContainer>
-        <ScrollButton
-          style={{ left: 5 }}
-          $show={showLeftButton}
-          onClick={() => {
-            const el = document.getElementById('partner-scroll');
-            if (el) el.scrollBy({ left: -300, behavior: 'smooth' });
-          }}
-        >
-          <FaChevronLeft />
-        </ScrollButton>
-        <ScrollButton
-          style={{ right: 5 }}
-          $show={showRightButton}
-          onClick={() => {
-            const el = document.getElementById('partner-scroll');
-            if (el) el.scrollBy({ left: 300, behavior: 'smooth' });
-          }}
-        >
-          <FaChevronRight />
-        </ScrollButton>
         <HorizontalScroll
+          ref={scrollRef}
           id="partner-scroll"
           onScroll={handleScroll}
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
-          {partners.map((partner, index) => (
+          {duplicatedPartners.map((partner, index) => (
             <LogoBox key={index}>
               <img src={partner.logo} alt={partner.name} />
             </LogoBox>

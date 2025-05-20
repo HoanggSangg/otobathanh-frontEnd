@@ -9,7 +9,7 @@ import { SiTiktok, SiYoutube } from 'react-icons/si';
 const FooterWrapper = styled.footer`
   background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
   color: white;
-  padding: 60px 0 20px 0;
+  padding: 40px 0 ;
 `;
 
 const FooterGrid = styled.div`
@@ -100,8 +100,7 @@ const Footer = () => {
           <div>
             <Logo src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Ô Tô Bá Thành" />
             <CompanyInfo>
-              <Typography variant="h6">ÔTÔ Bá Thành - Dịch Vụ Hoàn Hảo - Tận Tâm và Chuyên Nghiệp</Typography>
-              <Typography variant="subtitle1">Sửa Xe Bằng Cả Trái Tim</Typography>
+              <Typography variant="h6">Bá Thành - Dịch Vụ Hoàn Hảo - Tận Tâm và Chuyên Nghiệp - Sửa Xe Bằng Cả Trái Tim</Typography>
               <Typography>Công ty TNHH Bá Thành</Typography>
               <Typography>Mã số thuế / Mã số doanh nghiệp : 0304342069</Typography>
               <Typography>Hỗ trợ khách hàng</Typography>

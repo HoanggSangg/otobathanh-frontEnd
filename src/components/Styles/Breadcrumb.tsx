@@ -107,8 +107,12 @@ const Breadcrumb = () => {
         return 'Giới thiệu';
       case 'contact':
         return 'Liên hệ';
+      case 'category-staff':
+        return 'Chức vụ';
       case 'news':
         return 'Tin tức';
+      case 'staff':
+        return 'Nhân viên';
       case 'newslist':
         return 'Danh mục tin tức';
       case 'manager':

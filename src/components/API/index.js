@@ -18,7 +18,6 @@ export const loginAPI = async (email, password) => {
 
     localStorage.setItem('token', token);
 
-    // Set default authorization header for all future requests
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
     return response.data;
@@ -924,5 +923,137 @@ export const getMonthlyContactCountAPI = async (month, year) => {
   }
 };
 
+export const sendCozeMessageAPI = async (message, userId) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/coze/chat`, {
+      message,
+      userId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending message to Coze:', error);
+    throw error;
+  }
+};
 
+export const getAllCategoryStaffsAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/categoriesStaff`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching category staffs:', error);
+    throw error;
+  }
+};
+
+export const getCategoryStaffByIdAPI = async (categoryStaffId) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/categoriesStaff/${categoryStaffId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching category staff:', error);
+    throw error;
+  }
+};
+
+export const createCategoryStaffAPI = async (categoryStaffData) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/categoriesStaff/create`, 
+      categoryStaffData,
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error creating category staff:', error);
+    throw error;
+  }
+};
+
+export const updateCategoryStaffAPI = async (categoryStaffId, categoryStaffData) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/categoriesStaff/${categoryStaffId}`,
+      categoryStaffData,
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating category staff:', error);
+    throw error;
+  }
+};
+
+export const deleteCategoryStaffAPI = async (categoryStaffId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/categoriesStaff/${categoryStaffId}`,
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting category staff:', error);
+    throw error;
+  }
+};
+
+// Staff APIs
+export const getAllStaffAPI = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/staff`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching staff:', error);
+    throw error;
+  }
+};
+
+export const getStaffByIdAPI = async (staffId) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/staff/${staffId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching staff member:', error);
+    throw error;
+  }
+};
+
+export const createStaffAPI = async (staffData) => {
+  try {
+    const response = await axios.post(`${API_URL}/api/staff/create`, 
+      staffData,
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error creating staff member:', error);
+    throw error;
+  }
+};
+
+export const updateStaffAPI = async (staffId, staffData) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/staff/${staffId}`,
+      staffData,
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating staff member:', error);
+    throw error;
+  }
+};
+
+export const deleteStaffAPI = async (staffId) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL}/api/staff/${staffId}`,
+      { headers: getAuthHeaders() }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting staff member:', error);
+    throw error;
+  }
+};
 

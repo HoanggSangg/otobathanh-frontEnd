@@ -3,6 +3,14 @@ import styled from 'styled-components';
 import { IconButton, Paper, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
+import DeleteIcon from '@mui/icons-material/Close';
+import { sendCozeMessageAPI, createContactAPI } from '../API';
+import { getCurrentUser } from '../Utils/auth';
+
+interface ChatMessage {
+  text: string;
+  isUser: boolean;
+}
 
 const ChatContainer = styled.div`
   position: fixed;
@@ -27,7 +35,7 @@ const ChatWindow = styled(Paper)`
   bottom: 70px;
   right: 0;
   width: 320px;
-  height: 460px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -88,7 +96,6 @@ const Message = styled.div<{ $isUser?: boolean }>`
   align-self: ${props => props.$isUser ? 'flex-end' : 'flex-start'};
   background-color: ${props => props.$isUser ? '#007AFF' : '#f1f1f1'};
   color: ${props => props.$isUser ? 'white' : 'black'};
-  position: relative;
   display: flex;
   align-items: center;
 `;
@@ -114,18 +121,92 @@ const SendButton = styled(IconButton)`
   color: #ff0000 !important;
 `;
 
-interface ChatMessage {
-  text: string;
-  isUser: boolean;
-}
+const FormInputMessage = styled(TextField)`
+  && {
+    background: white;
+    border-radius: 12px;
+    margin: 4px 0;
+    width: 80%;
+    align-self: flex-start;
 
-const autoResponses = {
-  'xin chào': 'Xin chào! Tôi có thể giúp gì cho bạn?',
-  'giá': 'Để biết giá cụ thể của dịch vụ, vui lòng cho chúng tôi biết loại xe và dịch vụ bạn cần. Hoặc gọi số hotline: 1900.866.876',
-  'địa chỉ': '19 Phan Văn Trị, Phường 07, Quận Gò Vấp, Tp HCM',
-  'liên hệ': 'Bạn có thể liên hệ với chúng tôi qua:\nHotline: 1900.866.876\nDi động: 0908.751.765 - 0913.169.066\nEmail: otobathanh@gmail.com',
-  'default': 'Cảm ơn bạn đã liên hệ. Vui lòng để lại số điện thoại, chúng tôi sẽ gọi lại cho bạn sớm nhất!'
-};
+    .MuiOutlinedInput-root {
+      border-radius: 12px;
+    }
+
+    .MuiInputBase-input {
+      padding: 8px 12px;
+    }
+
+    &.MuiTextField-root {
+      margin-bottom: 8px;
+    }
+  }
+`;
+
+const ImageUploadContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    display: block;
+    width: 100%;
+  }
+
+  input[type='file'] {
+    width: 100%;
+    padding: 8px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &::file-selector-button {
+      background: #ff0000;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      margin-right: 8px;
+      cursor: pointer;
+      font-size: 14px;
+
+      &:hover {
+        background: #cc0000;
+      }
+    }
+  }
+
+  .preview-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .image-preview {
+    position: relative;
+    width: 60px;
+    height: 60px;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .remove-button {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      padding: 2px;
+      background: white;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+`;
 
 const ChatBox = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -133,31 +214,87 @@ const ChatBox = () => {
     { text: 'Xin chào! Tôi có thể giúp gì cho bạn?', isUser: false }
   ]);
   const [inputText, setInputText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [contactData, setContactData] = useState({
+    fullName: '',
+    numberPhone: '',
+    description: '',
+    date: '',
+    timeSlot: '',
+    images: [] as string[]
+  });
 
-  const handleSend = () => {
-    if (!inputText.trim()) return;
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const userMessage = { text: inputText, isUser: true };
-    setMessages(prev => [...prev, userMessage]);
-
-    // Find auto response
-    const lowerInput = inputText.toLowerCase();
-    let responseText = autoResponses.default;
-
-    for (const [key, value] of Object.entries(autoResponses)) {
-      if (lowerInput.includes(key)) {
-        responseText = value;
-        break;
-      }
+    if (!contactData.fullName || !contactData.numberPhone || !contactData.date || !contactData.timeSlot) {
+      setMessages(prev => [
+        ...prev,
+        { text: 'Vui lòng điền đầy đủ thông tin trước khi gửi.', isUser: false }
+      ]);
+      return;
     }
 
-    setTimeout(() => {
-      const botResponse = { text: responseText, isUser: false };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-
-    setInputText('');
+    try {
+      await createContactAPI(contactData);
+      setMessages(prev => [
+        ...prev,
+        { text: 'Cảm ơn bạn đã để lại thông tin, chúng tôi sẽ liên hệ sớm nhất.', isUser: false }
+      ]);
+      setContactData({ fullName: '', numberPhone: '', description: '', date: '', timeSlot: '', images: [] });
+      setShowContactForm(false);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || 'Gửi thông tin thất bại. Vui lòng thử lại sau.';
+      setMessages(prev => [...prev, { text: errorMessage, isUser: false }]);
+    }
   };
+
+  const handleSend = async () => {
+    if (!inputText.trim() || isLoading) return;
+  
+    const userMessage = { text: inputText, isUser: true };
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+  
+    const keywords = ["liên hệ", "đặt lịch", "gặp", "hẹn gặp", "đặt hẹn"];
+    const lowerCaseMessage = inputText.toLowerCase();
+  
+    if (keywords.some(keyword => lowerCaseMessage.includes(keyword))) {
+      setShowContactForm(true);
+      setMessages(prev => [
+        ...prev,
+        { text: 'Vui lòng điền thông tin bên dưới để chúng tôi có thể hỗ trợ bạn.', isUser: false }
+      ]);
+      return;
+    }
+  
+    // ✅ Nếu không chứa từ khóa nhưng form đang hiển thị => ẩn form đi
+    if (showContactForm) {
+      setShowContactForm(false);
+    }
+  
+    setIsLoading(true);
+    try {
+      const currentUser = getCurrentUser();
+      const userId = currentUser?.id || 'guest';
+      const response = await sendCozeMessageAPI(inputText, userId);
+      const botResponse = {
+        text: response.botReply || 'Xin lỗi, tôi không thể xử lý yêu cầu này.',
+        isUser: false
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      setMessages(prev => [
+        ...prev,
+        { text: 'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.', isUser: false }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -172,7 +309,7 @@ const ChatBox = () => {
         <ChatWindow elevation={3}>
           <ChatHeader>
             <HeaderLeft>
-              <Avatar src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot" />
+              <Avatar src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot Avatar" />
               <ChatTitle>
                 <span>Trợ lý ảo của 2HM</span>
                 <span>● Online</span>
@@ -182,6 +319,7 @@ const ChatBox = () => {
               <CloseIcon />
             </IconButton>
           </ChatHeader>
+
           <MessagesContainer>
             {messages.map((message, index) => (
               <Message key={index} $isUser={message.isUser}>
@@ -189,7 +327,56 @@ const ChatBox = () => {
                 {message.text}
               </Message>
             ))}
+
+            {showContactForm && (
+              <>
+                <Message $isUser={false}>
+                  <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot" />
+                  Vui lòng điền thông tin của bạn:
+                </Message>
+                <FormInputMessage label="Họ tên *" value={contactData.fullName} onChange={e => setContactData({ ...contactData, fullName: e.target.value })} size="small" />
+                <FormInputMessage label="Số điện thoại *" value={contactData.numberPhone} onChange={e => setContactData({ ...contactData, numberPhone: e.target.value })} size="small" />
+                <FormInputMessage label="Mô tả" multiline rows={2} value={contactData.description} onChange={e => setContactData({ ...contactData, description: e.target.value })} size="small" />
+                <FormInputMessage label="Ngày *" type="date" value={contactData.date} onChange={e => setContactData({ ...contactData, date: e.target.value })} InputLabelProps={{ shrink: true }} size="small" />
+                <FormInputMessage label="Khung giờ *" value={contactData.timeSlot} onChange={e => setContactData({ ...contactData, timeSlot: e.target.value })} size="small" />
+                <ImageUploadContainer>
+                  <label>
+                    <input type="file" accept="image/*" multiple onChange={async (e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        const files = Array.from(e.target.files);
+                        const imagePromises = files.map(file => {
+                          return new Promise<string>((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result as string);
+                            reader.readAsDataURL(file);
+                          });
+                        });
+                        const imageUrls = await Promise.all(imagePromises);
+                        setContactData(prev => ({ ...prev, images: [...prev.images, ...imageUrls] }));
+                      }
+                    }} />
+                  </label>
+                  <div className="preview-container">
+                    {contactData.images.map((image, index) => (
+                      <div key={index} className="image-preview">
+                        <img src={image} alt={`Preview ${index}`} />
+                        <IconButton className="remove-button" size="small" onClick={() => {
+                          setContactData(prev => ({
+                            ...prev,
+                            images: prev.images.filter((_, i) => i !== index)
+                          }));
+                        }}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </div>
+                    ))}
+                  </div>
+                </ImageUploadContainer>
+                <button onClick={handleContactSubmit} className="submit-button">Gửi liên hệ</button>
+              </>
+            )}
           </MessagesContainer>
+
           <InputContainer>
             <StyledTextField
               placeholder="Nhập tin nhắn..."

@@ -40,6 +40,9 @@ import ScrollToTop from './components/Styles/ScrollToTop';
 import Booking from './components/Appbar/Menu/Booking';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import NewsList from './components/Appbar/Menu/NewsList';
+import IndexCategoryStaff from './components/Admin/CategoryStaffManager/indexCategoryStaff';
+import IndexStaff from './components/Admin/StaffManager/indexStaff';
+import Staff from './components/Home/Staff';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -114,6 +117,7 @@ const App = () => {
                   <Information />
                   <Procedure />
                   <HomeStats />
+                  <Staff />
                   <Partner />
                 </>
               } />
@@ -142,6 +146,14 @@ const App = () => {
                 }
               />
               <Route
+                path="/manager/staff"
+                element={
+                  <ProtectedRoute>
+                    <IndexStaff />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/manager/news"
                 element={
                   <ProtectedRoute>
@@ -162,6 +174,14 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <IndexCategory />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/manager/category-staff"
+                element={
+                  <ProtectedRoute>
+                    <IndexCategoryStaff />
                   </ProtectedRoute>
                 }
               />
@@ -193,6 +213,7 @@ const App = () => {
               <Route path="/procedure" element={<Procedure />} />
               <Route path="/partner" element={<Partner />} />
               <Route path="/booking" element={<Booking />} />
+              <Route path="/staff" element={<Staff />} />
             </Routes>
             <Footer />
           </MainContent>
