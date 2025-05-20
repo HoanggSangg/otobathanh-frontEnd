@@ -144,23 +144,31 @@ const Partner = () => {
     setShowRightButton(!isAtEnd);
   };
 
-  const duplicatedPartners = [...partners, ...partners];
-
   useEffect(() => {
-    const scrollInterval = setInterval(() => {
-      if (scrollRef.current && !isPaused) {
+    let animationFrameId: number;
+    let lastTimestamp = 0;
+    const scrollSpeed = 2;
+
+    const animate = (timestamp: number) => {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const elapsed = timestamp - lastTimestamp;
+
+      if (scrollRef.current && !isPaused && elapsed > 32) {
         const container = scrollRef.current;
-        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth / 2;
+        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
         
         if (isAtEnd) {
-          container.scrollTo({ left: 0, behavior: 'smooth' });
+          container.scrollLeft = 0;
         } else {
-          container.scrollBy({ left: 1, behavior: 'auto' });
+          container.scrollBy({ left: scrollSpeed, behavior: 'auto' });
         }
+        lastTimestamp = timestamp;
       }
-    }, 30);
+      animationFrameId = requestAnimationFrame(animate);
+    };
 
-    return () => clearInterval(scrollInterval);
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [isPaused]);
 
   return (
@@ -174,7 +182,7 @@ const Partner = () => {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          {duplicatedPartners.map((partner, index) => (
+          {[...partners, ...partners, ...partners].map((partner, index) => (
             <LogoBox key={index}>
               <img src={partner.logo} alt={partner.name} />
             </LogoBox>

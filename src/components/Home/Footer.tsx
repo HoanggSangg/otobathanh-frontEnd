@@ -5,6 +5,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import { SiTiktok, SiYoutube } from 'react-icons/si';
+import { FaFacebook } from 'react-icons/fa';  // Add this import
 
 const FooterWrapper = styled.footer`
   background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
@@ -112,6 +113,9 @@ const Footer = () => {
             <SocialMediaSection>
               <Title variant="h6">THEO DÕI CHÚNG TÔI</Title>
               <SocialIcons>
+                <IconButton href="https://www.facebook.com/profile.php?id=61576099125776" target="_blank" aria-label="Facebook">
+                  <FaFacebook />
+                </IconButton>
                 <IconButton href="https://www.tiktok.com/@congtytnhhbathanh" target="_blank" aria-label="TikTok">
                   <SiTiktok />
                 </IconButton>

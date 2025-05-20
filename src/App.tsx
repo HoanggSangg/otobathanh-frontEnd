@@ -43,6 +43,7 @@ import NewsList from './components/Appbar/Menu/NewsList';
 import IndexCategoryStaff from './components/Admin/CategoryStaffManager/indexCategoryStaff';
 import IndexStaff from './components/Admin/StaffManager/indexStaff';
 import Staff from './components/Home/Staff';
+import FloatingButtons from './components/FloatingButtons/FloatingButtons';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -119,6 +120,7 @@ const App = () => {
                   <HomeStats />
                   <Staff />
                   <Partner />
+                  <FloatingButtons />
                 </>
               } />
               <Route path="/productoutstand" element={<ProductOutstand />} />
