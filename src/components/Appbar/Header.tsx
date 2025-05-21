@@ -20,7 +20,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 const HeaderContainer = styled.header`
-  background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
+  background: linear-gradient(to right, rgb(242, 12, 12) 50%, rgb(11, 9, 9));
   backdrop-filter: blur(8px);
   padding: 5px 0;
   position: fixed;
@@ -300,7 +300,7 @@ const NavLink = styled(RouterNavLink)`
       left: 0;
       right: 0;
       height: 2px;
-      background-color: #e31837;
+      background-color: rgb(229, 229, 245);
     }
   }
 

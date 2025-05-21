@@ -79,11 +79,18 @@ const ChatWindow = styled(Paper)`
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 
-  @media (max-width: 768px) {
-    width: 90vw;
-    height: 80vh;
-    bottom: 80px;
+  @media (max-width: 1024px) {
+    width: 25vw;
+    height: 60vh;
+    bottom: 70px;
     right: -10px;
+  }
+
+  @media (max-width: 768px) {
+    width: 40vw;
+    height: 40vh;
+    bottom: 60px;
+    right: -8px;
   }
 
   @media (max-width: 480px) {

@@ -5,10 +5,10 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import { SiTiktok, SiYoutube } from 'react-icons/si';
-import { FaFacebook } from 'react-icons/fa';  // Add this import
+import { FaFacebook } from 'react-icons/fa';
 
 const FooterWrapper = styled.footer`
-  background: linear-gradient(to right, rgb(246, 238, 238), rgb(242, 12, 12) 50%, rgb(11, 9, 9));
+  background: linear-gradient(to right, rgb(242, 12, 12) 50%, rgb(11, 9, 9));
   color: white;
   padding: 40px 0 ;
 `;
