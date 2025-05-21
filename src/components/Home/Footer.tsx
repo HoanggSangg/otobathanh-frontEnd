@@ -8,7 +8,7 @@ import { SiTiktok, SiYoutube } from 'react-icons/si';
 import { FaFacebook } from 'react-icons/fa';
 
 const FooterWrapper = styled.footer`
-  background: linear-gradient(to right, rgb(242, 12, 12) 50%, rgb(11, 9, 9));
+  background: linear-gradient(to right, rgb(197, 30, 30) 50%, rgb(11, 9, 9));
   color: white;
   padding: 40px 0 ;
 `;

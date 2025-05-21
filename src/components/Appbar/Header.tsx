@@ -20,7 +20,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 const HeaderContainer = styled.header`
-  background: linear-gradient(to right, rgb(242, 12, 12) 50%, rgb(11, 9, 9));
+  background: linear-gradient(to right, rgb(197, 30, 30) 50%, rgb(11, 9, 9));
   backdrop-filter: blur(8px);
   padding: 5px 0;
   position: fixed;
