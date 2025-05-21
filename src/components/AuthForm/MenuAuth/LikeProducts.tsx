@@ -97,11 +97,14 @@ const LikeButton = styled(Button)`
   padding: 0 !important;
   border-radius: 50% !important;
   background-color: white !important;
-  color: #e31837 !important;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
   
   &:hover {
-    background-color: #f5f5f5 !important;
+    background-color: '#f5f5f5'}
+  }
+
+  svg {
+    color: '#666'}
   }
 `;
 

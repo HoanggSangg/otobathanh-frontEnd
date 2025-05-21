@@ -98,7 +98,7 @@ const LogoContainer = styled.div`
 
 const RegisterButton = styled.button<{ $loading?: boolean }>`
   width: 100%;
-  padding: 8px;
+  padding: 12px;
   background: #e31837;
   color: white;
   border: none;
@@ -106,7 +106,7 @@ const RegisterButton = styled.button<{ $loading?: boolean }>`
   font-size: 16px;
   font-weight: 500;
   cursor: ${props => props.$loading ? 'not-allowed' : 'pointer'};
-  margin: 24px 0;
+  margin: 12px 0;
   opacity: ${props => props.$loading ? 0.7 : 1};
   
   &:hover {

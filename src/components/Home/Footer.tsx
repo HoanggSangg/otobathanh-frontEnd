@@ -24,8 +24,18 @@ const FooterGrid = styled.div`
 `;
 
 const Logo = styled.img`
-  height: 80px;
-  margin-bottom: 20px;
+  height: 104px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(227,24,55,0.12));
+  border-radius: 14px;
+  background: #fff;
+  padding: 6px 18px;
+  transition: box-shadow 0.3s, background 0.3s;
+  border: 1.5px solid #e31837;
+  &:hover {
+    box-shadow: 0 8px 32px rgba(227,24,55,0.18);
+    background: #f5f5f5;
+  }
 `;
 
 const CompanyInfo = styled.div`

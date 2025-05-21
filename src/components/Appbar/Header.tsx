@@ -31,6 +31,29 @@ const HeaderContainer = styled.header`
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 `;
 
+const SearchContainer = styled.div<{ $isExpanded: boolean }>`
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    display: ${props => props.$isExpanded ? 'flex' : 'none'};
+    width: 100%;
+    margin-right: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+`;
+
 const AuthButtons = styled.div`
   display: flex;
   align-items: center;
@@ -121,26 +144,18 @@ const MobileDropdownContent = styled.div<{ $isOpen: boolean }>`
 `;
 
 const Logo = styled.img`
-  height: 50px;
-  margin: 10px 0;
+  height: 64px;
+  margin: 2px 0;
   object-fit: contain;
-`;
-
-const SearchContainer = styled.div<{ $isExpanded: boolean }>`
-  display: flex;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 5px 10px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  height: 36px;
-
-  @media (max-width: 768px) {
-    display: ${props => props.$isExpanded ? 'flex' : 'none'};
-    width: 100%;
-    margin-right: 20px;
-    background-color: rgba(255, 255, 255, 0.2);
+  filter: drop-shadow(0 2px 8px rgba(227,24,55,0.12));
+  border-radius: 14px;
+  background: #fff;
+  padding: 6px 18px;
+  transition: box-shadow 0.3s, background 0.3s;
+  border: 1.5px solid #e31837;
+  &:hover {
+    box-shadow: 0 8px 32px rgba(227,24,55,0.18);
+    background: #f5f5f5;
   }
 `;
 
@@ -168,19 +183,76 @@ const NavContainer = styled.div<{ $isOpen: boolean }>`
   }
 `;
 
+const AuthButton = styled.button<{ $primary?: boolean }>`
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid ${props => props.$primary ? '#e31837' : 'rgba(255, 255, 255, 0.2)'};
+  background-color: ${props => props.$primary ? '#e31837' : 'transparent'};
+  color: white;
+  min-width: 120px;
+
+  &:hover {
+    transform: translateY(-1px);
+    background-color: ${props => props.$primary ? '#c41730' : 'rgba(255, 255, 255, 0.1)'};
+    border-color: ${props => props.$primary ? '#c41730' : 'white'};
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+`;
+
 const NavLinks = styled.nav<{ $isOpen: boolean }>`
   display: flex;
   align-items: center;
   font-size: 16px;
   gap: 20px;
 
+  @media (max-width: 1024px) {
+    gap: 10px;
+    font-size: 14px;
+
+    > a {
+      padding: 8px 8px;
+    }
+  }
+
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
-    padding: 0 20px 20px 20px;
-    gap: 15px;
+    padding: 20px;
+    gap: 0;
     width: 100%;
     background: linear-gradient(to bottom, #e31837, #000000);
+
+    > a {
+      width: 100%;
+      padding: 15px 0;
+      font-size: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.active::after {
+        display: none;
+      }
+
+      &:hover {
+        color: #e31837;
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 15px;
+    
+    > a {
+      font-size: 15px;
+      padding: 12px 0;
+    }
   }
 `;
 
@@ -237,23 +309,6 @@ const NavLink = styled(RouterNavLink)`
     padding: 12px 0;
     font-size: 18px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const AuthButton = styled.button<{ $primary?: boolean }>`
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid ${props => props.$primary ? '#e31837' : 'transparent'};
-  background-color: ${props => props.$primary ? '#e31837' : 'transparent'};
-  color: white;
-  min-width: 100px;
-
-  &:hover {
-    background-color: ${props => props.$primary ? '#c41730' : 'rgba(255, 255, 255, 0.1)'};
-    border-color: ${props => props.$primary ? '#c41730' : 'white'};
   }
 `;
 

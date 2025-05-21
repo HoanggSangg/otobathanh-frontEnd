@@ -11,6 +11,11 @@ const FloatingContainer = styled.div`
   flex-direction: column;
   gap: 12px;
   z-index: 999;
+
+  @media (max-width: 768px) {
+    right: 25px;
+    bottom: 75px;
+  }
 `;
 
 const FloatingButton = styled.a`
@@ -25,6 +30,12 @@ const FloatingButton = styled.a`
   text-decoration: none;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+
+  @media (max-width: 480px) {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
 
   &:hover {
     transform: scale(1.1);

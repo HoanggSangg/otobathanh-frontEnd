@@ -6,21 +6,23 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { createContactAPI } from '../../API';
 import { useToast } from '../../Styles/ToastProvider';
 import React, { useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ContactContainer = styled.div`
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 0;
+  max-width: 1400px;
 `;
 
 const ContactGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin: clamp(20px, 5vw, 50px);
+  gap: 60px;
+  margin: clamp(30px, 5vw, 60px);
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
-    margin: clamp(5px, 3vw, 10px);
+    margin: clamp(15px, 3vw, 20px);
   }
 `;
 
@@ -86,6 +88,68 @@ const InfoList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 25px;
+`;
+
+const ImagePreviewGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+`;
+
+const ImagePreviewItem = styled.div`
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(227, 24, 55, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #c41230;
+      transform: scale(1.1);
+    }
+  }
+`;
+
+const FileUploadButton = styled.label`
+  display: inline-block;
+  padding: 12px 20px;
+  background: #f8f8f8;
+  border: 2px dashed #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #e31837;
+    background: #fff;
+  }
+
+  input {
+    display: none;
+  }
 `;
 
 const InfoItem = styled.div`
@@ -262,7 +326,6 @@ const TimeSlotSelect = styled.select`
 const Contact = () => {
   const showToast = useToast();
   const [images, setImages] = useState<File[]>([]);
-  // Update the formData state type
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -280,8 +343,8 @@ const Contact = () => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const selectedFiles = Array.from(e.target.files); // Chuyển FileList thành mảng
-      setImages((prevImages) => [...prevImages, ...selectedFiles]); // Thêm ảnh mới vào state
+      const selectedFiles = Array.from(e.target.files);
+      setImages((prevImages) => [...prevImages, ...selectedFiles]);
     }
   };
 
@@ -307,7 +370,6 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Date validation
       if (!formData.date) {
         throw new Error('Vui lòng chọn ngày hẹn.');
       }
@@ -336,9 +398,7 @@ const Contact = () => {
       });
       setImages([]);
     } catch (error: any) {
-      console.error('Error during form submission:', error);  // Log the error for debugging
-
-      // Hiển thị lỗi nếu có
+      console.error('Error during form submission:', error);
       if (error.response && error.response.data && error.response.data.message) {
         showToast(error.response.data.message, 'error');
       } else {
@@ -460,47 +520,37 @@ const Contact = () => {
           </FormGroup>
           <FormGroup>
             <label>Hình ảnh</label>
-            <input
-              type="file"
-              name="images"
-              accept="image/*"
-              multiple // Cho phép chọn nhiều ảnh
-              onChange={handleImageChange}
-            />
+            <FileUploadButton>
+              <input
+                type="file"
+                name="images"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+              />
+              Chọn hình ảnh
+            </FileUploadButton>
           </FormGroup>
-          <div style={{ marginTop: '20px' }}>
+          <ImagePreviewGrid>
             {images.map((image, index) => (
-              <div key={index} style={{ display: 'inline-block', position: 'relative', marginRight: '10px' }}>
+              <ImagePreviewItem key={index}>
                 <img
                   src={URL.createObjectURL(image)}
                   alt={`Selected ${index}`}
-                  style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '8px' }}
                 />
-                <button
-                  onClick={() => handleRemoveImage(index)}
-                  style={{
-                    position: 'absolute',
-                    top: '-10px',
-                    right: '-10px',
-                    background: '#e31837',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '24px',
-                    height: '24px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  ×
-                </button>
-              </div>
+                <button onClick={() => handleRemoveImage(index)}>×</button>
+              </ImagePreviewItem>
             ))}
-          </div>
+          </ImagePreviewGrid>
           <SubmitButton type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Đang gửi...' : 'Gửi thông tin'}
+            {isSubmitting ? (
+              <>
+                <CircularProgress size={20} color="inherit" style={{ marginRight: '10px' }} />
+                Đang gửi...
+              </>
+            ) : (
+              'Gửi thông tin'
+            )}
           </SubmitButton>
         </ContactForm>
       </ContactGrid>

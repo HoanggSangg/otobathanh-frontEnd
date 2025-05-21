@@ -7,11 +7,16 @@ import { getAllBannersAPI } from '../API';
 const BannerContainer = styled(Box)`
   position: relative;
   height: 615px;
-  margin-top: 80px;
   overflow: hidden;
   width: 100%;
   z-index: 1;
   max-width: 1920px;
+
+  @media (max-width: 1280px) {
+    height: auto;
+    padding: 0;
+    margin-top: -30px;
+  }
 
   @media (max-width: 1024px) {
     height: auto;
@@ -97,7 +102,7 @@ const RightButton = styled(NavigationButton)`
   opacity: 1;
   transition: all 0.3s ease;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1280px) {
     display: none !important;
   }
 `;
@@ -106,7 +111,7 @@ const LeftButton = styled(NavigationButton)`
   left: 10px;
   opacity: 1;
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1280px) {
     display: none !important;
   }
 `;

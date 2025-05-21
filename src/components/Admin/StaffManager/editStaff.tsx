@@ -25,15 +25,18 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import GroupIcon from '@mui/icons-material/Group';
 
 const Container = styled.div`
-  padding: 20px;
-  max-width: 1200px;
+  padding: 24px;
+  max-width: 1400px;
   margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 16px;
+    border-radius: 12px;
   }
 `;
 
@@ -175,6 +178,7 @@ const Header = styled.div`
     gap: 20px;
   }
 `;
+
 const Title = styled.h1`
   color: #1a1a1a;
   font-size: 24px;

@@ -9,23 +9,48 @@ import { IconButton } from '@mui/material';
 import { deleteCommentAPI } from '../API';
 
 const ThumbnailContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
   gap: 10px;
   margin-top: 15px;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 10px;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #e31837;
+    border-radius: 3px;
+  }
+`;
+
+const MainContent = styled.div`
+  position: relative;
+
+  img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
 `;
 
 const StyledThumbnailWrapper = styled.div`
-  width: 100%;
+  min-width: 100px;
   height: 80px;
   border: 2px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
 
   &:hover {
     transform: scale(1.05);
@@ -116,17 +141,6 @@ const DeleteCommentButton = styled(IconButton)`
   padding: 4px;
   &:hover {
     color: #e31837;
-  }
-`;
-
-const MainContent = styled.div`
-  img {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 20px;
   }
 `;
 

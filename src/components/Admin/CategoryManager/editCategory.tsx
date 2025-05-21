@@ -23,9 +23,17 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
 const Container = styled.div`
-  padding: 20px;
-  max-width: 1200px;
+  padding: 24px;
+  max-width: 1400px;
   margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+    border-radius: 12px;
+  }
 `;
 
 const StyledTableContainer = styled(TableContainer)`

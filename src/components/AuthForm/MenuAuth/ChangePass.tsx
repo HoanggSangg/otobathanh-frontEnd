@@ -7,68 +7,142 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../Styles/ToastProvider';
 
 const Container = styled.div`
-  max-width: 600px;
-  margin: 30px auto 40px;
+  max-width: 1000px;
+  margin: 40px auto;
   padding: 20px;
+  background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 `;
 
 const Title = styled.h2`
   color: #1e2124;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   text-align: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  position: relative;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, #e31837, #ff4d6d);
+    border-radius: 2px;
+  }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 25px;
   background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 `;
 
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 `;
 
 const Label = styled.label`
-  font-weight: 500;
+  font-weight: 600;
   color: #1e2124;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const Input = styled.input`
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: 14px 18px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: ${props => props.disabled ? '#f8f9fa' : 'white'};
 
   &:focus {
     outline: none;
     border-color: #e31837;
+    box-shadow: 0 0 0 3px rgba(227, 24, 55, 0.1);
+  }
+
+  &::placeholder {
+    color: #adb5bd;
   }
 `;
 
 const Button = styled.button`
-  background-color: #e31837;
+  background: linear-gradient(135deg, #e31837, #c41730);
   color: white;
-  padding: 12px;
+  padding: 16px;
   border: none;
-  border-radius: 4px;
-  font-weight: 500;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  margin-top: 10px;
 
   &:hover {
-    background-color: #c41730;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(227, 24, 55, 0.2);
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 
   &:disabled {
-    background-color: #ccc;
+    background: linear-gradient(135deg, #ced4da, #adb5bd);
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
+`;
+
+const StepIndicator = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 30px;
+`;
+
+const Step = styled.div<{ active: boolean; completed: boolean }>`
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background: ${props => 
+    props.completed 
+      ? 'linear-gradient(135deg, #e31837, #c41730)'
+      : props.active 
+        ? '#fff' 
+        : '#f8f9fa'};
+  color: ${props => 
+    props.completed 
+      ? '#fff'
+      : props.active 
+        ? '#e31837' 
+        : '#adb5bd'};
+  border: 2px solid ${props => 
+    props.completed 
+      ? '#e31837'
+      : props.active 
+        ? '#e31837' 
+        : '#dee2e6'};
+  transition: all 0.3s ease;
 `;
 
 const ChangePass = () => {
@@ -240,6 +314,11 @@ const ChangePass = () => {
   return (
     <Container>
       <Title>Đổi Mật Khẩu</Title>
+      <StepIndicator>
+        <Step active={step === 1} completed={step > 1}>1</Step>
+        <Step active={step === 2} completed={step > 2}>2</Step>
+        <Step active={step === 3} completed={step > 3}>3</Step>
+      </StepIndicator>
       <Form onSubmit={
         step === 1 ? handleVerifyOldPassword :
           step === 2 ? handleVerifyCode :

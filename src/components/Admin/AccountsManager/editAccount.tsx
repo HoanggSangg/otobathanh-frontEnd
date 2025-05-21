@@ -33,13 +33,18 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { checkIsMasterRole } from '../../Styles/roleUtils';
 import GroupIcon from '@mui/icons-material/Group';
+
 const Container = styled.div`
-  padding: 20px;
-  max-width: 1200px;
+  padding: 24px;
+  max-width: 1400px;
   margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   
   @media (max-width: 768px) {
-    padding: 10px;
+    padding: 16px;
+    border-radius: 12px;
   }
 `;
 
@@ -47,11 +52,13 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
   
   @media (max-width: 1024px) {
     flex-direction: column;
-    gap: 15px;
+    align-items: stretch;
   }
 `;
 
@@ -171,7 +178,6 @@ const FilterSelect = styled.select`
   }
 `;
 
-// Update the SearchControls container
 const SearchControls = styled.div`
   display: flex;
   gap: 16px;

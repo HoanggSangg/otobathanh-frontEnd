@@ -1,22 +1,54 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { IconButton, Paper, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Close';
 import { sendCozeMessageAPI, createContactAPI } from '../API';
 import { getCurrentUser } from '../Utils/auth';
+import { IconButton, Paper, TextField, MenuItem } from '@mui/material';
 
 interface ChatMessage {
   text: string;
   isUser: boolean;
 }
 
+const SubmitButton = styled.button`
+  background-color: #ff0000;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #cc0000;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
 const ChatContainer = styled.div`
   position: fixed;
   bottom: 40px;
   right: 20px;
   z-index: 1000;
+
+  @media (max-width: 768px) {
+    bottom: 20px;
+    right: 10px;
+  }
 `;
 
 const ChatButton = styled(IconButton)`
@@ -24,9 +56,14 @@ const ChatButton = styled(IconButton)`
   width: 75px;
   height: 75px;
   img {
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 90%;
     border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
   }
 `;
 
@@ -41,6 +78,20 @@ const ChatWindow = styled(Paper)`
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+
+  @media (max-width: 768px) {
+    width: 90vw;
+    height: 80vh;
+    bottom: 80px;
+    right: -10px;
+  }
+
+  @media (max-width: 480px) {
+    width: 65vw;
+    height: 45vh;
+    bottom: 55px;
+    right: 8px;
+  }
 `;
 
 const ChatHeader = styled.div`
@@ -126,7 +177,7 @@ const FormInputMessage = styled(TextField)`
     background: white;
     border-radius: 12px;
     margin: 4px 0;
-    width: 80%;
+    width: 100%;
     align-self: flex-start;
 
     .MuiOutlinedInput-root {
@@ -209,6 +260,10 @@ const ImageUploadContainer = styled.div`
 `;
 
 const ChatBox = () => {
+  const timeSlots = [
+    '08:00', '09:00', '10:00', '11:00',
+    '13:00', '14:00', '15:00', '16:00'
+  ];
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { text: 'Xin chào! Tôi có thể giúp gì cho bạn?', isUser: false }
@@ -270,7 +325,6 @@ const ChatBox = () => {
       return;
     }
   
-    // ✅ Nếu không chứa từ khóa nhưng form đang hiển thị => ẩn form đi
     if (showContactForm) {
       setShowContactForm(false);
     }
@@ -309,7 +363,7 @@ const ChatBox = () => {
         <ChatWindow elevation={3}>
           <ChatHeader>
             <HeaderLeft>
-              <Avatar src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot Avatar" />
+              <Avatar src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot Avatar" />
               <ChatTitle>
                 <span>Trợ lý ảo của 2HM</span>
                 <span>● Online</span>
@@ -323,7 +377,7 @@ const ChatBox = () => {
           <MessagesContainer>
             {messages.map((message, index) => (
               <Message key={index} $isUser={message.isUser}>
-                {!message.isUser && <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot" />}
+                {!message.isUser && <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot" />}
                 {message.text}
               </Message>
             ))}
@@ -331,14 +385,27 @@ const ChatBox = () => {
             {showContactForm && (
               <>
                 <Message $isUser={false}>
-                  <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Bot" />
+                  <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot" />
                   Vui lòng điền thông tin của bạn:
                 </Message>
                 <FormInputMessage label="Họ tên *" value={contactData.fullName} onChange={e => setContactData({ ...contactData, fullName: e.target.value })} size="small" />
                 <FormInputMessage label="Số điện thoại *" value={contactData.numberPhone} onChange={e => setContactData({ ...contactData, numberPhone: e.target.value })} size="small" />
                 <FormInputMessage label="Mô tả" multiline rows={2} value={contactData.description} onChange={e => setContactData({ ...contactData, description: e.target.value })} size="small" />
                 <FormInputMessage label="Ngày *" type="date" value={contactData.date} onChange={e => setContactData({ ...contactData, date: e.target.value })} InputLabelProps={{ shrink: true }} size="small" />
-                <FormInputMessage label="Khung giờ *" value={contactData.timeSlot} onChange={e => setContactData({ ...contactData, timeSlot: e.target.value })} size="small" />
+                <FormInputMessage
+                  select
+                  label="Khung giờ *"
+                  value={contactData.timeSlot}
+                  onChange={e => setContactData({ ...contactData, timeSlot: e.target.value })}
+                  size="small"
+                >
+                  {timeSlots.map((time) => (
+                    <MenuItem key={time} value={time}>
+                      {time}
+                    </MenuItem>
+                  ))}
+                </FormInputMessage>
+                
                 <ImageUploadContainer>
                   <label>
                     <input type="file" accept="image/*" multiple onChange={async (e) => {
@@ -372,7 +439,7 @@ const ChatBox = () => {
                     ))}
                   </div>
                 </ImageUploadContainer>
-                <button onClick={handleContactSubmit} className="submit-button">Gửi liên hệ</button>
+                <SubmitButton onClick={handleContactSubmit}>Gửi liên hệ</SubmitButton>
               </>
             )}
           </MessagesContainer>
@@ -394,7 +461,7 @@ const ChatBox = () => {
         </ChatWindow>
       )}
       <ChatButton onClick={() => setIsOpen(true)}>
-        <img src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1746511865/pngtree-chatbot-in-modern-blue-circle-png-image_11914075_a8qju6.png" alt="Chat" />
+        <img src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Chat" />
       </ChatButton>
     </ChatContainer>
   );
