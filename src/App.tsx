@@ -44,6 +44,8 @@ import IndexCategoryStaff from './components/Admin/CategoryStaffManager/indexCat
 import IndexStaff from './components/Admin/StaffManager/indexStaff';
 import Staff from './components/Home/Staff';
 import FloatingButtons from './components/FloatingButtons/FloatingButtons';
+import UserChat from './websocket/user';
+import AdminChat from './websocket/admin';
 
 const MainContent = styled.main`
   margin-top: 80px;
@@ -51,7 +53,7 @@ const MainContent = styled.main`
 
 declare global {
   interface Window {
-    fbAsyncInit?: () => void;  // Thêm dấu ? để biến thành optional
+    fbAsyncInit?: () => void;
     FB?: any;
   }
 }
@@ -59,14 +61,12 @@ declare global {
 const App = () => {
 
   useEffect(() => {
-    // Hàm kiểm tra FB SDK
     const isFBReady = () => {
       return window.FB && typeof window.FB.init === 'function';
     };
 
     if (isFBReady()) return;
 
-    // Khởi tạo SDK
     window.fbAsyncInit = function () {
       try {
         window.FB?.init({
@@ -81,7 +81,6 @@ const App = () => {
       }
     };
 
-    // Tải script
     if (!document.getElementById('facebook-jssdk')) {
       const script = document.createElement('script');
       script.id = 'facebook-jssdk';
@@ -91,7 +90,6 @@ const App = () => {
       document.body.appendChild(script);
     }
 
-    // Cleanup
     return () => {
       const script = document.getElementById('facebook-jssdk');
       script?.remove();
@@ -216,6 +214,8 @@ const App = () => {
               <Route path="/partner" element={<Partner />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/staff" element={<Staff />} />
+              <Route path="/chat" element={<UserChat />} />
+              <Route path="/admin-chat" element={<AdminChat />} />
             </Routes>
             <Footer />
           </MainContent>

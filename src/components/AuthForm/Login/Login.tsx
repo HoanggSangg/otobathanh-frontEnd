@@ -231,11 +231,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ open, onClose }) => {
       }
     } catch (err: any) {
       if (err.response?.status === 401) {
-        showToast(err.response.data.message, 'error'); // Invalid credentials or unverified account
+        showToast(err.response.data.message, 'error');
       } else if (err.response?.status === 403) {
-        showToast(err.response.data.message, 'error'); // Account locked
+        showToast(err.response.data.message, 'error');
       } else if (err.response?.status === 500) {
-        showToast('Lỗi máy chủ', 'error'); // Server error
+        showToast('Lỗi máy chủ', 'error');
       } else {
         showToast('Có lỗi khi đăng nhập!', 'error');
       }
