@@ -19,7 +19,8 @@ const ADMIN_ONLY_ROUTES = [
   '/manager/products',
   '/manager/news',
   '/manager/banner',
-  '/manager/booking'
+  '/manager/booking',
+  '/admin-chat'
 ];
 
 interface ProtectedRouteProps {

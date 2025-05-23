@@ -44,7 +44,6 @@ import IndexCategoryStaff from './components/Admin/CategoryStaffManager/indexCat
 import IndexStaff from './components/Admin/StaffManager/indexStaff';
 import Staff from './components/Home/Staff';
 import FloatingButtons from './components/FloatingButtons/FloatingButtons';
-import UserChat from './websocket/user';
 import AdminChat from './websocket/admin';
 
 const MainContent = styled.main`
@@ -201,6 +200,14 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/admin-chat"
+                element={
+                  <ProtectedRoute>
+                    <AdminChat />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/account/profile" element={<Profile />} />
               <Route path="/account/update" element={<UpdateAccount />} />
@@ -214,8 +221,6 @@ const App = () => {
               <Route path="/partner" element={<Partner />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/staff" element={<Staff />} />
-              <Route path="/chat" element={<UserChat />} />
-              <Route path="/admin-chat" element={<AdminChat />} />
             </Routes>
             <Footer />
           </MainContent>

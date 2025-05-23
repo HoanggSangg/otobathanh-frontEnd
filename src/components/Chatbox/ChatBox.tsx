@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Close';
 import { sendCozeMessageAPI, createContactAPI } from '../API';
 import { getCurrentUser } from '../Utils/auth';
 import { IconButton, Paper, TextField, MenuItem } from '@mui/material';
+import UserChat from '../../websocket/user';
 
 interface ChatMessage {
   text: string;
@@ -64,6 +65,33 @@ const ChatButton = styled(IconButton)`
   @media (max-width: 768px) {
     width: 60px;
     height: 60px;
+  }
+`;
+
+const ChatOptionButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+`;
+
+const ChatOptionButton = styled.button`
+  background-color: #ff0000;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #cc0000;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 `;
 
@@ -275,6 +303,7 @@ const ChatBox = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { text: 'Xin chào! Tôi có thể giúp gì cho bạn?', isUser: false }
   ]);
+  const [chatType, setChatType] = useState<'none' | 'ui' | 'admin'>('none');
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
@@ -315,14 +344,14 @@ const ChatBox = () => {
 
   const handleSend = async () => {
     if (!inputText.trim() || isLoading) return;
-  
+
     const userMessage = { text: inputText, isUser: true };
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
-  
+
     const keywords = ["liên hệ", "đặt lịch", "gặp", "hẹn gặp", "đặt hẹn"];
     const lowerCaseMessage = inputText.toLowerCase();
-  
+
     if (keywords.some(keyword => lowerCaseMessage.includes(keyword))) {
       setShowContactForm(true);
       setMessages(prev => [
@@ -331,11 +360,11 @@ const ChatBox = () => {
       ]);
       return;
     }
-  
+
     if (showContactForm) {
       setShowContactForm(false);
     }
-  
+
     setIsLoading(true);
     try {
       const currentUser = getCurrentUser();
@@ -355,7 +384,7 @@ const ChatBox = () => {
       setIsLoading(false);
     }
   };
-  
+
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -376,95 +405,120 @@ const ChatBox = () => {
                 <span>● Online</span>
               </ChatTitle>
             </HeaderLeft>
-            <IconButton size="small" onClick={() => setIsOpen(false)} style={{ color: 'white' }}>
+            <IconButton size="small" onClick={() => {
+              setIsOpen(false);
+              setChatType('none');
+            }} style={{ color: 'white' }}>
               <CloseIcon />
             </IconButton>
           </ChatHeader>
 
-          <MessagesContainer>
-            {messages.map((message, index) => (
-              <Message key={index} $isUser={message.isUser}>
-                {!message.isUser && <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot" />}
-                {message.text}
-              </Message>
-            ))}
+          {chatType === 'none' ? (
+            <ChatOptionButtons>
+              <ChatOptionButton onClick={() => setChatType('ui')}>
+                Chat với UI Bot
+              </ChatOptionButton>
+              {getCurrentUser() ? (
+                <ChatOptionButton onClick={() => setChatType('admin')}>
+                  Chat với Admin
+                </ChatOptionButton>
+              ) : (
+                <ChatOptionButton>
+                  Đăng nhập để chat với Admin
+                </ChatOptionButton>
+              )}
+            </ChatOptionButtons>
+          ) : chatType === 'ui' ? (
+            <>
 
-            {showContactForm && (
-              <>
-                <Message $isUser={false}>
-                  <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot" />
-                  Vui lòng điền thông tin của bạn:
-                </Message>
-                <FormInputMessage label="Họ tên *" value={contactData.fullName} onChange={e => setContactData({ ...contactData, fullName: e.target.value })} size="small" />
-                <FormInputMessage label="Số điện thoại *" value={contactData.numberPhone} onChange={e => setContactData({ ...contactData, numberPhone: e.target.value })} size="small" />
-                <FormInputMessage label="Mô tả" multiline rows={2} value={contactData.description} onChange={e => setContactData({ ...contactData, description: e.target.value })} size="small" />
-                <FormInputMessage label="Ngày *" type="date" value={contactData.date} onChange={e => setContactData({ ...contactData, date: e.target.value })} InputLabelProps={{ shrink: true }} size="small" />
-                <FormInputMessage
-                  select
-                  label="Khung giờ *"
-                  value={contactData.timeSlot}
-                  onChange={e => setContactData({ ...contactData, timeSlot: e.target.value })}
-                  size="small"
-                >
-                  {timeSlots.map((time) => (
-                    <MenuItem key={time} value={time}>
-                      {time}
-                    </MenuItem>
-                  ))}
-                </FormInputMessage>
-                
-                <ImageUploadContainer>
-                  <label>
-                    <input type="file" accept="image/*" multiple onChange={async (e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        const files = Array.from(e.target.files);
-                        const imagePromises = files.map(file => {
-                          return new Promise<string>((resolve) => {
-                            const reader = new FileReader();
-                            reader.onloadend = () => resolve(reader.result as string);
-                            reader.readAsDataURL(file);
-                          });
-                        });
-                        const imageUrls = await Promise.all(imagePromises);
-                        setContactData(prev => ({ ...prev, images: [...prev.images, ...imageUrls] }));
-                      }
-                    }} />
-                  </label>
-                  <div className="preview-container">
-                    {contactData.images.map((image, index) => (
-                      <div key={index} className="image-preview">
-                        <img src={image} alt={`Preview ${index}`} />
-                        <IconButton className="remove-button" size="small" onClick={() => {
-                          setContactData(prev => ({
-                            ...prev,
-                            images: prev.images.filter((_, i) => i !== index)
-                          }));
-                        }}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+              <MessagesContainer>
+                {messages.map((message, index) => (
+                  <Message key={index} $isUser={message.isUser}>
+                    {!message.isUser && <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot" />}
+                    {message.text}
+                  </Message>
+                ))}
+
+                {showContactForm && (
+                  <>
+                    <Message $isUser={false}>
+                      <BotAvatarInline src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1747809635/z6623831613116_235dd36d63910822264d104d3529a58f_zfdkr1.jpg" alt="Bot" />
+                      Vui lòng điền thông tin của bạn:
+                    </Message>
+                    <FormInputMessage label="Họ tên *" value={contactData.fullName} onChange={e => setContactData({ ...contactData, fullName: e.target.value })} size="small" />
+                    <FormInputMessage label="Số điện thoại *" value={contactData.numberPhone} onChange={e => setContactData({ ...contactData, numberPhone: e.target.value })} size="small" />
+                    <FormInputMessage label="Mô tả" multiline rows={2} value={contactData.description} onChange={e => setContactData({ ...contactData, description: e.target.value })} size="small" />
+                    <FormInputMessage label="Ngày *" type="date" value={contactData.date} onChange={e => setContactData({ ...contactData, date: e.target.value })} InputLabelProps={{ shrink: true }} size="small" />
+                    <FormInputMessage
+                      select
+                      label="Khung giờ *"
+                      value={contactData.timeSlot}
+                      onChange={e => setContactData({ ...contactData, timeSlot: e.target.value })}
+                      size="small"
+                    >
+                      {timeSlots.map((time) => (
+                        <MenuItem key={time} value={time}>
+                          {time}
+                        </MenuItem>
+                      ))}
+                    </FormInputMessage>
+
+                    <ImageUploadContainer>
+                      <label>
+                        <input type="file" accept="image/*" multiple onChange={async (e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            const files = Array.from(e.target.files);
+                            const imagePromises = files.map(file => {
+                              return new Promise<string>((resolve) => {
+                                const reader = new FileReader();
+                                reader.onloadend = () => resolve(reader.result as string);
+                                reader.readAsDataURL(file);
+                              });
+                            });
+                            const imageUrls = await Promise.all(imagePromises);
+                            setContactData(prev => ({ ...prev, images: [...prev.images, ...imageUrls] }));
+                          }
+                        }} />
+                      </label>
+                      <div className="preview-container">
+                        {contactData.images.map((image, index) => (
+                          <div key={index} className="image-preview">
+                            <img src={image} alt={`Preview ${index}`} />
+                            <IconButton className="remove-button" size="small" onClick={() => {
+                              setContactData(prev => ({
+                                ...prev,
+                                images: prev.images.filter((_, i) => i !== index)
+                              }));
+                            }}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </ImageUploadContainer>
-                <SubmitButton onClick={handleContactSubmit}>Gửi liên hệ</SubmitButton>
-              </>
-            )}
-          </MessagesContainer>
+                    </ImageUploadContainer>
+                    <SubmitButton onClick={handleContactSubmit}>Gửi liên hệ</SubmitButton>
+                  </>
+                )}
+              </MessagesContainer>
 
-          <InputContainer>
-            <StyledTextField
-              placeholder="Nhập tin nhắn..."
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              size="small"
-              multiline
-              maxRows={3}
-            />
-            <SendButton onClick={handleSend}>
-              <SendIcon />
-            </SendButton>
-          </InputContainer>
+              <InputContainer>
+                <StyledTextField
+                  placeholder="Nhập tin nhắn..."
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  size="small"
+                  multiline
+                  maxRows={3}
+                />
+                <SendButton onClick={handleSend}>
+                  <SendIcon />
+                </SendButton>
+              </InputContainer>
+            </>
+          ) : (
+            <UserChat />
+          )}
         </ChatWindow>
       )}
       <ChatButton onClick={() => setIsOpen(true)}>

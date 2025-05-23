@@ -666,6 +666,11 @@ const Header = () => {
                   <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
                     Dịch vụ yêu thích
                   </DropdownItem>
+                  {isManager && (
+                    <DropdownItem to="/admin-chat" onClick={closeMenu}>
+                      Tin nhắn
+                    </DropdownItem>
+                  )}
                   <DropdownButton onClick={handleLogout}>
                     Đăng xuất
                   </DropdownButton>
@@ -802,6 +807,11 @@ const Header = () => {
                   <DropdownItem to="/account/likeProducts" onClick={closeMenu}>
                     Dịch vụ yêu thích
                   </DropdownItem>
+                  {isManager && (
+                    <DropdownItem to="/admin-chat" onClick={closeMenu}>
+                      Tin nhắn
+                    </DropdownItem>
+                  )}
                   <DropdownButton onClick={handleLogout}>
                     Đăng xuất
                   </DropdownButton>

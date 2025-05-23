@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { getCurrentUser, getToken } from '../components/Utils/auth';
 import { createSocketConnection } from '../config/socket';
 import { getAccountByIdAPI } from '../components/API';
+import isPropValid from '@emotion/is-prop-valid';
 
 const Container = styled.div`
     height: 80vh;
@@ -45,7 +46,9 @@ const ChatList = styled.div`
     flex: 1;
   `;
 
-const ChatItem = styled.div<{ active: boolean }>`
+const ChatItem = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'active'
+}) <{ active: boolean }>`
     padding: 15px 25px;
     cursor: pointer;
     display: flex;
@@ -178,20 +181,28 @@ const InputContainer = styled.div`
     }
   `;
 
-const SendButton = styled.button<{ active: boolean | undefined }>`
-  padding: 15px;
-  border-radius: 50%;
-  border: none;
-  cursor: ${props => props.active ? 'pointer' : 'not-allowed'};
-  background: ${props => props.active ? 'linear-gradient(135deg, #e31837, #c41730)' : '#eee'};
-  color: ${props => props.active ? 'white' : '#999'};
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: ${props => props.active ? 'translateY(-2px)' : 'none'};
-    box-shadow: ${props => props.active ? '0 8px 20px rgba(227, 24, 55, 0.2)' : 'none'};
-  }
-`;
+const SendButton = styled.button.withConfig({
+  shouldForwardProp: (prop, defaultValidatorFn) =>
+    isPropValid(prop) && prop !== 'isActive',
+}) <{ isActive: boolean }>`
+    padding: 15px;
+    border-radius: 50%;
+    border: none;
+    cursor: ${props => props.isActive ? 'pointer' : 'not-allowed'};
+    background: ${props => props.isActive ? 'linear-gradient(135deg, #e31837, #c41730)' : '#eee'};
+    color: ${props => props.isActive ? 'white' : '#999'};
+    transition: all 0.3s ease;
+  
+    &:hover {
+      transform: ${props => props.isActive ? 'translateY(-2px)' : 'none'};
+      box-shadow: ${props => props.isActive ? '0 8px 20px rgba(227, 24, 55, 0.2)' : 'none'};
+    }
+  
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  `;
 
 const ErrorMessage = styled.div`
     margin-top: 15px;
@@ -315,6 +326,7 @@ const AdminChat: React.FC = () => {
         });
 
       } catch (error) {
+        console.error("Admin role check error:", error);
         setError('Có lỗi xảy ra khi kiểm tra quyền truy cập');
       }
     };
@@ -328,7 +340,7 @@ const AdminChat: React.FC = () => {
 
   const addUserToList = async (userId: string, socketId: string) => {
     if (activeChats[socketId]) return;
-  
+
     try {
       const userData = await getAccountByIdAPI(userId);
       setActiveChats(prev => ({
@@ -340,13 +352,12 @@ const AdminChat: React.FC = () => {
         }
       }));
       setMessages(prev => ({ ...prev, [socketId]: [] }));
-  
+
       if (!currentUserSocketId) {
         setCurrentUserSocketId(socketId);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // Fallback to basic user info if API fails
       setActiveChats(prev => ({
         ...prev,
         [socketId]: {
@@ -414,9 +425,9 @@ const AdminChat: React.FC = () => {
       return;
     }
 
-    const userId = activeChats[currentUserSocketId];
-    socketRef.current.emit("end_chat", { userId });
-    logMessageToUser(currentUserSocketId, "Bạn đã kết thúc cuộc trò chuyện.", "System");
+    const userId = activeChats[currentUserSocketId].id;
+    
+    socketRef.current.emit('end_chat', { userId });
     removeUserFromList(currentUserSocketId);
   };
 
@@ -438,7 +449,6 @@ const AdminChat: React.FC = () => {
     );
   }
 
-  // Update the return statement in your AdminChat component:
   return (
     <Container>
       <Sidebar>
@@ -472,7 +482,7 @@ const AdminChat: React.FC = () => {
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <Avatar imageUrl={activeChats[currentUserSocketId]?.avatar}>
-                  {!activeChats[currentUserSocketId]?.avatar && 
+                  {!activeChats[currentUserSocketId]?.avatar &&
                     activeChats[currentUserSocketId]?.fullName.charAt(0).toUpperCase()}
                   <OnlineIndicator />
                 </Avatar>
@@ -481,11 +491,8 @@ const AdminChat: React.FC = () => {
                   <div style={{ fontSize: '0.9rem', color: '#22c55e' }}>Online</div>
                 </div>
               </div>
-              <EndChatButton onClick={handleEndChat} disabled={!isConnected}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
-                </svg>
-                End Chat
+              <EndChatButton onClick={handleEndChat}>
+                Kết thúc chat
               </EndChatButton>
             </>
           )}
@@ -512,7 +519,7 @@ const AdminChat: React.FC = () => {
             />
             <SendButton
               type="submit"
-              active={!!(isConnected && currentUserSocketId && message.trim().length > 0)}
+              isActive={!!(isConnected && currentUserSocketId && message.trim().length > 0)}
               disabled={!isConnected || !currentUserSocketId}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
