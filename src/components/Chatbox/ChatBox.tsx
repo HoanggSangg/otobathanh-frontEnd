@@ -7,6 +7,7 @@ import { sendCozeMessageAPI, createContactAPI } from '../API';
 import { getCurrentUser } from '../Utils/auth';
 import { IconButton, Paper, TextField, MenuItem } from '@mui/material';
 import UserChat from '../../websocket/user';
+import LoginForm from '../AuthForm/Login/Login';
 
 interface ChatMessage {
   text: string;
@@ -300,9 +301,13 @@ const ChatBox = () => {
     '13:00', '14:00', '15:00', '16:00'
   ];
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { text: 'Xin chào! Tôi có thể giúp gì cho bạn?', isUser: false }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const savedMessages = localStorage.getItem('chatMessages');
+    return savedMessages ? JSON.parse(savedMessages) : [
+      { text: 'Xin chào! Tôi có thể giúp gì cho bạn?', isUser: false }
+    ];
+  });
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [chatType, setChatType] = useState<'none' | 'ui' | 'admin'>('none');
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -385,12 +390,16 @@ const ChatBox = () => {
     }
   };
 
-
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setChatType('none');
   };
 
   return (
@@ -405,10 +414,11 @@ const ChatBox = () => {
                 <span>● Online</span>
               </ChatTitle>
             </HeaderLeft>
-            <IconButton size="small" onClick={() => {
-              setIsOpen(false);
-              setChatType('none');
-            }} style={{ color: 'white' }}>
+            <IconButton
+              size="small"
+              onClick={handleClose}
+              style={{ color: 'white' }}
+            >
               <CloseIcon />
             </IconButton>
           </ChatHeader>
@@ -418,14 +428,21 @@ const ChatBox = () => {
               <ChatOptionButton onClick={() => setChatType('ui')}>
                 Chat với UI Bot
               </ChatOptionButton>
+              
               {getCurrentUser() ? (
                 <ChatOptionButton onClick={() => setChatType('admin')}>
                   Chat với Admin
                 </ChatOptionButton>
               ) : (
-                <ChatOptionButton>
-                  Đăng nhập để chat với Admin
-                </ChatOptionButton>
+                <>
+                  <ChatOptionButton onClick={() => setIsLoginOpen(true)}>
+                    Đăng nhập để chat với Admin
+                  </ChatOptionButton>
+                  <LoginForm
+                    open={isLoginOpen}
+                    onClose={() => setIsLoginOpen(false)}
+                  />
+                </>
               )}
             </ChatOptionButtons>
           ) : chatType === 'ui' ? (

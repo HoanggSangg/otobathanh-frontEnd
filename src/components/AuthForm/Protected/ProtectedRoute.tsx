@@ -3,6 +3,7 @@ import { getCurrentUser } from '../../Utils/auth';
 import { getAccountByIdAPI } from '../../API';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useToast } from '../../Styles/ToastProvider';
+import LoginForm from '../Login/Login';
 
 interface Role {
   id: string;
@@ -28,6 +29,8 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const [isLoginOpen, setIsLoginOpen] = useState(true);
+  
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const currentUser = getCurrentUser();
@@ -38,8 +41,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const checkUserRole = async () => {
       try {
         if (!currentUser?.id) {
-          showToast('Vui lòng đăng nhập để truy cập trang này', 'warning');
           setIsLoading(false);
+          setIsLoginOpen(true);
           return;
         }
         
@@ -85,6 +88,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (!currentUser?.id) {
+    return (
+      <>
+        <LoginForm
+          open={isLoginOpen}
+          onClose={() => setIsLoginOpen(false)}
+        />
+      </>
+    );
   }
 
   if (!isAuthorized) {
