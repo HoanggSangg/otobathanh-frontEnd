@@ -308,7 +308,8 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
     try {
       const response = await getAllNewsAPI();
       if (Array.isArray(response)) {
-        setNews(response);
+        const sortedNews = response.sort((a: News, b: News) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setNews(sortedNews);
       } else {
         showToast('Dữ liệu không hợp lệ!', 'error');
       }

@@ -362,7 +362,11 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
   });
 
   useEffect(() => {
-    fetchProducts();
+    setIsLoading(true);
+    fetchProducts().finally(() => setIsLoading(false));
+  }, []);
+
+  useEffect(() => {
     if (selectedProduct) {
       setFormData({
         name: selectedProduct.name,
@@ -372,20 +376,14 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
         description: selectedProduct.description
       });
     }
-
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    // Cleanup timer
-    return () => clearTimeout(loadingTimer);
   }, [selectedProduct]);
 
   const fetchProducts = async () => {
     try {
       const response = await getAllProductsAPI();
       if (Array.isArray(response)) {
-        setProducts(response);
+        const sortedProducts = response.sort((a: Product, b: Product) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setProducts(sortedProducts);
       } else {
         showToast('Dữ liệu không hợp lệ!', 'error');
       }
