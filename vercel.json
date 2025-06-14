@@ -1,0 +1,15 @@
+{
+    "redirects": [
+      {
+        "source": "/(.*)",
+        "has": [
+          {
+            "type": "host",
+            "value": "bathanhvn.com"
+          }
+        ],
+        "destination": "https://www.bathanhvn.com/$1",
+        "permanent": true
+      }
+    ]
+  }
