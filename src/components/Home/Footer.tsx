@@ -111,15 +111,16 @@ const Footer = () => {
           <div>
             <Logo src="https://res.cloudinary.com/drbjrsm0s/image/upload/v1745463450/logo_ulbaie.png" alt="Ô Tô Bá Thành" />
             <CompanyInfo>
-              <Typography variant="h6">Bá Thành - Dịch Vụ Hoàn Hảo - Tận Tâm và Chuyên Nghiệp - Sửa Xe Bằng Cả Trái Tim</Typography>
+              <Typography variant="h6">
+                Bá Thành - Gara ô tô Quận 12 chuyên sửa chữa, bảo trì ô tô uy tín tại TP.HCM.
+              </Typography>
               <Typography>Công ty TNHH Bá Thành</Typography>
               <Typography>Mã số thuế / Mã số doanh nghiệp : 0304342069</Typography>
               <Typography>Hỗ trợ khách hàng</Typography>
               <Typography>1900.866.876 - 0908.751.765 - 0913.169.066</Typography>
             </CompanyInfo>
           </div>
-
-          <div>
+<div>
             <SocialMediaSection>
               <Title variant="h6">THEO DÕI CHÚNG TÔI</Title>
               <SocialIcons>
@@ -141,8 +142,9 @@ const Footer = () => {
             <ContactItem>
               <LocationOnIcon />
               <Typography>
-                ĐỊA CHỈ<br />
-                19 Phan Văn Trị, Phường 07, Quận Gò Vấp,Tp HCM<br />
+                <strong>Chi nhánh Gò Vấp:</strong><br />
+                19 Phan Văn Trị, Phường 07, Quận Gò Vấp, TP.HCM<br /><br />
+                <strong>Chi nhánh Quận 12:</strong><br />
                 15 TL08, Phường Thạnh Lộc, Quận 12, TP.HCM
               </Typography>
             </ContactItem>
@@ -163,6 +165,10 @@ const Footer = () => {
             </ContactItem>
           </div>
         </FooterGrid>
+
+        <Typography align="center" style={{ marginTop: '30px', color: '#fff' }}>
+          <strong>Bá Thành là gara ô tô uy tín tại Quận 12</strong> – Chuyên sửa chữa, bảo trì xe ô tô các loại, phục vụ tận tâm cho khách hàng tại TP.HCM và khu vực lân cận.
+        </Typography>
 
         <Copyright>
           ® Ghi rõ nguồn "otobathanh.com" khi trích dẫn thông tin từ website này.
