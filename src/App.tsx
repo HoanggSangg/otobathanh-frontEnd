@@ -120,14 +120,14 @@ const App = () => {
                   <FloatingButtons />
                 </>
               } />
-              <Route path="/productoutstand" element={<ProductOutstand />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/products/:id" element={<ProductPage />} />
-              <Route path="/services" element={<Services />} />
+              <Route path="/san-pham-noi-bat" element={<ProductOutstand />} />
+              <Route path="/san-pham" element={<Products />} />
+              <Route path="/san-pham/:id" element={<ProductPage />} />
+              <Route path="/dich-vu" element={<Services />} />
               <Route path="/oto-quan-12" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/newslist" element={<NewsList />} />
+              <Route path="/lien-he" element={<Contact />} />
+              <Route path="/tin-tuc" element={<News />} />
+              <Route path="/danh-sach-tin-tuc" element={<NewsList />} />
               <Route
                 path="/manager/products"
                 element={
@@ -208,7 +208,7 @@ const App = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/news/:id" element={<NewsDetail />} />
+              <Route path="/tin-tuc/:id" element={<NewsDetail />} />
               <Route path="/account/profile" element={<Profile />} />
               <Route path="/account/update" element={<UpdateAccount />} />
               <Route path="/account/changePass" element={<ChangePass />} />
@@ -217,10 +217,10 @@ const App = () => {
               <Route path="/cart/cartDetail" element={<CartDetail />} />
               <Route path="/order/checkout" element={<Order />} />
               <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
-              <Route path="/procedure" element={<Procedure />} />
-              <Route path="/partner" element={<Partner />} />
+              <Route path="/quy-trinh" element={<Procedure />} />
+              <Route path="/doi-tac" element={<Partner />} />
               <Route path="/booking" element={<Booking />} />
-              <Route path="/staff" element={<Staff />} />
+              <Route path="/nhan-su" element={<Staff />} />
             </Routes>
             <Footer />
           </MainContent>

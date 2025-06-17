@@ -501,7 +501,7 @@ const ProductPage = () => {
         }
       } catch (error) {
         console.error('Error fetching product:', error);
-        navigate('/products');
+        navigate('/san-pham');
       }
     };
 
@@ -554,7 +554,7 @@ const ProductPage = () => {
                 </SpecificationList>
               )}
 
-              <ContactButton onClick={() => navigate('/contact')}>
+              <ContactButton onClick={() => navigate('/lien-he')}>
                 Liên hệ tư vấn
               </ContactButton>
 

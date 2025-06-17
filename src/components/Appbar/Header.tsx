@@ -682,16 +682,16 @@ const Header = () => {
             <NavLink to="/" end onClick={closeMenu}>
               Trang chủ
             </NavLink>
-            <NavLink to="/products" onClick={closeMenu}>
+            <NavLink to="/san-pham" onClick={closeMenu}>
               Dịch vụ
             </NavLink>
-            <NavLink to="/newslist" onClick={closeMenu}>
+            <NavLink to="/danh-sach-tin-tuc" onClick={closeMenu}>
               Tin Tức
             </NavLink>
             <NavLink to="/oto-quan-12" onClick={closeMenu}>
               Giới thiệu
             </NavLink>
-            <NavLink to="/contact" onClick={closeMenu}>
+            <NavLink to="/lien-he" onClick={closeMenu}>
               Liên hệ
             </NavLink>
             {isManager && (

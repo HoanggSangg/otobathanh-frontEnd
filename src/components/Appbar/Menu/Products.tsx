@@ -313,7 +313,7 @@ const Products = () => {
   };
 
   const handleViewDetail = (productId: string) => {
-    navigate(`/products/${productId}`);
+    navigate(`/san-pham/${productId}`);
   };
 
   const handleLike = async (e: React.MouseEvent, productId: string) => {

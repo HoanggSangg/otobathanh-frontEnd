@@ -172,7 +172,7 @@ const Products = () => {
   };
 
   const handleViewDetail = (productId: string) => {
-    navigate(`/products/${productId}`);
+    navigate(`/san-pham/${productId}`);
   };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -220,7 +220,7 @@ const Products = () => {
                   <PlaceName>{product.name}</PlaceName>
                   <ContactButton onClick={(e) => {
                     e.stopPropagation();
-                    navigate('/contact');
+                    navigate('/lien-he');
                   }}>
                     Liên hệ tư vấn
                   </ContactButton>

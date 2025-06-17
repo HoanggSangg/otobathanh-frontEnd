@@ -218,7 +218,7 @@ const HomeServices = () => {
 
   const handleServiceClick = (service: Service) => {
     if (service.subServices && service.subServices.length > 0) {
-      navigate(`/services`);
+      navigate(`/dich-vu`);
     }
   };
 

@@ -184,7 +184,7 @@ const ServicesDetail = () => {
         <CategoryLinks>
           <Link to="/">SỬA CHỮA ĐỘNG CƠ Ô TÔ</Link>
           <span>,</span>
-          <Link to="/services">DỊCH VỤ SỬA CHỮA</Link>
+          <Link to="/dich-vu-sua-chua">DỊCH VỤ SỬA CHỮA</Link>
         </CategoryLinks>
         <ServiceTitle>
           Dịch vụ bảo dưỡng xe Đảm bảo sự hoàn hảo tới từng chi tiết nhỏ nhất
@@ -223,11 +223,11 @@ const ServicesDetail = () => {
         <Sidebar>
           <h3>Dịch vụ khác</h3>
           <ServiceList>
-            <li><Link to="/services/maintenance">Bảo dưỡng định kỳ</Link></li>
-            <li><Link to="/services/engine-repair">Sửa chữa động cơ</Link></li>
-            <li><Link to="/services/paint">Đồng sơn xe</Link></li>
-            <li><Link to="/services/parts">Phụ tùng chính hãng</Link></li>
-            <li><Link to="/services/care">Chăm sóc xe</Link></li>
+            <li><Link to="/dich-vu-bao-duong-dinh-ky">Bảo dưỡng định kỳ</Link></li>
+            <li><Link to="/dich-vu-sua-chua-dong-co">Sửa chữa động cơ</Link></li>
+            <li><Link to="/dich-vu-dong-son-xe">Đồng sơn xe</Link></li>
+            <li><Link to="/dich-vu-phu-tung-chinh-hang">Phụ tùng chính hãng</Link></li>
+            <li><Link to="/dich-vu-cham-soc-xe">Chăm sóc xe</Link></li>
           </ServiceList>
         </Sidebar>
       </ServiceContent>

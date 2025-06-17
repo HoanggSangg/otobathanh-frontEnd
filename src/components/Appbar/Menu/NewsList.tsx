@@ -219,7 +219,7 @@ const NewsList = () => {
   }, []);
 
   const handleNewsClick = (newsId: string) => {
-    navigate(`/news/${newsId}`);
+    navigate(`/tin-tuc/${newsId}`);
   };
 
   const toggleSortOrder = () => {
@@ -239,7 +239,7 @@ const NewsList = () => {
   return (
     <NewsSection>
       <Container>
-        <SectionTitle>TIN TỨC KHUYẾN MÃI</SectionTitle>
+        <SectionTitle>TIN TỨC</SectionTitle>
         <SearchContainer>
           <SearchInput
             type="text"

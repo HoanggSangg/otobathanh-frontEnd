@@ -164,7 +164,7 @@ const News = () => {
   }, []);
 
   const handleNewsClick = (newsId: string) => {
-    navigate(`/news/${newsId}`);
+    navigate(`/tin-tuc/${newsId}`);
   };
 
   const [showLeftButton, setShowLeftButton] = useState(false);

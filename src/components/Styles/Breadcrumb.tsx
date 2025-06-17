@@ -83,9 +83,9 @@ const Breadcrumb = () => {
 
   const getPageTitle = (path: string) => {
     switch (path) {
-      case 'services':
+      case 'dich-vu':
         return 'Dịch vụ';
-      case 'products':
+      case 'san-pham':
         return 'Dịch vụ';
       case 'accounts':
         return 'Tài khoản';
@@ -105,16 +105,16 @@ const Breadcrumb = () => {
         return 'Danh mục';
       case 'oto-quan-12':
         return 'Giới thiệu';
-      case 'contact':
+      case 'lien-he':
         return 'Liên hệ';
       case 'category-staff':
         return 'Chức vụ';
-      case 'news':
+      case 'tin-tuc':
         return 'Tin tức';
-      case 'staff':
+      case 'nhan-su':
         return 'Nhân viên';
-      case 'newslist':
-        return 'Danh mục tin tức';
+      case 'danh-sach-tin-tuc':
+        return 'Danh sách tin tức';
       case 'manager':
         return 'Quản lý';
       case 'banner':
@@ -134,10 +134,10 @@ const Breadcrumb = () => {
     );
 
     // Handle product detail page
-    if (pathSegments[0] === 'products' && pathSegments.length > 1) {
+    if (pathSegments[0] === 'san-pham' && pathSegments.length > 1) {
       items.push(<Separator key="sep-products" />);
       items.push(
-        <BreadcrumbItem key="products" to="/products">
+        <BreadcrumbItem key="san-pham" to="/san-pham">
           dịch vụ
         </BreadcrumbItem>
       );
@@ -151,10 +151,10 @@ const Breadcrumb = () => {
     }
 
     // Handle news detail page
-    if (pathSegments[0] === 'news' && pathSegments.length > 1) {
+    if (pathSegments[0] === 'tin-tuc' && pathSegments.length > 1) {
       items.push(<Separator key="sep-news" />);
       items.push(
-        <BreadcrumbItem key="news" to="/news">
+        <BreadcrumbItem key="tin-tuc" to="/tin-tuc">
           Tin tức
         </BreadcrumbItem>
       );

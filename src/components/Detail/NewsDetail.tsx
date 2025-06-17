@@ -242,7 +242,7 @@ const NewsPage = () => {
               <h3>Tin tức liên quan</h3>
               <ul>
                 {relatedNews.map(news => (
-                  <RelatedNewsItem key={news._id} onClick={() => navigate(`/news/${news._id}`)}>
+                  <RelatedNewsItem key={news._id} onClick={() => navigate(`/tin-tuc/${news._id}`)}>
                     {news.title}
                   </RelatedNewsItem>
                 ))}
