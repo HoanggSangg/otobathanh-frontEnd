@@ -688,7 +688,7 @@ const Header = () => {
             <NavLink to="/newslist" onClick={closeMenu}>
               Tin Tức
             </NavLink>
-            <NavLink to="/about" onClick={closeMenu}>
+            <NavLink to="/oto-quan-12" onClick={closeMenu}>
               Giới thiệu
             </NavLink>
             <NavLink to="/contact" onClick={closeMenu}>

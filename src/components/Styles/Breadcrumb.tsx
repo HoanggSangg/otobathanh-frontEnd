@@ -103,7 +103,7 @@ const Breadcrumb = () => {
         return 'Đặt lịch';
       case 'category':
         return 'Danh mục';
-      case 'about':
+      case 'oto-quan-12':
         return 'Giới thiệu';
       case 'contact':
         return 'Liên hệ';
