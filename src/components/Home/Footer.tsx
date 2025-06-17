@@ -143,7 +143,7 @@ const Footer = () => {
               <LocationOnIcon />
               <Typography>
                 <strong>Chi nhánh Gò Vấp:</strong><br />
-                19 Phan Văn Trị, Phường 07, Quận Gò Vấp, TP.HCM<br /><br />
+                19 Phan Văn Trị, Phường 01, Quận Gò Vấp, TP.HCM<br /><br />
                 <strong>Chi nhánh Quận 12:</strong><br />
                 15 TL08, Phường Thạnh Lộc, Quận 12, TP.HCM
               </Typography>

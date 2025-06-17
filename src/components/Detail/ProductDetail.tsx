@@ -558,7 +558,7 @@ const ProductPage = () => {
                 Liên hệ tư vấn
               </ContactButton>
 
-              <CommentSection>
+              {/* <CommentSection>
                 <h3>Bình luận</h3>
                 <CommentForm onSubmit={handleCommentSubmit}>
                   <CommentInput
@@ -595,7 +595,7 @@ const ProductPage = () => {
                     <p>Chưa có bình luận nào.</p>
                   )}
                 </CommentList>
-              </CommentSection>
+              </CommentSection> */}
             </MainContent>
 
             <Sidebar>

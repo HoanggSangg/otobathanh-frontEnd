@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const PartnerSection = styled.section`
   background: #f8f9fa;
@@ -8,7 +9,6 @@ const PartnerSection = styled.section`
 `;
 
 const Title = styled.h2`
-  text-align: center;
   font-size: 32px;
   color: #e31837;
   margin-bottom: 50px;
@@ -17,7 +17,6 @@ const Title = styled.h2`
   font-family: 'Roboto', sans-serif;
   position: relative;
   padding-bottom: 20px;
-
   &:after {
     content: '';
     position: absolute;
@@ -31,38 +30,16 @@ const Title = styled.h2`
   }
 `;
 
-const ScrollContainer = styled.div`
+const ScrollWrapper = styled.div`
   position: relative;
-  width: 100%;
-  padding: 0 20px;
-  
-  &::before, &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 100px;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, #f8f9fa 0%, rgba(248, 249, 250, 0) 100%);
-  }
-
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, #f8f9fa 0%, rgba(248, 249, 250, 0) 100%);
-  }
 `;
 
-const HorizontalScroll = styled.div`
+const ScrollContainer = styled.div`
   display: flex;
-  gap: 24px;
-  padding: 10px 0;
   overflow-x: auto;
   scroll-behavior: smooth;
+  gap: 24px;
+  padding: 10px 20px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -78,32 +55,13 @@ const LogoBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #e31837 0%, #ff4d6d 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-
-    &::before {
-      opacity: 1;
-    }
   }
-
   img {
     max-width: 80%;
     max-height: 80%;
@@ -111,10 +69,37 @@ const LogoBox = styled.div`
     filter: grayscale(100%);
     transition: filter 0.3s ease;
   }
-
   &:hover img {
     filter: grayscale(0%);
   }
+`;
+
+const ScrollButton = styled.button<{ visible: boolean }>`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  width: 40px;
+  height: 40px;
+  z-index: 2;
+  cursor: pointer;
+  display: ${({ visible }) => (visible ? 'flex' : 'none')};
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    background: #eee;
+  }
+`;
+
+const LeftButton = styled(ScrollButton)`
+  left: 0;
+`;
+
+const RightButton = styled(ScrollButton)`
+  right: 0;
 `;
 
 const partners = [
@@ -130,65 +115,41 @@ const partners = [
 ];
 
 const Partner = () => {
-  const [showLeftButton, setShowLeftButton] = useState(false);
-  const [showRightButton, setShowRightButton] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(true);
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const isAtStart = container.scrollLeft === 0;
-    const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
+  const scrollBy = (offset: number) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
 
-    setShowLeftButton(!isAtStart);
-    setShowRightButton(!isAtEnd);
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setShowLeft(el.scrollLeft > 10);
+    setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 10);
   };
 
   useEffect(() => {
-    let animationFrameId: number;
-    let lastTimestamp = 0;
-    const scrollSpeed = 2;
-
-    const animate = (timestamp: number) => {
-      if (!lastTimestamp) lastTimestamp = timestamp;
-      const elapsed = timestamp - lastTimestamp;
-
-      if (scrollRef.current && !isPaused && elapsed > 32) {
-        const container = scrollRef.current;
-        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 1;
-        
-        if (isAtEnd) {
-          container.scrollLeft = 0;
-        } else {
-          container.scrollBy({ left: scrollSpeed, behavior: 'auto' });
-        }
-        lastTimestamp = timestamp;
-      }
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animationFrameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isPaused]);
+    handleScroll(); // Run on mount
+  }, []);
 
   return (
     <PartnerSection>
       <Title>THƯƠNG HIỆU ĐỐI TÁC</Title>
-      <ScrollContainer>
-        <HorizontalScroll
-          ref={scrollRef}
-          id="partner-scroll"
-          onScroll={handleScroll}
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          {[...partners, ...partners, ...partners].map((partner, index) => (
+      <ScrollWrapper>
+        <LeftButton onClick={() => scrollBy(-300)} visible={showLeft}><ChevronLeft /></LeftButton>
+        <ScrollContainer ref={scrollRef} onScroll={handleScroll}>
+          {partners.map((partner, index) => (
             <LogoBox key={index}>
               <img src={partner.logo} alt={partner.name} />
             </LogoBox>
           ))}
-        </HorizontalScroll>
-      </ScrollContainer>
+        </ScrollContainer>
+        <RightButton onClick={() => scrollBy(300)} visible={showRight}><ChevronRight /></RightButton>
+      </ScrollWrapper>
     </PartnerSection>
   );
 };
