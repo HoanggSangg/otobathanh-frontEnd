@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+                      http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
+  <!-- Trang chính -->
+  <url><loc>https://www.bathanhvn.com/</loc></url>
 
-<url>
-  <loc>https://www.bathanhvn.com/</loc>
-  <lastmod>2025-06-14T08:58:54+00:00</lastmod>
-</url>
+  <!-- Trang công khai -->
+  <url><loc>https://www.bathanhvn.com/productoutstand</loc></url>
+  <url><loc>https://www.bathanhvn.com/products</loc></url>
+  <url><loc>https://www.bathanhvn.com/services</loc></url>
+  <url><loc>https://www.bathanhvn.com/oto-quan-12</loc></url>
+  <url><loc>https://www.bathanhvn.com/contact</loc></url>
+  <url><loc>https://www.bathanhvn.com/news</loc></url>
+  <url><loc>https://www.bathanhvn.com/newslist</loc></url>
+  <url><loc>https://www.bathanhvn.com/procedure</loc></url>
+  <url><loc>https://www.bathanhvn.com/partner</loc></url>
+  <url><loc>https://www.bathanhvn.com/staff</loc></url>
 
+ 
 
 </urlset>
