@@ -122,12 +122,18 @@ const App = () => {
               } />
               <Route path="/san-pham-noi-bat" element={<ProductOutstand />} />
               <Route path="/san-pham" element={<Products />} />
+              <Route path="/products" element={<Products />} />
               <Route path="/san-pham/:id" element={<ProductPage />} />
               <Route path="/dich-vu" element={<Services />} />
+              <Route path="/services" element={<Services />} />
               <Route path="/oto-quan-12" element={<About />} />
+              <Route path="/about" element={<About />} />
               <Route path="/lien-he" element={<Contact />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/tin-tuc" element={<News />} />
+              <Route path="/news" element={<News />} />
               <Route path="/danh-sach-tin-tuc" element={<NewsList />} />
+              <Route path="/news-list" element={<NewsList />} />
               <Route
                 path="/manager/products"
                 element={
