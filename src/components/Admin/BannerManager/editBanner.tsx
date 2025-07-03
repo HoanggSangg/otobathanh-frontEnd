@@ -36,6 +36,17 @@ const Container = styled.div`
   }
 `;
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 0 0 16px 0;
+  border-bottom: 2px solid #f5f5f5;
+  margin-bottom: 24px;
+`;
+
 const StyledTableContainer = styled(TableContainer)`
   margin-top: 20px;
   overflow-x: auto;
@@ -270,13 +281,32 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
   };
 
   const getCurrentPageItems = () => {
+    const sortedBanners = [...banners].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return banners.slice(startIndex, endIndex);
+    return sortedBanners.slice(startIndex, endIndex);
   };
 
   return (
     <Container>
+      <Header>
+        <h1 style={{
+          margin: 0,
+          fontWeight: 700,
+          fontSize: '2rem',
+          color: '#e31837',
+          letterSpacing: '1px'
+        }}>
+          Quản lý banner
+        </h1>
+        <span style={{
+          fontWeight: 500,
+          color: '#333',
+          fontSize: '1.1rem'
+        }}>
+          Tổng số: {banners.length}
+        </span>
+      </Header>
       <StyledTableContainer>
         <StyledPaper>
           <Table>

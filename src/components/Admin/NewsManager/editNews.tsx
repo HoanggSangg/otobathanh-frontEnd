@@ -149,16 +149,13 @@ const SearchSelect = styled.select`
 
 const Header = styled.div`
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
   gap: 24px;
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
+  flex-wrap: wrap;
+  padding: 0 0 16px 0;
+  border-bottom: 2px solid #f5f5f5;
+  margin-bottom: 24px;
 `;
 
 const ImageModal = styled.div`
@@ -293,6 +290,9 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [newsToDelete, setNewsToDelete] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [searchType, setSearchType] = useState('title'); // 'title' or 'content'
 
   useEffect(() => {
     fetchNews();
@@ -308,8 +308,7 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
     try {
       const response = await getAllNewsAPI();
       if (Array.isArray(response)) {
-        const sortedNews = response.sort((a: News, b: News) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        setNews(sortedNews);
+        setNews(response);
       } else {
         showToast('Dữ liệu không hợp lệ!', 'error');
       }
@@ -361,42 +360,32 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
     setNewsToDelete(null);
   };
 
-  const [searchType, setSearchType] = useState('title'); // 'title' or 'content'
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setCurrentPage(value);
-  };
-
   const getPaginatedNews = () => {
+    // Sắp xếp theo mới nhất trước khi phân trang
+    const filtered = news
+      .filter(item => {
+        const searchValue = searchTerm.toLowerCase();
+        switch (searchType) {
+          case 'title':
+            return item.title.toLowerCase().includes(searchValue);
+          case 'content':
+            return item.content.toLowerCase().includes(searchValue);
+          default:
+            return true;
+        }
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredAndSortedNews.slice(startIndex, startIndex + itemsPerPage);
+    return filtered.slice(startIndex, startIndex + itemsPerPage);
   };
-
-  const filteredAndSortedNews = news
-    .filter(item => {
-      const searchValue = searchTerm.toLowerCase();
-      switch (searchType) {
-        case 'title':
-          return item.title.toLowerCase().includes(searchValue);
-        case 'content':
-          return item.content.toLowerCase().includes(searchValue);
-        default:
-          return true;
-      }
-    })
-    .sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
 
   return (
     <Container>
       <Header>
         <Title>Quản lý tin tức</Title>
+        <span style={{ fontWeight: 500, color: '#333', fontSize: '1.1rem' }}>
+          Tổng số: {news.length}
+        </span>
         <SearchControls>
           <SearchSelect
             value={searchType}
@@ -411,13 +400,6 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <SearchSelect
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-          >
-            <option value="desc">Mới nhất</option>
-            <option value="asc">Cũ nhất</option>
-          </SearchSelect>
         </SearchControls>
       </Header>
 
@@ -455,7 +437,7 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
                     <LoadingSpinner />
                   </TableCell>
                 </TableRow>
-              ) : filteredAndSortedNews.length === 0 ? (
+              ) : getPaginatedNews().length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} align="center">Không tìm thấy tin tức nào</TableCell>
                 </TableRow>
@@ -495,12 +477,12 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
           <ModalImage src={selectedImageUrl} alt="Enlarged view" />
         </ImageModal>
       )}
-      {!isLoading && filteredAndSortedNews.length > 0 && (
+      {!isLoading && getPaginatedNews().length > 0 && (
         <PaginationWrapper>
           <Pagination
-            count={Math.ceil(filteredAndSortedNews.length / itemsPerPage)}
+            count={Math.ceil(news.length / itemsPerPage)}
             page={currentPage}
-            onChange={handlePageChange}
+            onChange={(event, value) => setCurrentPage(value)}
             color="primary"
             size="large"
             sx={{

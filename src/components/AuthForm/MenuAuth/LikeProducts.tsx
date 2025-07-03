@@ -196,7 +196,7 @@ const LikeProducts = () => {
   const navigate = useNavigate();
   const user = getCurrentUser();
   const showToast = useToast();
-  const [sortOption, setSortOption] = useState<'default' | 'newest'>('default');
+  const [sortOption, setSortOption] = useState<'default' | 'newest'>('newest');
   const [productLikes, setProductLikes] = useState<Record<string, number>>({});
   const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
   const [likedProducts, setLikedProducts] = useState<Product[]>([]);

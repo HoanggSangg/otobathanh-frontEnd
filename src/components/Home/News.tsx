@@ -154,7 +154,9 @@ const News = () => {
     const fetchNews = async () => {
       try {
         const data = await getAllNewsAPI();
-        setNewsItems(data);
+        // Sắp xếp tin tức theo ngày tạo mới nhất
+        const sortedData = data.sort((a: NewsItem, b: NewsItem) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setNewsItems(sortedData);
       } catch (error) {
         console.error('Error fetching news:', error);
       }

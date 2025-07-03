@@ -299,8 +299,6 @@ interface Props {
 const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [searchType, setSearchType] = useState('fullName');
-    const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const showToast = useToast();
@@ -517,82 +515,62 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
                         return true;
                 }
             })
-            .sort((a, b) => {
-                if (sortBy === 'name') {
-                    return sortOrder === 'asc'
-                        ? a.fullName.localeCompare(b.fullName)
-                        : b.fullName.localeCompare(a.fullName);
-                } else {
-                    return sortOrder === 'asc'
-                        ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-                }
-            });
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     };
 
     return (
         <Container>
-            <Header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
-                <Title style={{ marginRight: '16px' }}>Quản lý tài khoản</Title>
-
-                {totalAccounts !== null && (
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        background: '#f5f5f5',
-                        padding: '6px 12px',
-                        borderRadius: '8px',
-                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                    }}>
-                        <GroupIcon style={{ color: '#1976d2' }} />
-                        <span style={{ fontWeight: 'bold', color: '#333', fontSize: '16px' }}>
-                            {totalAccounts} người dùng
-                        </span>
-                    </div>
-                )}
-
-                <SearchControls style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Header style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '24px',
+                flexWrap: 'wrap',
+                padding: '0 0 16px 0',
+                borderBottom: '2px solid #f5f5f5',
+                marginBottom: '24px',
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
+                    <Title style={{ margin: 0, fontWeight: 700, fontSize: '2rem', color: '#e31837', letterSpacing: '1px' }}>
+                        Quản lý tài khoản
+                    </Title>
+                    {totalAccounts !== null && (
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: '#f5f5f5',
+                            padding: '6px 16px',
+                            borderRadius: '20px',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+                            fontSize: '1rem',
+                            fontWeight: 500,
+                            color: '#333',
+                        }}>
+                            <GroupIcon style={{ color: '#1976d2', fontSize: '1.5rem' }} />
+                            <span>{totalAccounts} người dùng</span>
+                        </div>
+                    )}
+                </div>
+                <SearchControls style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                     <FilterSelect
                         value={searchType}
                         onChange={(e) => setSearchType(e.target.value)}
+                        style={{ minWidth: 140, fontSize: '1rem' }}
                     >
                         <option value="fullName">Tìm theo tên</option>
                         <option value="email">Tìm theo email</option>
                         <option value="role">Tìm theo vai trò</option>
                     </FilterSelect>
-
                     <SearchInput
                         type="text"
-                        placeholder={`Tìm kiếm theo ${searchType === 'fullName'
-                            ? 'tên'
-                            : searchType === 'email'
-                                ? 'email'
-                                : 'vai trò'
-                            }...`}
+                        placeholder={`Tìm kiếm theo ${searchType === 'fullName' ? 'tên' : searchType === 'email' ? 'email' : 'vai trò'}...`}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ minWidth: 220, fontSize: '1rem' }}
                     />
-
-                    <FilterSelect
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
-                    >
-                        <option value="date">Sắp xếp theo ngày</option>
-                        <option value="name">Sắp xếp theo tên</option>
-                    </FilterSelect>
-
-                    <FilterSelect
-                        value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                    >
-                        <option value="desc">Giảm dần</option>
-                        <option value="asc">Tăng dần</option>
-                    </FilterSelect>
                 </SearchControls>
             </Header>
-
-
 
             <StyledTableContainer>
                 <StyledPaper>

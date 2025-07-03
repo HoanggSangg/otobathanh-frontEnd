@@ -89,10 +89,8 @@ const IndexCategory = () => {
 
   return (
     <PageContainer maxWidth="lg">
-      <Title>Quản lý chức vụ</Title>
-
-      <StyledTabs 
-        value={tabValue} 
+      <StyledTabs
+        value={tabValue}
         onChange={handleTabChange}
         variant="scrollable"
         scrollButtons="auto"
@@ -106,7 +104,7 @@ const IndexCategory = () => {
       </TabPanel>
 
       <TabPanel value={tabValue} index={0}>
-        <CreateCategory 
+        <CreateCategory
           selectedCategory={selectedCategory}
           onSuccess={() => {
             setSelectedCategory(null);

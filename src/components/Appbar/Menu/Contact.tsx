@@ -428,8 +428,8 @@ const Contact = () => {
               <LocationOnIcon />
               <div>
                 <h3>Địa chỉ</h3>
-                <p>15 TL08, Phường Thạnh Lộc, Quận 12, TP.HCM</p>
-                <p>​19 Phan Văn Trị, Phường 7, Quận Gò Vấp, TP.HCM</p>
+                <p>15 TL08, Phường An Phú Đông, TP.HCM</p>
+                <p>19 Phan Văn Trị, Phường Hạnh Thông, TP.HCM</p>
               </div>
             </InfoItem>
             <InfoItem>
@@ -443,7 +443,7 @@ const Contact = () => {
               <EmailIcon />
               <div>
                 <h3>Email</h3>
-                <p>otobathanh@gmail.com</p>
+                <p>otobathanhquan12@gmail.com</p>
                 <p>nhan.duong@otobathanh.com</p>
               </div>
             </InfoItem>

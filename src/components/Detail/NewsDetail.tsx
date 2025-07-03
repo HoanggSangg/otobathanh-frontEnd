@@ -125,7 +125,6 @@ const NewsContent = styled.div`
 const MainContent = styled.div`
   img {
     width: 100%;
-    height: 500px;
     object-fit: cover;
     border-radius: 12px;
     margin-bottom: 30px;

@@ -49,6 +49,55 @@ const Title = styled.h1`
   }
 `;
 
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 0 0 16px 0;
+  border-bottom: 2px solid #f5f5f5;
+  margin-bottom: 24px;
+`;
+
+const TotalCount = styled.span`
+  font-weight: 500;
+  color: #333;
+  font-size: 1.1rem;
+  background: #f5f5f5;
+  padding: 6px 18px;
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+`;
+
+const StatusBadge = styled.span<{ color: string }>`
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 16px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #fff;
+  background: ${props => props.color};
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+`;
+
+const FilterCard = styled(Paper)`
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 24px 20px;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  margin-bottom: 24px;
+  background: #fff;
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 8px;
+  }
+`;
+
 const StyledTableContainer = styled(TableContainer) <StyledTableContainerProps>`
   margin-top: 20px;
   overflow-x: auto;
@@ -329,34 +378,16 @@ const IndexBooking = () => {
 
     return (
         <PageContainer maxWidth="lg">
-            <Title>Quản lý Lịch Hẹn</Title>
-            <Paper sx={{
-                p: { xs: 2, sm: 3 },
-                mb: 3,
-                display: 'flex',
-                gap: { xs: 2, sm: 3 },
-                alignItems: 'center',
-                flexDirection: { xs: 'column', sm: 'row' },
-                borderRadius: 2,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                backgroundColor: '#fff',
-                '& .MuiFormControl-root': {
-                    minWidth: { xs: '100%', sm: 220 },
-                    flex: 1
-                },
-                '& .MuiButton-root': {
-                    minWidth: { xs: '100%', sm: 'auto' }
-                }
-            }}>
-                <FormControl sx={{
-                    minWidth: 200,
-                    '& .MuiInputBase-root': {
-                        height: '44px'
-                    },
-                    '& .MuiOutlinedInput-input': {
-                        padding: '0 14px'
-                    }
-                }}>
+            <Header>
+                <Title style={{ margin: 0, fontWeight: 700, fontSize: '2rem', color: '#e31837', letterSpacing: '1px' }}>
+                    Quản lý Lịch Hẹn
+                </Title>
+                <TotalCount>
+                    Tổng số: {contacts.length}
+                </TotalCount>
+            </Header>
+            <FilterCard>
+                <FormControl sx={{ minWidth: 200, flex: 1 }}>
                     <TextField
                         type="date"
                         label="Tìm theo ngày"
@@ -365,19 +396,7 @@ const IndexBooking = () => {
                         InputLabelProps={{ shrink: true }}
                     />
                 </FormControl>
-
-                <FormControl sx={{
-                    minWidth: 200,
-                    '& .MuiInputBase-root': {
-                        height: '44px'
-                    },
-                    '& .MuiInputLabel-root': {
-                        transform: 'translate(18px, 10px) scale(1)'
-                    },
-                    '& .MuiInputLabel-shrink': {
-                        transform: 'translate(14px, -9px) scale(0.75)'
-                    }
-                }}>
+                <FormControl sx={{ minWidth: 200, flex: 1 }}>
                     <InputLabel>Tìm theo giờ hẹn</InputLabel>
                     <Select
                         value={searchTimeSlot}
@@ -386,85 +405,34 @@ const IndexBooking = () => {
                     >
                         <MenuItem value="">Tất cả</MenuItem>
                         {TIME_SLOTS.map((slot) => (
-                            <MenuItem key={slot} value={slot}>
-                                {slot}
-                            </MenuItem>
+                            <MenuItem key={slot} value={slot}>{slot}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-
-                <div style={{
-                    display: 'flex',
-                    gap: '16px',
-                    width: '100%',
-                    justifyContent: 'flex-end',
-                    flexWrap: 'wrap'
-                }}>
+                <div style={{ display: 'flex', gap: '16px', width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                     <Button
                         onClick={handleCombinedSearch}
                         variant="contained"
-                        sx={{
-                            flex: '1',
-                            minWidth: '120px',
-                            height: '44px',
-                            backgroundColor: '#1976d2',
-                            '&:hover': {
-                                backgroundColor: '#1565c0',
-                            },
-                            fontSize: '15px',
-                            fontWeight: 500,
-                            textTransform: 'none',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                        }}
+                        sx={{ flex: '1', minWidth: '120px', height: '44px', backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' }, fontSize: '15px', fontWeight: 500, textTransform: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                     >
                         Tìm kiếm
                     </Button>
                     <Button
-                        onClick={() => {
-                            setSearchDate('');
-                            setSearchTimeSlot('');
-                            fetchContacts();
-                        }}
+                        onClick={() => { setSearchDate(''); setSearchTimeSlot(''); fetchContacts(); }}
                         variant="outlined"
-                        sx={{
-                            flex: '1',
-                            minWidth: '120px',
-                            height: '44px',
-                            borderColor: '#1976d2',
-                            color: '#1976d2',
-                            '&:hover': {
-                                borderColor: '#1565c0',
-                                backgroundColor: 'rgba(25, 118, 210, 0.04)'
-                            },
-                            fontSize: '15px',
-                            fontWeight: 500,
-                            textTransform: 'none'
-                        }}
+                        sx={{ flex: '1', minWidth: '120px', height: '44px', borderColor: '#1976d2', color: '#1976d2', '&:hover': { borderColor: '#1565c0', backgroundColor: 'rgba(25, 118, 210, 0.04)' }, fontSize: '15px', fontWeight: 500, textTransform: 'none' }}
                     >
                         Đặt lại
                     </Button>
                     <Button
                         variant="contained"
                         onClick={() => setIsMonthlyModalOpen(true)}
-                        sx={{
-                            flex: '1',
-                            minWidth: '120px',
-                            height: '44px',
-                            backgroundColor: '#2e7d32',
-                            '&:hover': {
-                                backgroundColor: '#1b5e20',
-                            },
-                            fontSize: '15px',
-                            fontWeight: 500,
-                            textTransform: 'none',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                        }}
+                        sx={{ flex: '1', minWidth: '120px', height: '44px', backgroundColor: '#2e7d32', '&:hover': { backgroundColor: '#1b5e20' }, fontSize: '15px', fontWeight: 500, textTransform: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
                     >
                         Thống kê tháng
                     </Button>
                 </div>
-            </Paper>
-
+            </FilterCard>
             <StyledTableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -501,12 +469,9 @@ const IndexBooking = () => {
                                 <TableCell>{formatDate(contact.date)}</TableCell>
                                 <TableCell>{contact.timeSlot}</TableCell>
                                 <TableCell>
-                                    <span style={{
-                                        color: getStatusColor(contact.status),
-                                        fontWeight: 'bold'
-                                    }}>
+                                    <StatusBadge color={getStatusColor(contact.status)}>
                                         {ContactStatus[contact.status]}
-                                    </span>
+                                    </StatusBadge>
                                 </TableCell>
                                 <TableCell>{formatDate(contact.createdAt)}</TableCell>
                                 <TableCell align="right">

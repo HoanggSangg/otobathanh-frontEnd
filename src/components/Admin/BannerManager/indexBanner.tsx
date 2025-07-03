@@ -68,8 +68,6 @@ const IndexBanner = () => {
 
   return (
     <PageContainer maxWidth="lg">
-      <Title>Quản lý Banner</Title>
-
       <StyledTabs value={tabValue} onChange={handleTabChange}>
         <StyledTab label={selectedBanner ? "Chỉnh sửa banner" : "Thêm banner mới"} />
         <StyledTab label="Danh sách banner" />
@@ -80,7 +78,7 @@ const IndexBanner = () => {
       </TabPanel>
 
       <TabPanel value={tabValue} index={0}>
-        <CreateBanner 
+        <CreateBanner
           selectedBanner={selectedBanner}
           onSuccess={() => {
             setSelectedBanner(null);

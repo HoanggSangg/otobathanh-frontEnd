@@ -150,6 +150,7 @@ interface Product {
   quantity: number;
   image: string;
   description: string;
+  createdAt: string;
 }
 
 const Products = () => {
@@ -165,7 +166,8 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       const data = await getFeaturedProductsAPI();
-      setProducts(data);
+      const sortedData = data.sort((a: Product, b: Product) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setProducts(sortedData);
     } catch (error) {
       console.error('Failed to fetch featured products:', error);
     }

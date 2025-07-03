@@ -168,15 +168,13 @@ const FilterSelect = styled.select`
 
 const Header = styled.div`
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
   gap: 24px;
-  
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    gap: 20px;
-  }
+  flex-wrap: wrap;
+  padding: 0 0 16px 0;
+  border-bottom: 2px solid #f5f5f5;
+  margin-bottom: 24px;
 `;
 
 const Title = styled.h1`
@@ -259,8 +257,6 @@ interface Props {
 const EditStaff: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [staffList, setStaffList] = useState<Staff[]>([]);
     const [searchType, setSearchType] = useState('name');
-    const [sortBy, setSortBy] = useState<'name' | 'date'>('date');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const showToast = useToast();
@@ -312,18 +308,7 @@ const EditStaff: React.FC<Props> = ({ onEdit, onSuccess }) => {
             });
         }
 
-        filtered.sort((a, b) => {
-            if (sortBy === 'name') {
-                return sortOrder === 'asc' 
-                    ? a.name.localeCompare(b.name)
-                    : b.name.localeCompare(a.name);
-            } else {
-                return sortOrder === 'asc'
-                    ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                    : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            }
-        });
-
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         return filtered;
     };
 
@@ -365,6 +350,9 @@ const EditStaff: React.FC<Props> = ({ onEdit, onSuccess }) => {
         <Container>
             <Header>
                 <Title>Quản lý nhân viên</Title>
+                <span style={{ fontWeight: 500, color: '#333', fontSize: '1.1rem' }}>
+                    Tổng số: {staffList.length}
+                </span>
                 <SearchControls>
                     <FilterSelect
                         value={searchType}

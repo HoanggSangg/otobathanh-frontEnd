@@ -142,10 +142,10 @@ const Footer = () => {
             <ContactItem>
               <LocationOnIcon />
               <Typography>
-                <strong>Chi nhánh Gò Vấp:</strong><br />
-                19 Phan Văn Trị, Phường 01, Quận Gò Vấp, TP.HCM<br /><br />
-                <strong>Chi nhánh Quận 12:</strong><br />
-                15 TL08, Phường Thạnh Lộc, Quận 12, TP.HCM
+                <strong>Chi nhánh 1:</strong><br />
+                19 Phan Văn Trị, Phường Hạnh Thông, TP.HCM<br /><br />
+                <strong>Chi nhánh 2:</strong><br />
+                15 TL08, Phường An Phú Đông, TP.HCM
               </Typography>
             </ContactItem>
             <ContactItem>
@@ -159,7 +159,7 @@ const Footer = () => {
               <EmailIcon />
               <div>
                 <Typography>EMAIL</Typography>
-                <Link href="mailto:otobathanh@gmail.com" color="inherit">otobathanh@gmail.com</Link><br />
+                <Link href="mailto:otobathanh@gmail.com" color="inherit">otobathanhquan12@gmail.com</Link><br />
                 <Link href="mailto:nhan.duong@otobathanh.com" color="inherit">nhan.duong@otobathanh.com</Link><br />
               </div>
             </ContactItem>

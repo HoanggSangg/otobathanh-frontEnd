@@ -203,6 +203,7 @@ interface Product {
     _id: string;
     name: string;
   };
+  createdAt?: string;
 }
 
 interface Category {
@@ -215,7 +216,7 @@ const Products = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [productLikes, setProductLikes] = useState<Record<string, number>>({});
-  const [sortOption, setSortOption] = useState('default');
+  const [sortOption, setSortOption] = useState('newest');
   const [likedStatus, setLikedStatus] = useState<Record<string, boolean>>({});
 
   const navigate = useNavigate();
@@ -387,7 +388,15 @@ const Products = () => {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'newest':
-        filtered.reverse();
+        if (filtered.length > 0 && filtered[0].createdAt) {
+          filtered.sort((a, b) => {
+            const dateA = new Date(a.createdAt ?? 0).getTime();
+            const dateB = new Date(b.createdAt ?? 0).getTime();
+            return dateB - dateA;
+          });
+        } else {
+          filtered.reverse();
+        }
         break;
       default:
         break;

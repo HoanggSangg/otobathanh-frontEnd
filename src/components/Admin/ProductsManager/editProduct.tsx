@@ -158,16 +158,13 @@ const PriceRangeContainer = styled.div`
 
 const Header = styled.div`
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
   gap: 24px;
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-  }
+  flex-wrap: wrap;
+  padding: 0 0 16px 0;
+  border-bottom: 2px solid #f5f5f5;
+  margin-bottom: 24px;
 `;
 
 const StyledTableContainer = styled(TableContainer)`
@@ -481,36 +478,39 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
     setSelectedSubImages(null);
   };
 
+  // Hàm chuyển ObjectId sang timestamp (MongoDB ObjectId)
+  function getTimestampFromObjectId(objectId: string) {
+    return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
+  }
+
+  const getCurrentPageItems = () => {
+    // Sắp xếp products theo ngày tạo mới nhất trước khi phân trang
+    const sortedProducts = [...products].sort((a, b) => getTimestampFromObjectId(b._id).getTime() - getTimestampFromObjectId(a._id).getTime());
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return sortedProducts.slice(startIndex, endIndex);
+  };
+
   // Update the search section in the return statement
   return (
     <Container>
       <Header>
-        <Title>Quản lý sản phẩm</Title>
-        <SearchContainer>
-          <SearchInput
-            type="text"
-            placeholder="Tìm kiếm theo tên, danh mục, mô tả..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <PriceRangeContainer>
-            <input
-              type="number"
-              placeholder="Giá từ"
-              value={priceRange.min}
-              onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-              style={{ padding: '8px' }}
-            />
-            <span>-</span>
-            <input
-              type="number"
-              placeholder="Giá đến"
-              value={priceRange.max}
-              onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-              style={{ padding: '8px' }}
-            />
-          </PriceRangeContainer>
-        </SearchContainer>
+        <h1 style={{
+          margin: 0,
+          fontWeight: 700,
+          fontSize: '2rem',
+          color: '#e31837',
+          letterSpacing: '1px'
+        }}>
+          Quản lý sản phẩm
+        </h1>
+        <span style={{
+          fontWeight: 500,
+          color: '#333',
+          fontSize: '1.1rem'
+        }}>
+          Tổng số: {products.length}
+        </span>
       </Header>
 
       <StyledTableContainer>
