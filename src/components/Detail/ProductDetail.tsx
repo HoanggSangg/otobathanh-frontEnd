@@ -602,7 +602,7 @@ const ProductPage = () => {
               <h3>Dịch vụ liên quan</h3>
               <RelatedProductsList>
                 {relatedProducts.map(prod => (
-                  <li key={prod._id} onClick={() => navigate(`/products/${prod._id}`)}>
+                  <li key={prod._id} onClick={() => navigate(`/san-pham/${prod._id}`)}>
                     {prod.name}
                   </li>
                 ))}
