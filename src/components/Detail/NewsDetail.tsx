@@ -131,7 +131,6 @@ const MainContent = styled.div`
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 
     @media (max-width: 768px) {
-      height: 300px;
       margin-bottom: 20px;
     }
   }
