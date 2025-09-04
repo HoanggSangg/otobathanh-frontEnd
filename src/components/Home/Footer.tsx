@@ -146,9 +146,9 @@ const Footer = () => {
                 19 Phan Văn Trị, Phường Hạnh Thông, TP.HCM<br /><br />
                 <strong>Chi nhánh 2:</strong><br />
                 15 TL08, Phường An Phú Đông, TP.HCM <br /><br />
-                <strong>Khu Vực Bà Rịa - Vũng Tàu địa chỉ 1:</strong><br />
+                <strong>Khu Vực Bà Rịa - Vũng Tàu</strong><br />
                 19 Trần Hưng Đạo, Phường Phú Mỹ, Bà Rịa - Vũng Tàu<br /><br />
-                <strong>Khu Vực Bà Rịa - Vũng Tàu địa chỉ 2:</strong><br />
+                <strong>Khu Vực Bình Dương</strong><br />
                 397/8 Nguyễn Kim Cương, Tân Thạnh Đông, Củ Chi.
               </Typography>
             </ContactItem>
