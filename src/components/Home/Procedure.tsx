@@ -1,5 +1,8 @@
+
+
 import React, { useState, useEffect } from 'react';
-import '../css/Procedure.css';
+// @ts-ignore
+import '../Css/Procedure.css';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Step {
