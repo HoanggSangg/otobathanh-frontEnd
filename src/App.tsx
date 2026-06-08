@@ -45,7 +45,6 @@ import IndexStaff from './components/Admin/StaffManager/indexStaff';
 import Staff from './components/Home/Staff';
 import FloatingButtons from './components/FloatingButtons/FloatingButtons';
 import AdminChat from './websocket/admin';
-
 const MainContent = styled.main`
   margin-top: 80px;
 `;
