@@ -31,7 +31,7 @@ import Procedure from './components/Home/Procedure';
 import { ToastProvider } from './components/Styles/ToastProvider';
 import ProductOutstand from './components/Home/ProductOutstand';
 import Products from './components/Appbar/Menu/Products';
-import Partner from './components/Home/Partner';
+// import Partner from './components/Home/Partner';
 import IndexBanner from './components/Admin/BannerManager/indexBanner';
 import ProtectedRoute from './components/AuthForm/Protected/ProtectedRoute';
 import IndexCategory from './components/Admin/CategoryManager/indexCategory';
@@ -116,7 +116,7 @@ const App = () => {
                   <Procedure />
                   <HomeStats />
                   <Staff />
-                  <Partner />
+                  {/* <Partner /> */}
                   <FloatingButtons />
                 </>
               } />
@@ -224,8 +224,8 @@ const App = () => {
               <Route path="/order/checkout" element={<Order />} />
               <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
               <Route path="/quy-trinh" element={<Procedure />} />
-              <Route path="/doi-tac" element={<Partner />} />
-              {/* <Route path="/booking" element={<Booking />} /> */}
+              {/* <Route path="/doi-tac" element={<Partner />} /> */}
+              <Route path="/booking" element={<Booking />} />
               <Route path="/nhan-su" element={<Staff />} />
             </Routes>
             <Footer />
