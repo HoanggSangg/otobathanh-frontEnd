@@ -225,7 +225,7 @@ const App = () => {
               <Route path="/order/orderDetail/:orderId" element={<OrderDetail />} />
               <Route path="/quy-trinh" element={<Procedure />} />
               <Route path="/doi-tac" element={<Partner />} />
-              <Route path="/booking" element={<Booking />} />
+              {/* <Route path="/booking" element={<Booking />} /> */}
               <Route path="/nhan-su" element={<Staff />} />
             </Routes>
             <Footer />

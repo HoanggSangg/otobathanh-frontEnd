@@ -120,7 +120,7 @@ const Footer = () => {
               <Typography>1900.866.876 - 0908.751.765 - 0913.169.066</Typography>
             </CompanyInfo>
           </div>
-<div>
+          <div>
             <SocialMediaSection>
               <Title variant="h6">THEO DÕI CHÚNG TÔI</Title>
               <SocialIcons>
