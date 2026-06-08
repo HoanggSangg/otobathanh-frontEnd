@@ -49,6 +49,7 @@ const MainContent = styled.main`
   margin-top: 80px;
 `;
 
+
 declare global {
   interface Window {
     fbAsyncInit?: () => void;
