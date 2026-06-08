@@ -140,7 +140,6 @@ const Profile = () => {
     image: user?.image || '',
     createdAt: '',
   }));
-  const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
 
   useEffect(() => {
@@ -183,13 +182,11 @@ const Profile = () => {
           showToast('Lỗi kết nối đến máy chủ', 'error');
         }
         console.error('Error fetching account data:', err);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchAccountData();
-  }, []);
+  }, [showToast, user?.email, user?.fullName, user?.id, user?.image, user?.roles, user?.status]);
 
   const handleUpdateClick = () => {
     navigate('/account/update');

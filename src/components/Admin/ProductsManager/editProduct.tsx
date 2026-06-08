@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
 import {
@@ -39,18 +39,7 @@ const Container = styled.div`
   }
 `;
 
-const Title = styled.h1`
-  color: #333;
-  font-size: 24px;
-  margin: 0;
-
-  @media (max-width: 768px) {
-    font-size: 20px;
-    text-align: center;
-  }
-`;
-
-const StyledButton = styled(Button)`
+const Header = styled.div`
   &.MuiButton-root {
     padding: 8px 20px;
     border-radius: 6px;
@@ -86,77 +75,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const SearchContainer = styled.div`
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-  max-width: 800px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 12px;
-  }
-`;
-
-const SearchInput = styled.input`
-  padding: 12px 24px;
-  border: 2px solid #eee;
-  border-radius: 30px;
-  width: 300px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-
-  &:focus {
-    outline: none;
-    border-color: #e31837;
-    box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const PriceRangeContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  input {
-    padding: 12px;
-    border: 2px solid #eee;
-    border-radius: 30px;
-    font-size: 1rem;
-    width: 150px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-
-    &:focus {
-      outline: none;
-      border-color: #e31837;
-      box-shadow: 0 4px 15px rgba(227, 24, 55, 0.1);
-    }
-
-    @media (max-width: 768px) {
-      width: calc(50% - 15px);
-    }
-  }
-
-  span {
-    color: #666;
-    font-weight: 500;
-  }
-`;
-
-const Header = styled.div`
+const StyledButton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -282,17 +201,6 @@ const ModalImage = styled.img`
   object-fit: contain;
 `;
 
-interface EditFormData {
-  name: string;
-  price: string;
-  quantity: string;
-  category_id: {
-    _id: string;
-    name: string;
-  };
-  description: string;
-}
-
 interface Product {
   _id: string;
   name: string;
@@ -317,8 +225,8 @@ interface Props {
 
 const EditProduct: React.FC<Props> = ({ onEdit }) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const searchTerm = '';
+  const priceRange = { min: '', max: '' };
   const [isLoading, setIsLoading] = useState(true);
   const showToast = useToast();
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
@@ -347,35 +255,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
     return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
   };
 
-  const [formData, setFormData] = useState<EditFormData>({
-    name: '',
-    price: '',
-    quantity: '',
-    category_id: {
-      _id: '',
-      name: ''
-    },
-    description: ''
-  });
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchProducts().finally(() => setIsLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (selectedProduct) {
-      setFormData({
-        name: selectedProduct.name,
-        price: selectedProduct.price.toString(),
-        quantity: selectedProduct.quantity.toString(),
-        category_id: selectedProduct.category_id,
-        description: selectedProduct.description
-      });
-    }
-  }, [selectedProduct]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await getAllProductsAPI();
       if (Array.isArray(response)) {
@@ -388,14 +268,12 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
       showToast('Không thể tải danh sách sản phẩm!', 'error');
       console.error('Error fetching products:', err);
     }
-  };
+  }, [showToast]);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(price);
-  };
+  useEffect(() => {
+    setIsLoading(true);
+    fetchProducts().finally(() => setIsLoading(false));
+  }, [fetchProducts]);
 
   const handleEdit = (product: Product) => {
     onEdit(product);
@@ -454,9 +332,6 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
     setProductToDelete(null);
   };
 
-  // Add these new states after existing useState declarations
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-
   // Update the filteredProducts logic
   const filteredProducts = products.filter(product => {
     const nameMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -476,19 +351,6 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
 
   const handleCloseSubImagesModal = () => {
     setSelectedSubImages(null);
-  };
-
-  // Hàm chuyển ObjectId sang timestamp (MongoDB ObjectId)
-  function getTimestampFromObjectId(objectId: string) {
-    return new Date(parseInt(objectId.substring(0, 8), 16) * 1000);
-  }
-
-  const getCurrentPageItems = () => {
-    // Sắp xếp products theo ngày tạo mới nhất trước khi phân trang
-    const sortedProducts = [...products].sort((a, b) => getTimestampFromObjectId(b._id).getTime() - getTimestampFromObjectId(a._id).getTime());
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return sortedProducts.slice(startIndex, endIndex);
   };
 
   // Update the search section in the return statement
@@ -604,7 +466,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                             onClick={() => handleSubImagesClick(product.subImages)}>
                             <img
                               src={product.subImages[0]}
-                              alt="First sub image"
+                              alt="Ảnh phụ đầu tiên"
                               style={{
                                 width: '100%',
                                 height: '100%',
@@ -699,7 +561,7 @@ const EditProduct: React.FC<Props> = ({ onEdit }) => {
                 <img
                   key={index}
                   src={img}
-                  alt={`Sub image ${index + 1}`}
+                  alt={`Phụ ${index + 1}`}
                   style={{
                     width: '300px',
                     height: '300px',

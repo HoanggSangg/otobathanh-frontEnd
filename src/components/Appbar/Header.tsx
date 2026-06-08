@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import LoginForm from '../AuthForm/Login/Login';
@@ -505,7 +505,7 @@ const Header = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen] = useState(false);
   const [userImage, setUserImage] = useState('');
   const user = getCurrentUser();
   const navigate = useNavigate();
@@ -542,7 +542,7 @@ const Header = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   TextField,
   Button,
@@ -104,6 +104,19 @@ const CreateStaff: React.FC<CreateStaffProps> = ({ onSuccess, editingStaff }) =>
     catestaff_id: '',
   });
 
+  const [categoryStaffs, setCategoryStaffs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const showToast = useToast();
+
+  const fetchCategoryStaffs = useCallback(async () => {
+    try {
+      const response = await getAllCategoryStaffsAPI();
+      setCategoryStaffs(response);
+    } catch (error) {
+      showToast('Không thể tải danh mục nhân viên', 'error');
+    }
+  }, [showToast]);
+
   useEffect(() => {
     fetchCategoryStaffs();
     if (editingStaff) {
@@ -123,20 +136,7 @@ const CreateStaff: React.FC<CreateStaffProps> = ({ onSuccess, editingStaff }) =>
         catestaff_id: '',
       });
     }
-  }, [editingStaff]);
-
-  const [categoryStaffs, setCategoryStaffs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const showToast = useToast();
-
-  const fetchCategoryStaffs = async () => {
-    try {
-      const response = await getAllCategoryStaffsAPI();
-      setCategoryStaffs(response);
-    } catch (error) {
-      showToast('Không thể tải danh mục nhân viên', 'error');
-    }
-  };
+  }, [editingStaff, fetchCategoryStaffs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

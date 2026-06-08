@@ -10,11 +10,6 @@ interface Role {
   name: string;
 }
 
-interface User {
-  id: string;
-  roles: Role[];
-}
-
 const MASTER_ONLY_ROUTES = ['/manager/accounts'];
 const ADMIN_ONLY_ROUTES = [
   '/manager/products',

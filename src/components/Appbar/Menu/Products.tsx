@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import styled from 'styled-components';
 import {
   Typography, CardContent, CardMedia, Button, Paper, List, ListItem, ListItemText,
 } from '@mui/material';
@@ -226,7 +226,7 @@ const Products = () => {
   const [searchParams] = useSearchParams();
   const [hasLoadedLikes, setHasLoadedLikes] = useState(false);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const searchTerm = searchParams.get('search');
       let data;
@@ -245,9 +245,9 @@ const Products = () => {
       console.error('Failed to fetch products:', error);
       showToast('Không thể tải danh sách dịch vụ', 'error');
     }
-  };
+  }, [searchParams, showToast]);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const data = await getAllCategoriesAPI();
       setCategories(data);
@@ -255,26 +255,9 @@ const Products = () => {
       console.error('Failed to fetch categories:', error);
       showToast('Không thể tải danh mục dịch vụ', 'error');
     }
-  };
+  }, [showToast]);
 
-  const handleCategoryClick = (categoryId: string) => {
-    setSelectedCategory(prev => prev === categoryId ? '' : categoryId);
-    setPage(1);
-  };
-
-  useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (user && products.length > 0 && !hasLoadedLikes) {
-      fetchLikeData();
-      setHasLoadedLikes(true);
-    }
-  }, [user, products, hasLoadedLikes]);
-
-  const fetchLikeData = async () => {
+  const fetchLikeData = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -311,7 +294,24 @@ const Products = () => {
       console.error('Failed to fetch like data:', error);
       showToast('Không thể tải dữ liệu yêu thích', 'error');
     }
+  }, [user, products, showToast]);
+
+  const handleCategoryClick = (categoryId: string) => {
+    setSelectedCategory(prev => prev === categoryId ? '' : categoryId);
+    setPage(1);
   };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, [fetchProducts, fetchCategories]);
+
+  useEffect(() => {
+    if (user && products.length > 0 && !hasLoadedLikes) {
+      fetchLikeData();
+      setHasLoadedLikes(true);
+    }
+  }, [user, products, hasLoadedLikes, fetchLikeData]);
 
   const handleViewDetail = (productId: string) => {
     navigate(`/san-pham/${productId}`);

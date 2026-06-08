@@ -5,11 +5,6 @@ interface Role {
     id: string;
     name: string;
   }
-  
-  interface User {
-    id: string;
-    roles: Role[];
-  }
 
 export const checkIsMasterRole = async () => {
   const currentUser = getCurrentUser();

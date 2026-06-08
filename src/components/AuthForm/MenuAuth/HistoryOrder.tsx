@@ -91,7 +91,7 @@ const HistoryOrder = () => {
     };
 
     fetchOrders();
-  }, []);
+  }, [showToast, user?.id]);
 
   const handleDelete = async (orderId: string) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')) {

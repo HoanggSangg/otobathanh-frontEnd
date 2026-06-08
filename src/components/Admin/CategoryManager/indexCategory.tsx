@@ -13,18 +13,6 @@ const PageContainer = styled(Container)`
   padding: 40px 0;
 `;
 
-const Title = styled.h1`
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 20px;
-  margin-left: 20px;
-
-  @media (max-width: 768px) {
-    margin-bottom: 20px !important;
-    font-size: 1.5rem !important;
-  }
-`;
-
 const StyledTabs = styled(Tabs)`
   margin-bottom: 20px;
   .MuiTabs-indicator {

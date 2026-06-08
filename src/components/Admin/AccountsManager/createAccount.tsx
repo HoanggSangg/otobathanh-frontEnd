@@ -113,7 +113,7 @@ const CreateAccount: React.FC<Props> = ({ onSuccess, editingAccount }) => {
     };
 
     fetchData();
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     if (editingAccount) {

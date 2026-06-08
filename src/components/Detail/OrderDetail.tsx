@@ -57,18 +57,6 @@ const Button = styled.button`
   }
 `;
 
-interface OrderType {
-  _id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  note?: string;
-  status: string;
-  createdAt: string;
-  total: number;
-}
-
 interface OrderDetailType {
   _id: string;
   order_id: string;

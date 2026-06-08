@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     getAllAccountsAPI,
     deleteAccountAPI,
@@ -313,7 +313,7 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [removeRolesConfirmOpen, setRemoveRolesConfirmOpen] = useState(false);
     const [accountToRemoveRoles, setAccountToRemoveRoles] = useState<Account | null>(null);
 
-    const fetchAccounts = async () => {
+    const fetchAccounts = useCallback(async () => {
         try {
             const response = await getAllAccountsAPI();
             if (Array.isArray(response)) {
@@ -325,9 +325,9 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
             console.error('Error fetching accounts:', err);
             showToast('Không thể tải danh sách tài khoản!', 'error');
         }
-    };
+    }, [showToast]);
 
-    const fetchAccountCount = async () => {
+    const fetchAccountCount = useCallback(async () => {
         try {
             const response = await countAccountsAPI();
             if (response.totalAccounts !== undefined) {
@@ -336,7 +336,7 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
         } catch (error) {
             console.error('Lỗi khi lấy số lượng tài khoản:', error);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchAccounts();
@@ -353,7 +353,7 @@ const EditAccount: React.FC<Props> = ({ onEdit, onSuccess }) => {
         }, 2000);
 
         return () => clearTimeout(loadingTimer);
-    }, []);
+    }, [fetchAccounts, fetchAccountCount]);
 
     const handleRemoveAllRoles = async (account: Account) => {
         if (!isMaster) {

@@ -1,4 +1,4 @@
-import { getCurrentUser, getToken } from '../components/Utils/auth';
+import { getToken } from '../components/Utils/auth';
 import { io, Socket } from 'socket.io-client';
 
 interface SocketConfig {

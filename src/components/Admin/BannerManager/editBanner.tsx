@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
 import {
@@ -213,17 +213,7 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [bannerToDelete, setBannerToDelete] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchBanners();
-
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(loadingTimer);
-  }, []);
-
-  const fetchBanners = async () => {
+  const fetchBanners = useCallback(async () => {
     try {
       const response = await getAllBannersAPI();
       if (Array.isArray(response)) {
@@ -235,7 +225,17 @@ const EditBanner: React.FC<Props> = ({ onEdit }) => {
       showToast('Không thể tải danh sách banner!', 'error');
       console.error('Error fetching banners:', err);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchBanners();
+
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(loadingTimer);
+  }, [fetchBanners]);
 
   const handleEdit = (banner: Banner) => {
     onEdit(banner);

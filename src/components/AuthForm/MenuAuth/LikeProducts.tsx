@@ -1,7 +1,7 @@
 import { getCurrentUser } from '../../Utils/auth';
 import { useToast } from '../../Styles/ToastProvider';
-import styled, { keyframes } from 'styled-components';
-import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Typography, CardContent, CardMedia, Button, Paper } from '@mui/material';
 import { getAllCategoriesAPI, getFavoriteProductsAPI } from '../../API';
 import { likeProductAPI, unlikeProductAPI, countProductLikesAPI, isProductLikedAPI } from '../../API';
@@ -209,7 +209,7 @@ const LikeProducts = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const fetchFavoriteProducts = async () => {
+  const fetchFavoriteProducts = useCallback(async () => {
     try {
       if (!user) {
         showToast('Vui lòng đăng nhập để xem sản phẩm yêu thích', 'warning');
@@ -222,14 +222,9 @@ const LikeProducts = () => {
       console.error('Error fetching favorite products:', error);
       showToast('Không thể tải danh sách sản phẩm yêu thích', 'error');
     }
-  };
+  }, [user, navigate, showToast]);
 
-  const handleCategoryClick = (categoryId: string) => {
-    setSelectedCategory(prev => prev === categoryId ? 'all' : categoryId);
-    setCurrentPage(1);
-  };
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const data = await getAllCategoriesAPI();
       setCategories(data);
@@ -237,39 +232,25 @@ const LikeProducts = () => {
       console.error('Failed to fetch categories:', error);
       showToast('Không thể tải danh mục dịch vụ', 'error');
     }
-  };
+  }, [showToast]);
 
-  useEffect(() => {
-    fetchCategories();
-    fetchFavoriteProducts();
-  }, []);
-
-
-  useEffect(() => {
-    if (user && likedProducts.length > 0 && !hasLoadedLikes) {
-      fetchLikeData();
-      setHasLoadedLikes(true);
-    }
-
-  }, [user, likedProducts, hasLoadedLikes]);
-
-  const fetchLikeData = async () => {
+  const fetchLikeData = useCallback(async () => {
     if (!user) return;
 
     try {
       const likeCounts = await Promise.all(
-        likedProducts.map(async (likedProducts) => {
+        likedProducts.map(async (product) => {
           try {
-            const count = await countProductLikesAPI(likedProducts._id);
-            const isLiked = await isProductLikedAPI(user.id, likedProducts._id);
+            const count = await countProductLikesAPI(product._id);
+            const isLiked = await isProductLikedAPI(user.id, product._id);
             return {
-              id: likedProducts._id,
+              id: product._id,
               count: Number(count),
               isLiked
             };
           } catch (error) {
-            console.error(`Failed to get likes for product ${likedProducts._id}:`, error);
-            return { id: likedProducts._id, count: 0, isLiked: false };
+            console.error(`Failed to get likes for product ${product._id}:`, error);
+            return { id: product._id, count: 0, isLiked: false };
           }
         })
       );
@@ -290,7 +271,24 @@ const LikeProducts = () => {
       console.error('Failed to fetch like data:', error);
       showToast('Không thể tải dữ liệu yêu thích', 'error');
     }
+  }, [user, likedProducts, showToast]);
+
+  const handleCategoryClick = (categoryId: string) => {
+    setSelectedCategory(prev => prev === categoryId ? 'all' : categoryId);
+    setCurrentPage(1);
   };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchFavoriteProducts();
+  }, [fetchCategories, fetchFavoriteProducts]);
+
+  useEffect(() => {
+    if (user && likedProducts.length > 0 && !hasLoadedLikes) {
+      fetchLikeData();
+      setHasLoadedLikes(true);
+    }
+  }, [user, likedProducts, hasLoadedLikes, fetchLikeData]);
 
   const getSortedProducts = () => {
     let filtered = [...likedProducts];

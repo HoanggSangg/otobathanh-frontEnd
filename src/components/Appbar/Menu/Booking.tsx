@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import {
     Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     Paper, FormControl, Select, MenuItem, List,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../Styles/ToastProvider';
 import { getAllContactsAPI } from '../../API';
 import { SelectChangeEvent } from '@mui/material/Select';
@@ -147,14 +146,13 @@ const Booking = () => {
     const [sortOption, setSortOption] = useState('default');
     const [selectedTimeSlot, setSelectedTimeSlot] = useState('all');
 
-    const navigate = useNavigate();
     const showToast = useToast();
 
     const handleSortChange = (event: SelectChangeEvent<string>) => {
         setSortOption(event.target.value);
     };
 
-    const fetchContacts = async () => {
+    const fetchContacts = useCallback(async () => {
         try {
             const data = await getAllContactsAPI();
             setContacts(data);
@@ -162,11 +160,11 @@ const Booking = () => {
             console.error('Failed to fetch contacts:', error);
             showToast('Không thể tải danh sách lịch hẹn', 'error');
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchContacts();
-    }, []);
+    }, [fetchContacts]);
 
     const getFilteredAndSortedContacts = () => {
         let filtered = [...contacts];

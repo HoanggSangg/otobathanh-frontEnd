@@ -177,7 +177,7 @@ const ChangePass = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate, showToast, user?.id]);
 
   const handleVerifyOldPassword = async (e: React.FormEvent) => {
     e.preventDefault();

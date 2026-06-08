@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     getAllStaffAPI,
     deleteStaffAPI,
@@ -265,7 +265,7 @@ const EditStaff: React.FC<Props> = ({ onEdit, onSuccess }) => {
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [staffToDelete, setStaffToDelete] = useState<string | null>(null);
 
-    const fetchStaff = async () => {
+    const fetchStaff = useCallback(async () => {
         try {
             const response = await getAllStaffAPI();
             if (Array.isArray(response)) {
@@ -279,11 +279,11 @@ const EditStaff: React.FC<Props> = ({ onEdit, onSuccess }) => {
             showToast('Không thể tải danh sách nhân viên!', 'error');
             setIsLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchStaff();
-    }, []);
+    }, [fetchStaff]);
 
     const handleEdit = (staff: Staff) => {
         onEdit(staff);

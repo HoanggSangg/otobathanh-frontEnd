@@ -171,7 +171,7 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [editingProduct, showToast]);
 
   // Add function to handle comment deletion
   const handleDeleteComment = async (commentId: string) => {
@@ -465,7 +465,7 @@ const CreateProduct: React.FC<Props> = ({ onSuccess, editingProduct }) => {
                     <Box key={index} sx={{ position: 'relative' }}>
                       <img
                         src={img}
-                        alt={`Sub image ${index + 1}`}
+                        alt={`Phụ ${index + 1}`}
                         style={{
                           width: '100px',
                           height: '100px',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { SectionTitle } from '../Styles/StylesComponents';
 import { getFeaturedProductsAPI } from '../API';
 import { useNavigate } from 'react-router-dom';

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   Container,
-  Typography,
   Tabs,
   Tab,
   Box,

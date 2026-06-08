@@ -37,29 +37,6 @@ const CloseButton = styled(IconButton)`
   padding: 8px !important;
 `;
 
-const InputField = styled.div`
-  margin-bottom: 16px;
-  position: relative;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  outline: none;
-  box-sizing: border-box;
-
-  &:focus {
-    border-color: #e31837;
-  }
-
-  &::placeholder {
-    color: #666;
-  }
-`;
-
 const VerifyButton = styled.button<{ $loading?: boolean }>`
   width: 100%;
   padding: 12px;
@@ -76,13 +53,6 @@ const VerifyButton = styled.button<{ $loading?: boolean }>`
   &:hover {
     background: ${props => props.$loading ? '#e31837' : '#c41730'};
   }
-`;
-
-const ErrorMessage = styled.div`
-  color: #e31837;
-  font-size: 14px;
-  margin-top: 4px;
-  text-align: left;
 `;
 
 const Message = styled.p`

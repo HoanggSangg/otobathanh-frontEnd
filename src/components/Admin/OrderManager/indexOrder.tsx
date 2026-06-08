@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
 import {
@@ -139,18 +139,18 @@ const IndexOrder = () => {
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         try {
             const response = await getAllOrdersAPI();
             setOrders(response);
         } catch (error) {
             showToast('Không thể tải danh sách đơn hàng', 'error');
         }
-    };
+    }, [showToast]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
 
     const handleStatusChange = async () => {
         if (!selectedOrder) return;

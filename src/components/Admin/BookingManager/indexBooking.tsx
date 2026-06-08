@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -242,18 +242,18 @@ const IndexBooking = () => {
     const [monthlyCount, setMonthlyCount] = useState(0);
     const showToast = useToast();
 
-    useEffect(() => {
-        fetchContacts();
-    }, []);
-
-    const fetchContacts = async () => {
+    const fetchContacts = useCallback(async () => {
         try {
             const response = await getAllContactsAPI();
             setContacts(response);
         } catch (error) {
             showToast('Không thể tải danh sách lịch hẹn', 'error');
         }
-    };
+    }, [showToast]);
+
+    useEffect(() => {
+        fetchContacts();
+    }, [fetchContacts]);
 
     const handleViewDetails = async (contact: Contact) => {
         try {

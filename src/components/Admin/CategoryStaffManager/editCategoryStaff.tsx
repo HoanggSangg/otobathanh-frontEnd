@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
 import {
@@ -165,18 +165,7 @@ const EditCategory: React.FC<Props> = ({ onEdit }) => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchCategories();
-
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    // Cleanup timer
-    return () => clearTimeout(loadingTimer);
-  }, []);
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await getAllCategoryStaffsAPI();
       if (Array.isArray(response)) {
@@ -188,7 +177,18 @@ const EditCategory: React.FC<Props> = ({ onEdit }) => {
       showToast('Không thể tải danh sách chức vụ!', 'error');
       console.error('Error fetching categories:', err);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchCategories();
+
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    // Cleanup timer
+    return () => clearTimeout(loadingTimer);
+  }, [fetchCategories]);
 
   const handleEdit = (category: Category) => {
     onEdit(category);

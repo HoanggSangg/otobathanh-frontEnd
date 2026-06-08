@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useToast } from '../../Styles/ToastProvider';
 import {
@@ -294,17 +294,7 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
   const itemsPerPage = 10;
   const [searchType, setSearchType] = useState('title'); // 'title' or 'content'
 
-  useEffect(() => {
-    fetchNews();
-
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(loadingTimer);
-  }, []);
-
-  const fetchNews = async () => {
+  const fetchNews = useCallback(async () => {
     try {
       const response = await getAllNewsAPI();
       if (Array.isArray(response)) {
@@ -316,7 +306,17 @@ const EditNews: React.FC<Props> = ({ onEdit }) => {
       showToast('Không thể tải danh sách tin tức!', 'error');
       console.error('Error fetching news:', err);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchNews();
+
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(loadingTimer);
+  }, [fetchNews]);
 
   const handleImageClick = (imageUrl: string) => {
     setSelectedImageUrl(imageUrl);

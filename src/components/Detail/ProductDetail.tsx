@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { getProductByIdAPI, getAllProductsAPI, createCommentAPI, getCommentsByProductIdAPI } from '../API';
-import { getCurrentUser } from '../Utils/auth';
-import { useToast } from '../Styles/ToastProvider';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { IconButton } from '@mui/material';
-import { deleteCommentAPI } from '../API';
+import { getProductByIdAPI, getAllProductsAPI } from '../API';
 
 const ThumbnailContainer = styled.div`
   display: flex;
@@ -90,30 +85,6 @@ const MainImage = styled.img`
   }
 `;
 
-const CommentHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  
-  span {
-    color: #666;
-    font-size: 14px;
-  }
-  
-  div {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-`;
-
 const ProductContainer = styled.div`
   max-width: 1400px;
   margin: 0 auto;
@@ -157,13 +128,6 @@ const ProductContent = styled.div`
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
     gap: 30px;
-  }
-`;
-
-const DeleteCommentButton = styled(IconButton)`
-  padding: 4px;
-  &:hover {
-    color: #e31837;
   }
 `;
 
@@ -258,91 +222,6 @@ const Sidebar = styled.div`
   }
 `;
 
-const CommentSection = styled.div`
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-
-  h3 {
-    color: #e31837;
-    font-size: 18px;
-    margin-bottom: 15px;
-    position: relative;
-    padding-bottom: 10px;
-
-    &:after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 2px;
-      background-color: #e31837;
-    }
-  }
-`;
-
-const CommentForm = styled.form`
-  display: flex;
-  gap: 10px;
-  margin-bottom: 30px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
-`;
-
-const CommentInput = styled.textarea`
-  flex-grow: 1;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  min-height: 80px;
-  font-family: inherit;
-  resize: vertical;
-
-  @media (max-width: 768px) {
-    margin-bottom: 10px;
-  }
-`;
-
-const CommentButton = styled.button`
-  background-color: #e31837;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: #c41730;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const CommentList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
-
-const CommentItem = styled.div`
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
-`;
-
 const RelatedProductsList = styled.ul`
   list-style: none;
   padding: 0;
@@ -390,97 +269,13 @@ interface Product {
   updatedAt: string;
 }
 
-interface Comment {
-  _id: string;
-  comment: string;
-  account: {
-    _id: string;
-    fullName: string;
-  };
-  product: string;
-  createdAt: string;
-}
-
 const ProductPage = () => {
 
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const user = getCurrentUser();
-  const showToast = useToast();
-
-  const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (!user?.id) {
-        showToast('Vui lòng đăng nhập để thêm bình luận!', 'error');
-        return;
-      }
-
-      if (id && newComment.trim()) {
-        const commentData = {
-          productId: id,
-          comment: newComment,
-          accountId: user.id
-        };
-
-        const response = await createCommentAPI(commentData);
-        if (response) {
-          const updatedComments = await getCommentsByProductIdAPI(id);
-          setComments(updatedComments);
-          setNewComment('');
-          showToast('Bình luận được thêm thành công!', 'success');
-        }
-      }
-    } catch (error: any) {
-      console.error('Error posting comment:', error);
-      showToast('Không thể thêm bình luận. Vui lòng thử lại sau!', 'error');
-    }
-  };
-
-  const handleDeleteComment = async (commentId: string) => {
-    try {
-      if (!user?.id) {
-        showToast('Vui lòng đăng nhập để xóa bình luận!', 'error');
-        return;
-      }
-
-      const response = await deleteCommentAPI(commentId, user.id);
-      if (response.message) {
-        setComments(comments.filter(comment => comment._id !== commentId));
-        showToast(response.message, 'success');
-      }
-    } catch (err: any) {
-      if (err.response?.status === 404) {
-        showToast('Bình luận không tồn tại.', 'error');
-      } else if (err.response?.status === 403) {
-        showToast('Bạn không có quyền xóa bình luận này.', 'error');
-      } else {
-        showToast('Lỗi khi xóa bình luận.', 'error');
-        console.error('Error deleting comment:', err);
-      }
-    }
-  };
-
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        if (id) {
-          const commentsData = await getCommentsByProductIdAPI(id);
-          setComments(commentsData);
-        }
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-    };
-
-    fetchComments();
-  }, [id]);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -557,45 +352,6 @@ const ProductPage = () => {
               <ContactButton onClick={() => navigate('/lien-he')}>
                 Liên hệ tư vấn
               </ContactButton>
-
-              {/* <CommentSection>
-                <h3>Bình luận</h3>
-                <CommentForm onSubmit={handleCommentSubmit}>
-                  <CommentInput
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Viết bình luận của bạn..."
-                    required
-                  />
-                  <CommentButton type="submit">Gửi bình luận</CommentButton>
-                </CommentForm>
-
-                <CommentList>
-                  {comments && comments.length > 0 ? (
-                    comments.map((comment) => (
-                      <CommentItem key={comment._id}>
-                        <CommentHeader>
-                          <span>{comment.account?.fullName || 'Anonymous'}</span>
-                          <div>
-                            <span>{new Date(comment.createdAt).toLocaleDateString('vi-VN')}</span>
-                            {user?.id === comment.account._id && (
-                              <DeleteCommentButton
-                                onClick={() => handleDeleteComment(comment._id)}
-                                size="small"
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </DeleteCommentButton>
-                            )}
-                          </div>
-                        </CommentHeader>
-                        <p>{comment.comment}</p>
-                      </CommentItem>
-                    ))
-                  ) : (
-                    <p>Chưa có bình luận nào.</p>
-                  )}
-                </CommentList>
-              </CommentSection> */}
             </MainContent>
 
             <Sidebar>

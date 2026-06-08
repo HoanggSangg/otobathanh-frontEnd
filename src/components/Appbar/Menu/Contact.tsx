@@ -385,7 +385,7 @@ const Contact = () => {
         images: base64Images,
       };
 
-      const response = await createContactAPI(submitData);
+      await createContactAPI(submitData);
 
       showToast("Đặt lịch thành công!", 'success');
       setFormData({

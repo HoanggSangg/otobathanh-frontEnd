@@ -72,13 +72,13 @@ const StatusMessage = styled.div`
   font-style: italic;
 `;
 
-interface Message {
+interface ChatMessage {
   text: string;
   isUser: boolean;
 }
 
 const UserChat: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     { text: 'Xin chào! Vui lòng đợi trong giây lát, nhân viên sẽ sớm kết nối với bạn.', isUser: false }
   ]);
   const [inputText, setInputText] = useState('');

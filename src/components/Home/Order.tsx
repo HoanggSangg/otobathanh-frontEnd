@@ -104,14 +104,6 @@ const ActionButton = styled.button<{ $primary?: boolean }>`
   }
 `;
 
-const ErrorMessage = styled.div`
-  color: #e31837;
-  background-color: #ffe6e6;
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-`;
-
 // Update CartItem interface
 interface CartItem {
   _id: string;
@@ -161,7 +153,7 @@ const Order = () => {
     };
   
     fetchCartItems();
-  }, []);
+  }, [showToast, user?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -260,6 +260,44 @@ const AdminChat: React.FC = () => {
   }, [activeChats]);
 
   useEffect(() => {
+    const logMessageToUserLocal = (socketId: string, message: string, from: string) => {
+      setMessages(prev => ({
+        ...prev,
+        [socketId]: [...(prev[socketId] || []), { from, message }]
+      }));
+    };
+
+    const addUserToListLocal = async (userId: string, socketId: string) => {
+      try {
+        const userData = await getAccountByIdAPI(userId);
+        setActiveChats(prev => {
+          if (prev[socketId]) return prev;
+          return {
+            ...prev,
+            [socketId]: {
+              id: userId,
+              fullName: userData.account.fullName || 'Unknown User',
+              avatar: userData.account.avatar
+            }
+          };
+        });
+        setMessages(prev => ({ ...prev, [socketId]: [] }));
+        setCurrentUserSocketId(current => current ?? socketId);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setActiveChats(prev => {
+          if (prev[socketId]) return prev;
+          return {
+            ...prev,
+            [socketId]: {
+              id: userId,
+              fullName: 'Unknown User'
+            }
+          };
+        });
+      }
+    };
+
     const checkAdminRole = async () => {
       try {
         if (!currentAdmin?.id) {
@@ -305,8 +343,8 @@ const AdminChat: React.FC = () => {
         });
 
         socket.on('start_chat', ({ userId, socketId }: StartChatData) => {
-          addUserToList(userId, socketId);
-          logMessageToUser(socketId, `💬 Đã kết nối với user ID: ${userId}`, "System");
+          addUserToListLocal(userId, socketId);
+          logMessageToUserLocal(socketId, `💬 Đã kết nối với user ID: ${userId}`, "System");
         });
 
         socket.on('receive_message', (data: Message) => {
@@ -315,12 +353,12 @@ const AdminChat: React.FC = () => {
           )?.[0];
 
           if (senderSocketId) {
-            logMessageToUser(senderSocketId, data.message, data.from);
+            logMessageToUserLocal(senderSocketId, data.message, data.from);
           } else {
             const allSocketIds = Object.keys(activeChatsRef.current);
             if (allSocketIds.length > 0) {
               const defaultSocketId = allSocketIds[0];
-              logMessageToUser(defaultSocketId, data.message, data.from);
+              logMessageToUserLocal(defaultSocketId, data.message, data.from);
             }
           }
         });
@@ -336,37 +374,7 @@ const AdminChat: React.FC = () => {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, []);
-
-  const addUserToList = async (userId: string, socketId: string) => {
-    if (activeChats[socketId]) return;
-
-    try {
-      const userData = await getAccountByIdAPI(userId);
-      setActiveChats(prev => ({
-        ...prev,
-        [socketId]: {
-          id: userId,
-          fullName: userData.account.fullName || 'Unknown User',
-          avatar: userData.account.avatar
-        }
-      }));
-      setMessages(prev => ({ ...prev, [socketId]: [] }));
-
-      if (!currentUserSocketId) {
-        setCurrentUserSocketId(socketId);
-      }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      setActiveChats(prev => ({
-        ...prev,
-        [socketId]: {
-          id: userId,
-          fullName: 'Unknown User'
-        }
-      }));
-    }
-  };
+  }, [currentAdmin?.id]);
 
   const removeUserFromList = (socketId: string) => {
     setActiveChats(prev => {

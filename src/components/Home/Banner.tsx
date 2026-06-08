@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Box, IconButton } from '@mui/material';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -165,11 +165,11 @@ const Banner = () => {
     fetchBanners();
   }, []);
 
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentSlide(current =>
       current === banners.length - 1 ? 0 : current + 1
     );
-  };
+  }, [banners.length]);
 
   const prevSlide = () => {
     setCurrentSlide(current =>
@@ -198,7 +198,7 @@ const Banner = () => {
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
-  }, [banners.length]); // Add dependency on banners.length
+  }, [nextSlide]);
 
   // Don't render anything if no banners are loaded
   if (banners.length === 0) {
